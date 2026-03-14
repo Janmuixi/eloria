@@ -1,6 +1,10 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'auth' })
 
+useSeoMeta({
+  title: 'Sign In - Eloria',
+})
+
 const { login } = useAuth()
 const form = reactive({ email: '', password: '' })
 const error = ref('')

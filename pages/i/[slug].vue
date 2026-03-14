@@ -69,17 +69,18 @@ function formatDate(dateStr: string) {
 
 useSeoMeta({
   title: () => invitation.value
-    ? `${invitation.value.coupleName1} & ${invitation.value.coupleName2} - Wedding Invitation`
-    : 'Wedding Invitation',
-  ogTitle: () => invitation.value
-    ? `${invitation.value.coupleName1} & ${invitation.value.coupleName2}`
+    ? `${invitation.value.coupleName1} & ${invitation.value.coupleName2}'s Wedding`
     : 'Wedding Invitation',
   description: () => invitation.value
-    ? `You're invited to the wedding of ${invitation.value.coupleName1} & ${invitation.value.coupleName2} on ${formatDate(invitation.value.date)}`
+    ? `You're invited to ${invitation.value.coupleName1} & ${invitation.value.coupleName2}'s wedding on ${formatDate(invitation.value.date)}.`
     : '',
+  ogTitle: () => invitation.value
+    ? `${invitation.value.coupleName1} & ${invitation.value.coupleName2}'s Wedding`
+    : 'Wedding Invitation',
   ogDescription: () => invitation.value
     ? `Join us on ${formatDate(invitation.value.date)} at ${invitation.value.venue}`
     : '',
+  ogType: 'website',
 })
 </script>
 

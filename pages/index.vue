@@ -1,11 +1,10 @@
 <script setup lang="ts">
-useHead({
+useSeoMeta({
   title: 'Eloria - Beautiful Wedding Invitations',
-  meta: [
-    { name: 'description', content: 'Create stunning, personalized wedding invitations with AI-powered design, RSVP tracking, and easy sharing. Start for free.' },
-    { property: 'og:title', content: 'Eloria - Beautiful Wedding Invitations' },
-    { property: 'og:description', content: 'Create stunning, personalized wedding invitations with AI-powered design, RSVP tracking, and easy sharing.' },
-  ],
+  description: 'Create stunning wedding invitations with AI-powered design. Send via link, email, or print. Track RSVPs in real-time.',
+  ogTitle: 'Eloria - Beautiful Wedding Invitations',
+  ogDescription: 'Create stunning wedding invitations with AI-powered design.',
+  ogType: 'website',
 })
 
 const features = [

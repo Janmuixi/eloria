@@ -14,7 +14,7 @@ const { data: events, status } = await useFetch('/api/events')
       </NuxtLink>
     </div>
 
-    <div v-if="status === 'pending'" class="text-gray-500">Loading events...</div>
+    <UiLoadingSpinner v-if="status === 'pending'" />
 
     <div v-else-if="!events?.length" class="text-center py-12">
       <p class="text-gray-500 mb-4">You haven't created any events yet.</p>

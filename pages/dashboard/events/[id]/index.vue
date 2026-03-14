@@ -6,6 +6,12 @@ const eventId = route.params.id as string
 
 const { data: evt, status } = await useFetch(`/api/events/${eventId}`)
 
+const tabs = [
+  { label: 'Overview', to: `/dashboard/events/${eventId}` },
+  { label: 'Guests', to: `/dashboard/events/${eventId}/guests` },
+  { label: 'Settings', to: `/dashboard/events/${eventId}/settings` },
+]
+
 const invitationUrl = computed(() => {
   if (!evt.value) return ''
   return `/i/${evt.value.slug}`
@@ -101,7 +107,24 @@ async function downloadPdf() {
       &larr; Back to Events
     </NuxtLink>
 
-    <div v-if="status === 'pending'" class="text-gray-500">Loading event...</div>
+    <!-- Tabs -->
+    <div class="border-b border-gray-200 mb-6">
+      <nav class="flex gap-6">
+        <NuxtLink
+          v-for="tab in tabs"
+          :key="tab.to"
+          :to="tab.to"
+          class="pb-3 text-sm font-medium border-b-2 transition-colors"
+          :class="$route.path === tab.to
+            ? 'border-primary-600 text-primary-600'
+            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+        >
+          {{ tab.label }}
+        </NuxtLink>
+      </nav>
+    </div>
+
+    <UiLoadingSpinner v-if="status === 'pending'" />
 
     <div v-else-if="!evt" class="text-center py-12">
       <p class="text-gray-500">Event not found.</p>

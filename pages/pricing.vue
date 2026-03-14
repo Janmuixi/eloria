@@ -1,9 +1,7 @@
 <script setup lang="ts">
-useHead({
+useSeoMeta({
   title: 'Pricing - Eloria',
-  meta: [
-    { name: 'description', content: 'Simple, transparent pricing for beautiful wedding invitations. Start free, upgrade when you need more.' },
-  ],
+  description: 'Simple per-event pricing for your wedding invitations. Choose from Basic, Premium, or Pro plans.',
 })
 
 const { data: tiers } = await useFetch('/api/tiers')

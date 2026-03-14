@@ -6,6 +6,12 @@ const eventId = route.params.id as string
 
 const { data: guests, refresh: refreshGuests, status } = await useFetch(`/api/events/${eventId}/guests`)
 
+const tabs = [
+  { label: 'Overview', to: `/dashboard/events/${eventId}` },
+  { label: 'Guests', to: `/dashboard/events/${eventId}/guests` },
+  { label: 'Settings', to: `/dashboard/events/${eventId}/settings` },
+]
+
 // Add guest form
 const showAddForm = ref(false)
 const addForm = reactive({ name: '', email: '' })
@@ -78,11 +84,29 @@ const statusBadgeClass = (status: string) => {
 
 <template>
   <div>
+    <NuxtLink to="/dashboard" class="text-sm text-gray-500 hover:text-gray-700 mb-4 block">
+      &larr; Back to Events
+    </NuxtLink>
+
+    <!-- Tabs -->
+    <div class="border-b border-gray-200 mb-6">
+      <nav class="flex gap-6">
+        <NuxtLink
+          v-for="tab in tabs"
+          :key="tab.to"
+          :to="tab.to"
+          class="pb-3 text-sm font-medium border-b-2 transition-colors"
+          :class="$route.path === tab.to
+            ? 'border-primary-600 text-primary-600'
+            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+        >
+          {{ tab.label }}
+        </NuxtLink>
+      </nav>
+    </div>
+
     <div class="flex items-center justify-between mb-6">
       <div>
-        <NuxtLink :to="`/dashboard/events/${eventId}`" class="text-sm text-gray-500 hover:text-gray-700 mb-1 block">
-          &larr; Back to Event
-        </NuxtLink>
         <h1 class="text-2xl font-bold">
           Guest List
           <span v-if="guests" class="text-base font-normal text-gray-500">({{ guests.length }})</span>
@@ -147,7 +171,7 @@ const statusBadgeClass = (status: string) => {
     </div>
 
     <!-- Loading -->
-    <div v-if="status === 'pending'" class="text-gray-500">Loading guests...</div>
+    <UiLoadingSpinner v-if="status === 'pending'" />
 
     <!-- Empty state -->
     <div v-else-if="!guests?.length" class="text-center py-12 bg-white rounded-lg shadow">

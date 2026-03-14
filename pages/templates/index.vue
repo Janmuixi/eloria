@@ -1,9 +1,7 @@
 <script setup lang="ts">
-useHead({
-  title: 'Templates - Eloria',
-  meta: [
-    { name: 'description', content: 'Browse beautiful wedding invitation templates. Filter by style — rustic, modern, elegant, minimal — and find the perfect design.' },
-  ],
+useSeoMeta({
+  title: 'Wedding Invitation Templates - Eloria',
+  description: 'Browse our collection of beautiful wedding invitation templates. Rustic, modern, elegant, and more.',
 })
 
 const categories = ['All', 'Rustic', 'Modern', 'Elegant', 'Minimal'] as const

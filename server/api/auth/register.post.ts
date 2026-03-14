@@ -57,5 +57,9 @@ export default defineEventHandler(async (event) => {
     path: '/',
   })
 
+  // TODO: Send verification email after registration
+  // The user can trigger this manually via POST /api/auth/send-verification
+  // In production, consider calling send-verification logic here automatically
+
   return { user: { id: user.id, email: user.email, name: user.name } }
 })
