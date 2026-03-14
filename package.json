@@ -18,6 +18,8 @@
     "drizzle-orm": "^0.45.1",
     "jsonwebtoken": "^9.0.3",
     "nuxt": "^3.21.2",
+    "openai": "^6.29.0",
+    "stripe": "^20.4.1",
     "vue": "^3.5.30",
     "vue-router": "^5.0.3"
   },
