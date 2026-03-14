@@ -1,0 +1,61 @@
+import { db } from '../../db'
+import { users } from '../../db/schema'
+import { eq } from 'drizzle-orm'
+import { hashPassword } from '../../utils/password'
+import { createToken } from '../../utils/auth'
+
+export default defineEventHandler(async (event) => {
+  const body = await readBody(event)
+
+  const { email, password, name } = body || {}
+
+  if (!email || !password || !name) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Email, password, and name are required',
+    })
+  }
+
+  if (password.length < 8) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Password must be at least 8 characters',
+    })
+  }
+
+  const normalizedEmail = email.toLowerCase().trim()
+
+  const existing = await db.query.users.findFirst({
+    where: eq(users.email, normalizedEmail),
+  })
+
+  if (existing) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Email already registered',
+    })
+  }
+
+  const passwordHash = await hashPassword(password)
+
+  const [user] = await db
+    .insert(users)
+    .values({
+      email: normalizedEmail,
+      passwordHash,
+      name: name.trim(),
+    })
+    .returning({ id: users.id, email: users.email, name: users.name })
+
+  const token = createToken({ userId: user.id, email: user.email })
+
+  setCookie(event, 'auth_token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+    path: '/',
+  })
+
+  return { user: { id: user.id, email: user.email, name: user.name } }
+})
