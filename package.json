@@ -9,6 +9,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "db:seed": "npx tsx server/db/seed.ts",
+    "db:seed-templates": "npx tsx server/db/seed-templates.ts",
     "db:push": "npx drizzle-kit push",
     "db:generate": "npx drizzle-kit generate"
   },
@@ -19,6 +20,8 @@
     "jsonwebtoken": "^9.0.3",
     "nuxt": "^3.21.2",
     "openai": "^6.29.0",
+    "puppeteer": "^24.39.1",
+    "resend": "^6.9.3",
     "stripe": "^20.4.1",
     "vue": "^3.5.30",
     "vue-router": "^5.0.3"

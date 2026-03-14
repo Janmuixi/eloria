@@ -47,6 +47,52 @@ const rsvpStats = computed(() => {
     pending: guests.filter((g: any) => g.rsvpStatus === 'pending').length,
   }
 })
+
+// Send Invitations
+const sendingEmails = ref(false)
+const emailResult = ref<{ sent: number; failed: number; message?: string } | null>(null)
+const emailError = ref('')
+
+async function sendInvitations() {
+  sendingEmails.value = true
+  emailResult.value = null
+  emailError.value = ''
+
+  try {
+    const result = await $fetch(`/api/events/${eventId}/send-invitations`, {
+      method: 'POST',
+    })
+    emailResult.value = result as { sent: number; failed: number; message?: string }
+  } catch (e: any) {
+    emailError.value = e.data?.statusMessage || 'Failed to send invitations'
+  } finally {
+    sendingEmails.value = false
+  }
+}
+
+// PDF Export
+const downloadingPdf = ref(false)
+
+async function downloadPdf() {
+  downloadingPdf.value = true
+  try {
+    const blob = await $fetch(`/api/events/${eventId}/pdf`, {
+      responseType: 'blob',
+    })
+    const url = URL.createObjectURL(blob as Blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${evt.value?.slug || 'invitation'}.pdf`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  } catch (e: any) {
+    alert(e.data?.statusMessage || 'Failed to generate PDF')
+  } finally {
+    downloadingPdf.value = false
+  }
+}
 </script>
 
 <template>
@@ -122,6 +168,52 @@ const rsvpStats = computed(() => {
         <div class="bg-white rounded-lg shadow p-4 text-center">
           <p class="text-2xl font-bold text-gray-400">{{ rsvpStats.pending }}</p>
           <p class="text-sm text-gray-500">Pending</p>
+        </div>
+      </div>
+
+      <!-- Email & PDF Actions -->
+      <div v-if="evt.paymentStatus === 'paid'" class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Actions</h2>
+        <div class="flex flex-wrap gap-3">
+          <!-- Send Invitations -->
+          <button
+            v-if="evt.tier?.hasEmailDelivery"
+            @click="sendInvitations"
+            :disabled="sendingEmails"
+            class="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            {{ sendingEmails ? 'Sending...' : 'Send Invitations' }}
+          </button>
+
+          <!-- Download PDF -->
+          <button
+            v-if="evt.tier?.hasPdfExport"
+            @click="downloadPdf"
+            :disabled="downloadingPdf"
+            class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            {{ downloadingPdf ? 'Generating...' : 'Download PDF' }}
+          </button>
+        </div>
+
+        <!-- Email Result Feedback -->
+        <div v-if="emailResult" class="mt-3 p-3 rounded-lg text-sm"
+          :class="emailResult.failed ? 'bg-yellow-50 text-yellow-700' : 'bg-green-50 text-green-700'">
+          <template v-if="emailResult.message">{{ emailResult.message }}</template>
+          <template v-else>
+            Sent {{ emailResult.sent }} invitation{{ emailResult.sent !== 1 ? 's' : '' }}<template v-if="emailResult.failed">, {{ emailResult.failed }} failed</template>.
+          </template>
+        </div>
+        <div v-if="emailError" class="mt-3 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
+          {{ emailError }}
         </div>
       </div>
 
