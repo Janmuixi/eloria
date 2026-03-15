@@ -7,6 +7,24 @@ useSeoMeta({
   ogType: 'website',
 })
 
+const carouselImages = [
+  '/carousel/image1.jpeg',
+  '/carousel/image2.jpeg',
+]
+const activeSlide = ref(0)
+
+let interval: ReturnType<typeof setInterval> | null = null
+
+onMounted(() => {
+  interval = setInterval(() => {
+    activeSlide.value = (activeSlide.value + 1) % carouselImages.length
+  }, 5000)
+})
+
+onUnmounted(() => {
+  if (interval) clearInterval(interval)
+})
+
 const features = [
   {
     title: 'AI-Powered Design',
@@ -34,22 +52,54 @@ const steps = [
 
 <template>
   <div>
-    <!-- Hero -->
-    <section class="bg-ivory-100 py-20 md:py-28">
-      <div class="max-w-4xl mx-auto px-6 text-center">
-        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 tracking-tight">
-          Create Beautiful Wedding Invitations
-        </h1>
-        <p class="mt-6 text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
-          Design stunning, personalized invitations in minutes. Share them anywhere, track RSVPs in real time, and make your big day unforgettable.
-        </p>
-        <div class="mt-10">
-          <NuxtLink
-            to="/auth/register"
-            class="inline-block bg-primary-600 text-white text-lg font-semibold px-8 py-3 rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
-          >
-            Get Started
-          </NuxtLink>
+    <!-- Hero with carousel -->
+    <section class="relative h-[600px] md:h-[700px] overflow-hidden">
+      <!-- Carousel images -->
+      <div
+        v-for="(src, idx) in carouselImages"
+        :key="src"
+        class="absolute inset-0 transition-opacity duration-1500 ease-in-out"
+        :class="idx === activeSlide ? 'opacity-100' : 'opacity-0'"
+      >
+        <img
+          :src="src"
+          :alt="`Wedding inspiration ${idx + 1}`"
+          class="w-full h-full object-cover grayscale"
+        />
+      </div>
+
+      <!-- Dark overlay -->
+      <div class="absolute inset-0 bg-primary-950/60" />
+
+      <!-- Content -->
+      <div class="relative z-10 h-full flex items-center justify-center">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-ivory-50 tracking-tight drop-shadow-lg">
+            Create Beautiful Wedding Invitations
+          </h1>
+          <p class="mt-6 text-lg md:text-xl text-ivory-200 max-w-2xl mx-auto drop-shadow">
+            Design stunning, personalized invitations in minutes. Share them anywhere, track RSVPs in real time, and make your big day unforgettable.
+          </p>
+          <div class="mt-10">
+            <NuxtLink
+              to="/auth/register"
+              class="inline-block bg-ivory-50 text-primary-900 text-lg font-semibold px-8 py-3 rounded-lg hover:bg-white transition-colors shadow-lg"
+            >
+              Get Started
+            </NuxtLink>
+          </div>
+
+          <!-- Carousel dots -->
+          <div class="mt-10 flex items-center justify-center gap-2">
+            <button
+              v-for="(_, idx) in carouselImages"
+              :key="idx"
+              @click="activeSlide = idx"
+              class="w-2 h-2 rounded-full transition-all duration-300"
+              :class="idx === activeSlide ? 'bg-ivory-50 w-6' : 'bg-ivory-50/40 hover:bg-ivory-50/60'"
+              :aria-label="`Go to slide ${idx + 1}`"
+            />
+          </div>
         </div>
       </div>
     </section>

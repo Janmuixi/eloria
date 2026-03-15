@@ -3,6 +3,9 @@ import type { Config } from 'tailwindcss'
 export default {
   theme: {
     extend: {
+      transitionDuration: {
+        '1500': '1500ms',
+      },
       colors: {
         primary: {
           50: '#f1f4f8',
