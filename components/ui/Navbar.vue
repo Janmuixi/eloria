@@ -12,18 +12,20 @@ const mobileOpen = ref(false)
 
 <template>
   <header class="bg-white border-b border-gray-200">
-    <nav class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <nav class="max-w-7xl mx-auto px-6 py-4 flex items-center">
       <!-- Logo -->
-      <NuxtLink to="/" class="text-xl font-bold text-primary-900">Eloria</NuxtLink>
+      <div class="flex-1">
+        <NuxtLink to="/" class="text-xl font-bold text-primary-900">Eloria</NuxtLink>
+      </div>
 
-      <!-- Desktop nav links -->
+      <!-- Desktop nav links (centered) -->
       <div class="hidden md:flex items-center gap-8">
         <NuxtLink to="/templates" class="text-gray-600 hover:text-gray-900 text-sm font-medium">Templates</NuxtLink>
         <NuxtLink to="/pricing" class="text-gray-600 hover:text-gray-900 text-sm font-medium">Pricing</NuxtLink>
       </div>
 
       <!-- Desktop auth buttons -->
-      <div class="hidden md:flex items-center gap-4">
+      <div class="hidden md:flex flex-1 items-center justify-end gap-4">
         <template v-if="!loading">
           <template v-if="user">
             <NuxtLink to="/dashboard" class="text-gray-600 hover:text-gray-900 text-sm font-medium">Dashboard</NuxtLink>
