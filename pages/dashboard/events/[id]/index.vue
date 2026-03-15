@@ -76,6 +76,22 @@ async function sendInvitations() {
   }
 }
 
+// Delete Event
+const showDeleteConfirm = ref(false)
+const deleting = ref(false)
+
+async function deleteEvent() {
+  deleting.value = true
+  try {
+    await $fetch(`/api/events/${eventId}`, { method: 'DELETE' })
+    navigateTo('/dashboard')
+  } catch (e: any) {
+    alert(e.data?.statusMessage || 'Failed to delete event')
+    deleting.value = false
+    showDeleteConfirm.value = false
+  }
+}
+
 // PDF Export
 const downloadingPdf = ref(false)
 
@@ -237,6 +253,35 @@ async function downloadPdf() {
         </div>
         <div v-if="emailError" class="mt-3 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
           {{ emailError }}
+        </div>
+      </div>
+
+      <!-- Danger Zone -->
+      <div class="bg-white rounded-lg shadow p-6 mb-6 border border-red-100">
+        <h2 class="text-lg font-semibold text-gray-900 mb-2">Danger Zone</h2>
+        <p class="text-sm text-gray-500 mb-4">Permanently delete this event and all its guest data. This action cannot be undone.</p>
+        <button
+          v-if="!showDeleteConfirm"
+          @click="showDeleteConfirm = true"
+          class="px-4 py-2 border border-red-300 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors"
+        >
+          Delete Event
+        </button>
+        <div v-else class="flex items-center gap-3">
+          <p class="text-sm text-red-600 font-medium">Are you sure?</p>
+          <button
+            @click="deleteEvent"
+            :disabled="deleting"
+            class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 disabled:opacity-50"
+          >
+            {{ deleting ? 'Deleting...' : 'Yes, delete permanently' }}
+          </button>
+          <button
+            @click="showDeleteConfirm = false"
+            class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50"
+          >
+            Cancel
+          </button>
         </div>
       </div>
 
