@@ -74,10 +74,10 @@ const steps = [
       <!-- Content -->
       <div class="relative z-10 h-full flex items-center justify-center">
         <div class="max-w-4xl mx-auto px-6 text-center">
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-ivory-50 tracking-tight drop-shadow-lg">
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-ivory-50 tracking-tight" style="text-shadow: 0 2px 8px rgba(0,0,0,0.4)">
             Create Beautiful Wedding Invitations
           </h1>
-          <p class="mt-6 text-lg md:text-xl text-ivory-200 max-w-2xl mx-auto drop-shadow">
+          <p class="mt-6 text-lg md:text-xl text-ivory-200 max-w-2xl mx-auto" style="text-shadow: 0 1px 4px rgba(0,0,0,0.3)">
             Design stunning, personalized invitations in minutes. Share them anywhere, track RSVPs in real time, and make your big day unforgettable.
           </p>
           <div class="mt-10">
