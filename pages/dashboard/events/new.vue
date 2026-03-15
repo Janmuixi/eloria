@@ -457,17 +457,19 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
         <!-- Right: Live Preview -->
         <div>
           <p class="text-sm font-medium mb-2 text-gray-500">Live Preview</p>
-          <div class="border rounded-lg p-8 bg-white text-center shadow-sm">
-            <p class="text-sm uppercase tracking-wider text-gray-400 mb-2">Together with their families</p>
-            <h2 class="text-3xl font-serif text-gray-800">{{ form.coupleName1 }} &amp; {{ form.coupleName2 }}</h2>
-            <div class="w-16 h-px bg-gray-300 mx-auto my-4" />
-            <p v-if="wording" class="text-gray-600 leading-relaxed">{{ wording }}</p>
-            <p v-else class="text-gray-300 italic">Your invitation wording will appear here</p>
-            <div class="mt-6 space-y-1">
-              <p class="font-medium text-gray-700">{{ form.date }}</p>
-              <p class="text-gray-500">{{ form.venue }}</p>
-              <p class="text-sm text-gray-400">{{ form.venueAddress }}</p>
-            </div>
+          <div v-if="selectedTemplate?.htmlTemplate" class="border rounded-lg overflow-hidden shadow-sm">
+            <InvitationTemplatePreview
+              :html-template="selectedTemplate.htmlTemplate"
+              :couple-name1="form.coupleName1"
+              :couple-name2="form.coupleName2"
+              :date="form.date"
+              :venue="form.venue"
+              :venue-address="form.venueAddress"
+              :wording="wording"
+            />
+          </div>
+          <div v-else class="border rounded-lg p-8 bg-white text-center shadow-sm">
+            <p class="text-gray-300 italic">Select a template to see the preview</p>
           </div>
           <p v-if="selectedTemplate" class="text-xs text-gray-400 mt-2 text-center">
             Template: {{ selectedTemplate.name }}
@@ -495,23 +497,19 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
       <p class="text-gray-500 mb-6">Review how your invitation will look to guests</p>
 
       <div class="max-w-2xl mx-auto">
-        <div class="border rounded-xl p-10 bg-white text-center shadow-lg">
-          <p class="text-sm uppercase tracking-[0.2em] text-gray-400 mb-4">Together with their families</p>
-          <h2 class="text-4xl font-serif text-gray-800 mb-2">{{ form.coupleName1 }}</h2>
-          <p class="text-xl text-gray-400 font-serif">&amp;</p>
-          <h2 class="text-4xl font-serif text-gray-800 mt-2">{{ form.coupleName2 }}</h2>
-          <div class="w-24 h-px bg-gray-300 mx-auto my-6" />
-          <p v-if="wording" class="text-gray-600 leading-relaxed max-w-md mx-auto mb-6">{{ wording }}</p>
-          <div class="space-y-2">
-            <p class="text-lg font-medium text-gray-700">{{ form.date }}</p>
-            <p class="text-gray-600">{{ form.venue }}</p>
-            <p class="text-sm text-gray-400">{{ form.venueAddress }}</p>
-            <a v-if="form.venueMapUrl" :href="form.venueMapUrl" target="_blank"
-              class="text-sm text-primary-600 hover:underline inline-block mt-1">
-              View on Map
-            </a>
-          </div>
-          <p v-if="form.description" class="text-sm text-gray-500 mt-6 border-t pt-4">{{ form.description }}</p>
+        <div v-if="selectedTemplate?.htmlTemplate" class="border rounded-xl overflow-hidden shadow-lg">
+          <InvitationTemplatePreview
+            :html-template="selectedTemplate.htmlTemplate"
+            :couple-name1="form.coupleName1"
+            :couple-name2="form.coupleName2"
+            :date="form.date"
+            :venue="form.venue"
+            :venue-address="form.venueAddress"
+            :wording="wording"
+          />
+        </div>
+        <div v-else class="border rounded-xl p-10 bg-white text-center shadow-lg">
+          <p class="text-gray-300 italic">No template selected</p>
         </div>
 
         <p v-if="selectedTemplate" class="text-sm text-gray-400 mt-4 text-center">

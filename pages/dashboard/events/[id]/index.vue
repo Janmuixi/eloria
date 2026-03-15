@@ -186,6 +186,22 @@ async function downloadPdf() {
         </div>
       </div>
 
+      <!-- Invitation Preview -->
+      <div v-if="evt.template?.htmlTemplate" class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Invitation Preview</h2>
+        <div class="border rounded-lg overflow-hidden max-w-xl mx-auto">
+          <InvitationTemplatePreview
+            :html-template="evt.template.htmlTemplate"
+            :couple-name1="evt.coupleName1"
+            :couple-name2="evt.coupleName2"
+            :date="formatDate(evt.date)"
+            :venue="evt.venue"
+            :venue-address="evt.venueAddress"
+            :wording="evt.customization ? JSON.parse(evt.customization).wording : ''"
+          />
+        </div>
+      </div>
+
       <!-- RSVP Stats -->
       <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
         <div class="bg-white rounded-lg shadow p-4 text-center">
