@@ -242,14 +242,14 @@ const modernMinimalHtml = `<!DOCTYPE html>
   .ampersand {
     font-family: 'DM Serif Display', serif;
     font-size: 28px;
-    color: #df5676;
+    color: #43608f;
     margin: 12px 0;
   }
 
   .divider {
     width: 48px;
     height: 2px;
-    background: #df5676;
+    background: #43608f;
     margin: 40px auto;
   }
 
@@ -554,11 +554,11 @@ async function seedTemplates() {
       htmlTemplate: modernMinimalHtml,
       cssTemplate: modernMinimalCss,
       colorScheme: JSON.stringify({
-        primary: '#df5676',
-        secondary: '#999999',
-        background: '#ffffff',
-        text: '#1a1a1a',
-        accent: '#df5676',
+        primary: '#314571',
+        secondary: '#8ea3c3',
+        background: '#FEFDF9',
+        text: '#101722',
+        accent: '#43608f',
       }),
       fontPairings: JSON.stringify({
         heading: 'DM Serif Display',

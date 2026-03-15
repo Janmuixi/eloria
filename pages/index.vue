@@ -35,7 +35,7 @@ const steps = [
 <template>
   <div>
     <!-- Hero -->
-    <section class="bg-primary-50 py-20 md:py-28">
+    <section class="bg-ivory-100 py-20 md:py-28">
       <div class="max-w-4xl mx-auto px-6 text-center">
         <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 tracking-tight">
           Create Beautiful Wedding Invitations
@@ -84,7 +84,7 @@ const steps = [
     </section>
 
     <!-- How It Works -->
-    <section class="bg-gray-50 py-20">
+    <section class="bg-ivory-50 py-20">
       <div class="max-w-4xl mx-auto px-6">
         <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">How it works</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -114,13 +114,13 @@ const steps = [
     </section>
 
     <!-- Final CTA -->
-    <section class="bg-primary-600 py-16">
+    <section class="bg-primary-900 py-16">
       <div class="max-w-3xl mx-auto px-6 text-center">
-        <h2 class="text-3xl font-bold text-white mb-4">Ready to create your perfect invitation?</h2>
-        <p class="text-primary-100 mb-8">Join thousands of couples who chose Eloria for their special day.</p>
+        <h2 class="text-3xl font-bold text-ivory-100 mb-4">Ready to create your perfect invitation?</h2>
+        <p class="text-primary-300 mb-8">Join thousands of couples who chose Eloria for their special day.</p>
         <NuxtLink
           to="/auth/register"
-          class="inline-block bg-white text-primary-600 font-semibold px-8 py-3 rounded-lg hover:bg-primary-50 transition-colors shadow-sm"
+          class="inline-block bg-ivory-100 text-primary-900 font-semibold px-8 py-3 rounded-lg hover:bg-ivory-200 transition-colors shadow-sm"
         >
           Get Started Free
         </NuxtLink>

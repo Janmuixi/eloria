@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-gray-50 border-t border-gray-200 py-8">
+  <footer class="bg-ivory-100 border-t border-ivory-300 py-8">
     <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
       <div class="text-gray-500 text-sm">
         <span class="font-semibold text-gray-700">Eloria</span>

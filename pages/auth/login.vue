@@ -25,7 +25,7 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+  <div class="min-h-screen flex items-center justify-center bg-ivory-50 px-4">
     <div class="w-full max-w-md">
       <h1 class="text-3xl font-bold text-center mb-8">Sign in to Eloria</h1>
       <form @submit.prevent="onSubmit" class="bg-white rounded-lg shadow p-8 space-y-4">

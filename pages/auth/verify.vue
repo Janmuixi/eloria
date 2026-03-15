@@ -34,7 +34,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+  <div class="min-h-screen flex items-center justify-center bg-ivory-50 px-4">
     <div class="w-full max-w-md text-center">
       <!-- Loading -->
       <div v-if="verifying">

@@ -14,7 +14,7 @@ const mobileOpen = ref(false)
   <header class="bg-white border-b border-gray-200">
     <nav class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
       <!-- Logo -->
-      <NuxtLink to="/" class="text-xl font-bold text-primary-600">Eloria</NuxtLink>
+      <NuxtLink to="/" class="text-xl font-bold text-primary-900">Eloria</NuxtLink>
 
       <!-- Desktop nav links -->
       <div class="hidden md:flex items-center gap-8">

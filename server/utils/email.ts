@@ -35,7 +35,7 @@ export async function sendInvitationEmail(params: SendInvitationParams) {
           Dear ${params.guestName},<br><br>
           ${params.coupleName1} &amp; ${params.coupleName2} would love for you to celebrate their wedding on ${params.date}.
         </p>
-        <a href="${params.invitationUrl}" style="display: inline-block; background: #df5676; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; margin-top: 20px; font-size: 16px;">
+        <a href="${params.invitationUrl}" style="display: inline-block; background: #314571; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; margin-top: 20px; font-size: 16px;">
           View Invitation &amp; RSVP
         </a>
         <p style="font-size: 12px; color: #999; margin-top: 30px;">Sent via Eloria</p>

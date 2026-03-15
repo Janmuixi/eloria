@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-ivory-50">
     <!-- Mobile header -->
     <div class="lg:hidden bg-white border-b px-4 py-3 flex items-center justify-between">
       <NuxtLink to="/" class="text-xl font-bold text-primary-600">Eloria</NuxtLink>
@@ -15,7 +15,7 @@
       <div class="fixed inset-0 bg-black/50" @click="sidebarOpen = false" />
       <aside class="fixed inset-y-0 left-0 w-64 bg-white z-50">
         <div class="p-6 flex items-center justify-between">
-          <NuxtLink to="/" class="text-2xl font-bold text-primary-600">Eloria</NuxtLink>
+          <NuxtLink to="/" class="text-2xl font-bold text-primary-900">Eloria</NuxtLink>
           <button @click="sidebarOpen = false" class="p-1 text-gray-400 hover:text-gray-600">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -40,7 +40,7 @@
     <!-- Desktop sidebar -->
     <aside class="fixed inset-y-0 left-0 w-64 bg-white border-r hidden lg:block">
       <div class="p-6">
-        <NuxtLink to="/" class="text-2xl font-bold text-primary-600">Eloria</NuxtLink>
+        <NuxtLink to="/" class="text-2xl font-bold text-primary-900">Eloria</NuxtLink>
       </div>
       <nav class="px-4 space-y-1">
         <NuxtLink to="/dashboard"

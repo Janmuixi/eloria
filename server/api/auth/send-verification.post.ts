@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
             Hi ${user.name},<br><br>
             Please verify your email address by clicking the button below.
           </p>
-          <a href="${verificationUrl}" style="display: inline-block; background: #df5676; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; margin-top: 20px; font-size: 16px;">
+          <a href="${verificationUrl}" style="display: inline-block; background: #314571; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; margin-top: 20px; font-size: 16px;">
             Verify Email
           </a>
           <p style="font-size: 12px; color: #999; margin-top: 30px;">This link expires in 24 hours.</p>
