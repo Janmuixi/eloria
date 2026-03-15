@@ -4,7 +4,7 @@ useSeoMeta({
   description: 'Browse our collection of beautiful wedding invitation templates. Rustic, modern, elegant, and more.',
 })
 
-const categories = ['All', 'Rustic', 'Modern', 'Elegant', 'Minimal'] as const
+const categories = ['All', 'rustic', 'modern', 'elegant', 'minimal', 'classic'] as const
 const activeCategory = ref<string>('All')
 
 const { data: templates, refresh } = await useFetch('/api/templates', {
@@ -31,10 +31,25 @@ function isBasicTier(template: Template): boolean {
 }
 
 const categoryColors: Record<string, string> = {
-  Rustic: 'bg-amber-100 text-amber-800',
-  Modern: 'bg-blue-100 text-blue-800',
-  Elegant: 'bg-purple-100 text-purple-800',
-  Minimal: 'bg-gray-100 text-gray-800',
+  rustic: 'bg-amber-100 text-amber-800',
+  modern: 'bg-blue-100 text-blue-800',
+  elegant: 'bg-purple-100 text-purple-800',
+  minimal: 'bg-gray-100 text-gray-800',
+  classic: 'bg-purple-100 text-purple-800',
+}
+
+const categoryGradients: Record<string, string> = {
+  rustic: 'from-amber-800 via-amber-600 to-yellow-700',
+  modern: 'from-slate-700 via-slate-500 to-slate-400',
+  elegant: 'from-purple-900 via-purple-700 to-purple-500',
+  minimal: 'from-gray-300 via-gray-200 to-white',
+  classic: 'from-yellow-900 via-yellow-700 to-yellow-500',
+}
+
+const brokenImages = ref<Set<number>>(new Set())
+
+function onImageError(templateId: number) {
+  brokenImages.value.add(templateId)
 }
 </script>
 
@@ -59,7 +74,7 @@ const categoryColors: Record<string, string> = {
             ? 'bg-primary-600 text-white'
             : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
         >
-          {{ cat }}
+          {{ cat === 'All' ? 'All' : cat.charAt(0).toUpperCase() + cat.slice(1) }}
         </button>
       </div>
 
@@ -74,14 +89,22 @@ const categoryColors: Record<string, string> = {
           class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
         >
           <!-- Preview -->
-          <div class="aspect-[4/3] bg-gradient-to-br from-primary-100 to-primary-50 flex items-center justify-center">
+          <div class="aspect-[4/3] relative overflow-hidden">
             <img
-              v-if="template.previewImageUrl && !template.previewImageUrl.startsWith('placeholder')"
+              v-if="template.previewImageUrl && !brokenImages.has(template.id)"
               :src="template.previewImageUrl"
               :alt="template.name"
               class="w-full h-full object-cover"
+              @error="onImageError(template.id)"
             />
-            <span v-else class="text-primary-300 text-sm font-medium">Preview</span>
+            <div
+              v-else
+              class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br"
+              :class="categoryGradients[template.category] || 'from-primary-200 to-primary-100'"
+            >
+              <span class="text-white/90 text-2xl font-serif italic drop-shadow">{{ template.name }}</span>
+              <span class="text-white/60 text-xs mt-1 uppercase tracking-widest">{{ template.category }}</span>
+            </div>
           </div>
 
           <div class="p-4">
