@@ -325,7 +325,7 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
           class="flex-1 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
         <button @click="loadTemplates" :disabled="loadingTemplates"
           class="bg-primary-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-700 disabled:opacity-50 whitespace-nowrap">
-          {{ loadingTemplates ? 'Loading...' : 'Get AI Recommendations' }}
+          {{ loadingTemplates ? 'Loading...' : 'Refresh Recommendations' }}
         </button>
       </div>
 
@@ -346,11 +346,13 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
                 'border-2 rounded-lg overflow-hidden text-left transition-all hover:shadow-md',
                 selectedTemplateId === tpl.id ? 'border-primary-600 ring-2 ring-primary-200' : 'border-gray-200'
               ]">
-              <div class="aspect-[3/4] bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center p-4">
-                <div class="text-center">
-                  <p class="text-xs uppercase tracking-wider text-gray-400 mb-1">Preview</p>
-                  <p class="text-sm font-serif text-gray-700">{{ tpl.name }}</p>
-                </div>
+              <div class="aspect-[3/4] bg-gray-100 overflow-hidden">
+                <img
+                  v-if="tpl.previewImageUrl"
+                  :src="tpl.previewImageUrl"
+                  :alt="tpl.name"
+                  class="w-full h-full object-cover object-top"
+                />
               </div>
               <div class="p-3">
                 <p class="font-medium text-sm truncate">{{ tpl.name }}</p>
@@ -375,11 +377,13 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
                 'border-2 rounded-lg overflow-hidden text-left transition-all hover:shadow-md',
                 selectedTemplateId === tpl.id ? 'border-primary-600 ring-2 ring-primary-200' : 'border-gray-200'
               ]">
-              <div class="aspect-[3/4] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
-                <div class="text-center">
-                  <p class="text-xs uppercase tracking-wider text-gray-400 mb-1">Preview</p>
-                  <p class="text-sm font-serif text-gray-700">{{ tpl.name }}</p>
-                </div>
+              <div class="aspect-[3/4] bg-gray-100 overflow-hidden">
+                <img
+                  v-if="tpl.previewImageUrl"
+                  :src="tpl.previewImageUrl"
+                  :alt="tpl.name"
+                  class="w-full h-full object-cover object-top"
+                />
               </div>
               <div class="p-3">
                 <p class="font-medium text-sm truncate">{{ tpl.name }}</p>
