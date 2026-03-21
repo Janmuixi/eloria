@@ -22,6 +22,16 @@ const renderedHtml = computed(() => {
   return html
 })
 
+function resizeIframe() {
+  if (!iframeRef.value) return
+  const doc = iframeRef.value.contentDocument
+  if (!doc?.body) return
+  const height = doc.documentElement.scrollHeight || doc.body.scrollHeight
+  if (height > 0) {
+    iframeRef.value.style.height = `${height}px`
+  }
+}
+
 function updateIframe() {
   if (!iframeRef.value) return
   const doc = iframeRef.value.contentDocument
@@ -29,6 +39,14 @@ function updateIframe() {
   doc.open()
   doc.write(renderedHtml.value)
   doc.close()
+  // Resize after content renders
+  nextTick(() => {
+    resizeIframe()
+    // Also resize after images/fonts load
+    if (doc.defaultView) {
+      doc.defaultView.addEventListener('load', resizeIframe)
+    }
+  })
 }
 
 watch(renderedHtml, () => {
@@ -44,7 +62,7 @@ onMounted(() => {
   <iframe
     ref="iframeRef"
     class="w-full border-0 rounded-lg"
-    style="min-height: 600px; pointer-events: none;"
+    style="height: 600px; pointer-events: none;"
     sandbox="allow-same-origin"
     title="Invitation preview"
   />

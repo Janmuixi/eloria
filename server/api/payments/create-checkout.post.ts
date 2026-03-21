@@ -48,7 +48,7 @@ export default defineEventHandler(async (event) => {
       quantity: 1,
     }],
     mode: 'payment',
-    success_url: `${process.env.BASE_URL}/dashboard/events/${eventId}/success`,
+    success_url: `${process.env.BASE_URL}/dashboard/events/${eventId}/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.BASE_URL}/dashboard/events/new?step=5&eventId=${eventId}`,
     metadata: { eventId: eventId.toString(), tierId: tier.id.toString() },
   })
