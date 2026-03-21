@@ -57,7 +57,7 @@ function onImageError(templateId: number) {
   <div class="py-20">
     <div class="max-w-6xl mx-auto px-6">
       <div class="text-center mb-12">
-        <h1 class="font-display font-bold text-4xl text-charcoal-900 mb-4">Invitation Templates</h1>
+        <h1 class="font-display font-semibold text-4xl text-charcoal-900 mb-4">Invitation Templates</h1>
         <p class="text-lg text-charcoal-500 max-w-2xl mx-auto">
           Browse our collection of professionally designed wedding invitation templates. Find the perfect match for your style.
         </p>
@@ -71,7 +71,7 @@ function onImageError(templateId: number) {
           @click="selectCategory(cat)"
           class="px-4 py-2 text-sm font-medium rounded-full transition-colors"
           :class="activeCategory === cat
-            ? 'bg-champagne-500 text-charcoal-900 rounded-full'
+            ? 'bg-champagne-500 text-white rounded-full'
             : 'bg-charcoal-100 text-charcoal-500 rounded-full hover:bg-charcoal-200'"
         >
           {{ cat === 'All' ? 'All' : cat.charAt(0).toUpperCase() + cat.slice(1) }}
@@ -86,7 +86,7 @@ function onImageError(templateId: number) {
         <div
           v-for="template in (templates as Template[])"
           :key="template.id"
-          class="bg-ivory-100 border border-charcoal-200 rounded-xl overflow-hidden hover:border-champagne-400 hover:shadow-md transition-all duration-200"
+          class="bg-ivory-100 border border-charcoal-200 rounded-2xl overflow-hidden hover:border-champagne-400 hover:shadow-md transition-all duration-200"
         >
           <!-- Preview -->
           <div class="aspect-[4/3] relative overflow-hidden">

@@ -39,7 +39,7 @@ interface Tier {
   <div class="py-20">
     <div class="max-w-6xl mx-auto px-6">
       <div class="text-center mb-16">
-        <h1 class="font-display font-bold text-4xl text-charcoal-900 mb-4">Simple, transparent pricing</h1>
+        <h1 class="font-display font-semibold text-4xl text-charcoal-900 mb-4">Simple, transparent pricing</h1>
         <p class="text-lg text-charcoal-500 max-w-2xl mx-auto">
           Choose the plan that fits your wedding. Start free and upgrade anytime.
         </p>
@@ -49,19 +49,19 @@ interface Tier {
         <div
           v-for="tier in (tiers as Tier[])"
           :key="tier.id"
-          class="relative rounded-xl p-8 flex flex-col"
+          class="relative rounded-2xl p-8 flex flex-col shadow-sm"
           :class="isPremium(tier.slug) ? 'bg-ivory-100 border-2 border-champagne-500 shadow-lg' : 'bg-ivory-100 border border-charcoal-200'"
         >
           <!-- Popular badge -->
           <div
             v-if="isPremium(tier.slug)"
-            class="absolute -top-3 left-1/2 -translate-x-1/2 bg-champagne-500 text-charcoal-900 rounded-full text-xs font-semibold px-3 py-1"
+            class="absolute -top-3 left-1/2 -translate-x-1/2 bg-champagne-500 text-white rounded-full text-xs font-semibold px-3 py-1"
           >
             Most Popular
           </div>
 
           <div class="mb-6">
-            <h2 class="text-xl font-bold text-charcoal-900">{{ tier.name }}</h2>
+            <h2 class="text-xl font-semibold text-charcoal-900">{{ tier.name }}</h2>
             <div class="mt-2">
               <span class="font-display font-bold text-4xl text-charcoal-900">{{ formatPrice(tier.price) }}</span>
               <span v-if="tier.price > 0" class="text-charcoal-500 text-sm ml-1">one-time</span>
@@ -127,8 +127,8 @@ interface Tier {
             to="/auth/register"
             class="block text-center font-medium py-2.5 transition-all duration-200"
             :class="isPremium(tier.slug)
-              ? 'bg-champagne-500 text-charcoal-900 rounded-full hover:bg-champagne-600'
-              : 'border border-charcoal-900 text-charcoal-900 rounded-full hover:bg-charcoal-100'"
+              ? 'bg-champagne-500 text-white rounded-full hover:bg-champagne-600 hover:shadow-md'
+              : 'border border-charcoal-900 text-charcoal-900 rounded-full hover:bg-charcoal-100 hover:shadow-md'"
           >
             Get Started
           </NuxtLink>

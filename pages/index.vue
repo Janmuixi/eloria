@@ -37,7 +37,7 @@ const steps = [
     <!-- Hero -->
     <section class="py-28 md:py-36">
       <div class="max-w-6xl mx-auto px-6 text-center">
-        <h1 class="font-display font-bold text-5xl md:text-6xl lg:text-7xl text-charcoal-900 tracking-tight">
+        <h1 class="font-display font-bold text-5xl md:text-6xl lg:text-7xl text-charcoal-900">
           Your Wedding, Beautifully Invited
         </h1>
         <p class="text-lg text-charcoal-500 max-w-xl mx-auto mt-6">
@@ -45,7 +45,7 @@ const steps = [
         </p>
         <NuxtLink
           to="/auth/register"
-          class="bg-champagne-500 text-charcoal-900 rounded-full px-8 py-3 font-medium hover:bg-champagne-600 transition-all duration-200 hover:scale-[1.02] mt-8 inline-block"
+          class="bg-champagne-500 text-white rounded-full px-8 py-3 font-medium hover:bg-champagne-600 hover:shadow-md transition-all duration-200 mt-8 inline-block"
         >
           Create Your Invitation
         </NuxtLink>
@@ -53,7 +53,7 @@ const steps = [
     </section>
 
     <!-- Divider -->
-    <div class="max-w-5xl mx-auto border-t border-champagne-400/30"></div>
+    <div class="max-w-5xl mx-auto border-t border-champagne-400/20"></div>
 
     <!-- Features -->
     <section class="py-20 md:py-28">
@@ -85,7 +85,7 @@ const steps = [
     </section>
 
     <!-- Divider -->
-    <div class="max-w-5xl mx-auto border-t border-champagne-400/30"></div>
+    <div class="max-w-5xl mx-auto border-t border-champagne-400/20"></div>
 
     <!-- How It Works -->
     <section class="py-20 md:py-28">
@@ -104,7 +104,7 @@ const steps = [
     </section>
 
     <!-- Divider -->
-    <div class="max-w-5xl mx-auto border-t border-champagne-400/30"></div>
+    <div class="max-w-5xl mx-auto border-t border-champagne-400/20"></div>
 
     <!-- Pricing Teaser -->
     <section class="py-20 md:py-28 text-center">
@@ -123,11 +123,11 @@ const steps = [
     <!-- Final CTA -->
     <section class="bg-charcoal-900 py-20 md:py-28">
       <div class="max-w-6xl mx-auto px-6 text-center">
-        <h2 class="font-display font-bold text-3xl text-ivory-50 mb-4">Ready to create your perfect invitation?</h2>
+        <h2 class="font-display font-semibold text-3xl text-ivory-50 mb-4">Ready to create your perfect invitation?</h2>
         <p class="text-charcoal-300 mb-8">Join thousands of couples who chose Eloria for their special day.</p>
         <NuxtLink
           to="/auth/register"
-          class="bg-champagne-500 text-charcoal-900 rounded-full px-8 py-3 font-medium hover:bg-champagne-600 transition-all duration-200 inline-block"
+          class="bg-champagne-500 text-white rounded-full px-8 py-3 font-medium hover:bg-champagne-600 hover:shadow-md transition-all duration-200 inline-block"
         >
           Get Started Free
         </NuxtLink>

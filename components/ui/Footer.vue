@@ -6,9 +6,9 @@
         &copy; {{ new Date().getFullYear() }} All rights reserved.
       </div>
       <div class="flex items-center gap-6">
-        <NuxtLink to="/templates" class="text-sm text-charcoal-500 hover:text-charcoal-900 hover:underline">Templates</NuxtLink>
-        <NuxtLink to="/pricing" class="text-sm text-charcoal-500 hover:text-charcoal-900 hover:underline">Pricing</NuxtLink>
-        <a href="#" class="text-sm text-charcoal-500 hover:text-charcoal-900 hover:underline">Contact</a>
+        <NuxtLink to="/templates" class="text-sm text-charcoal-500 hover:text-charcoal-700 transition-colors">Templates</NuxtLink>
+        <NuxtLink to="/pricing" class="text-sm text-charcoal-500 hover:text-charcoal-700 transition-colors">Pricing</NuxtLink>
+        <a href="#" class="text-sm text-charcoal-500 hover:text-charcoal-700 transition-colors">Contact</a>
       </div>
     </div>
   </footer>
