@@ -5,7 +5,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        display: ['"Playfair Display"', 'Georgia', 'serif'],
         sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
       },
       transitionDuration: {
@@ -13,24 +13,24 @@ export default {
       },
       colors: {
         charcoal: {
-          900: '#1a1a1a',
-          700: '#3d3d3d',
-          500: '#6b6b6b',
-          300: '#b0b0b0',
-          200: '#e0e0e0',
-          100: '#f0f0f0',
+          900: '#2d2326',
+          700: '#4a3f42',
+          500: '#6b5f62',
+          300: '#b0a5a8',
+          200: '#e0d8da',
+          100: '#f2eeef',
         },
         champagne: {
-          600: '#b8944f',
-          500: '#c9a96e',
-          400: '#d4bc8a',
-          100: '#faf6ee',
+          600: '#b5757b',
+          500: '#c4848a',
+          400: '#d4a0a7',
+          100: '#fdf2f3',
         },
         ivory: {
-          50: '#FDFCF9',
-          100: '#FAF8F3',
-          200: '#F5EFDF',
-          300: '#EDE4CC',
+          50: '#FEFBFB',
+          100: '#FBF6F6',
+          200: '#F5ECEC',
+          300: '#EDE0E0',
         },
       },
     },
