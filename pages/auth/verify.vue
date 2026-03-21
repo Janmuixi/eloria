@@ -39,7 +39,7 @@ onMounted(async () => {
       <!-- Loading -->
       <div v-if="verifying">
         <UiLoadingSpinner />
-        <p class="text-gray-500 mt-4">Verifying your email...</p>
+        <p class="text-charcoal-300 mt-4">Verifying your email...</p>
       </div>
 
       <!-- Success -->
@@ -47,10 +47,10 @@ onMounted(async () => {
         <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <span class="text-green-600 text-2xl">&#10003;</span>
         </div>
-        <h1 class="text-2xl font-bold mb-2">Email Verified!</h1>
-        <p class="text-gray-600 mb-6">Your email has been verified successfully.</p>
+        <h1 class="font-display text-2xl font-bold text-charcoal-900 mb-2">Email Verified!</h1>
+        <p class="text-charcoal-300 mb-6">Your email has been verified successfully.</p>
         <NuxtLink to="/dashboard"
-          class="inline-block bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700">
+          class="inline-block bg-champagne-500 text-charcoal-900 px-6 py-2 rounded-full font-medium hover:bg-champagne-600">
           Go to Dashboard
         </NuxtLink>
       </div>
@@ -60,10 +60,10 @@ onMounted(async () => {
         <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <span class="text-red-600 text-2xl">&#10007;</span>
         </div>
-        <h1 class="text-2xl font-bold mb-2">Verification Failed</h1>
-        <p class="text-gray-600 mb-6">{{ errorMessage }}</p>
+        <h1 class="font-display text-2xl font-bold text-charcoal-900 mb-2">Verification Failed</h1>
+        <p class="text-charcoal-300 mb-6">{{ errorMessage }}</p>
         <NuxtLink to="/dashboard"
-          class="inline-block bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700">
+          class="inline-block bg-champagne-500 text-charcoal-900 px-6 py-2 rounded-full font-medium hover:bg-champagne-600">
           Go to Dashboard
         </NuxtLink>
       </div>
