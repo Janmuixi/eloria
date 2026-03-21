@@ -211,15 +211,15 @@ async function payAndPublish() {
 const categoryColors: Record<string, string> = {
   classic: 'bg-amber-100 text-amber-800',
   modern: 'bg-blue-100 text-blue-800',
-  rustic: 'bg-green-100 text-green-800',
+  rustic: 'bg-champagne-100 text-champagne-800',
   romantic: 'bg-pink-100 text-pink-800',
-  minimalist: 'bg-gray-100 text-gray-800',
+  minimalist: 'bg-charcoal-100 text-charcoal-800',
   floral: 'bg-rose-100 text-rose-800',
   bohemian: 'bg-orange-100 text-orange-800',
 }
 
 function getCategoryClass(category: string) {
-  return categoryColors[category?.toLowerCase()] || 'bg-gray-100 text-gray-800'
+  return categoryColors[category?.toLowerCase()] || 'bg-charcoal-100 text-charcoal-800'
 }
 
 const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
@@ -232,80 +232,80 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
       <template v-for="(label, idx) in stepLabels" :key="idx">
         <div class="flex items-center gap-2">
           <div :class="[
-            'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors',
-            idx + 1 === currentStep ? 'bg-primary-600 text-white' : idx + 1 < currentStep ? 'bg-primary-100 text-primary-700' : 'bg-gray-200 text-gray-500'
+            'w-8 h-8 rounded-full flex items-center justify-center text-sm transition-colors',
+            idx + 1 <= currentStep ? 'bg-champagne-500 text-charcoal-900 font-display font-semibold' : 'bg-charcoal-200 text-charcoal-500 font-display'
           ]">
             {{ idx + 1 }}
           </div>
-          <span class="text-xs text-gray-500 hidden sm:inline">{{ label }}</span>
+          <span :class="['text-xs hidden sm:inline', idx + 1 <= currentStep ? 'text-charcoal-900' : 'text-charcoal-500']">{{ label }}</span>
         </div>
-        <div v-if="idx < stepLabels.length - 1" class="w-8 h-px bg-gray-300" />
+        <div v-if="idx < stepLabels.length - 1" :class="['w-8 h-px', idx + 1 < currentStep ? 'bg-champagne-400' : 'bg-charcoal-200']" />
       </template>
     </div>
 
     <!-- Global error -->
-    <div v-if="error" class="bg-red-50 text-red-600 p-3 rounded text-sm mb-4">
+    <div v-if="error" class="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4">
       {{ error }}
-      <button @click="error = ''" class="ml-2 underline text-sm">dismiss</button>
+      <button @click="error = ''" class="ml-2 underline text-sm text-red-600">dismiss</button>
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <!-- Step 1: Event Details                                             -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <div v-if="currentStep === 1" class="max-w-2xl mx-auto">
-      <h1 class="text-2xl font-bold mb-6">Event Details</h1>
+      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-6">Event Details</h1>
       <form @submit.prevent="submitDetails" class="space-y-4">
         <div>
-          <label class="block text-sm font-medium mb-1">Event Title (for your dashboard)</label>
+          <label class="block text-sm font-medium text-charcoal-700 mb-1">Event Title (for your dashboard)</label>
           <input v-model="form.title" type="text" required placeholder="Our Wedding"
-            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
+            class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium mb-1">Partner 1 Name</label>
+            <label class="block text-sm font-medium text-charcoal-700 mb-1">Partner 1 Name</label>
             <input v-model="form.coupleName1" type="text" required placeholder="Maria"
-              class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
+              class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">Partner 2 Name</label>
+            <label class="block text-sm font-medium text-charcoal-700 mb-1">Partner 2 Name</label>
             <input v-model="form.coupleName2" type="text" required placeholder="James"
-              class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
+              class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
           </div>
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-1">Wedding Date</label>
+          <label class="block text-sm font-medium text-charcoal-700 mb-1">Wedding Date</label>
           <input v-model="form.date" type="date" required
-            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
+            class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-1">Venue Name</label>
+          <label class="block text-sm font-medium text-charcoal-700 mb-1">Venue Name</label>
           <input v-model="form.venue" type="text" required placeholder="The Grand Ballroom"
-            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
+            class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-1">Venue Address</label>
+          <label class="block text-sm font-medium text-charcoal-700 mb-1">Venue Address</label>
           <input v-model="form.venueAddress" type="text" required placeholder="123 Wedding Lane, City"
-            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
+            class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-1">Map Link (optional)</label>
+          <label class="block text-sm font-medium text-charcoal-700 mb-1">Map Link (optional)</label>
           <input v-model="form.venueMapUrl" type="url" placeholder="https://maps.google.com/..."
-            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
+            class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-1">Additional Details (optional)</label>
+          <label class="block text-sm font-medium text-charcoal-700 mb-1">Additional Details (optional)</label>
           <textarea v-model="form.description" rows="3" placeholder="Any additional information for your guests..."
-            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
+            class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
         </div>
 
         <button type="submit" :disabled="submitting"
-          class="w-full bg-primary-600 text-white rounded-lg py-2 font-medium hover:bg-primary-700 disabled:opacity-50">
+          class="w-full bg-champagne-500 text-charcoal-900 rounded-full py-2.5 font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
           {{ submitting ? 'Creating...' : 'Continue to Template Selection' }}
         </button>
       </form>
@@ -315,38 +315,38 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
     <!-- Step 2: Template Selection                                        -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <div v-else-if="currentStep === 2">
-      <h1 class="text-2xl font-bold mb-2">Choose a Template</h1>
-      <p class="text-gray-500 mb-6">Select a design for your wedding invitation</p>
+      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">Choose a Template</h1>
+      <p class="text-charcoal-500 mb-6">Select a design for your wedding invitation</p>
 
       <!-- Style description + AI button -->
       <div class="flex gap-3 mb-6">
         <input v-model="styleDescription" type="text"
           placeholder="Describe your wedding style (e.g., rustic barn wedding, autumn colors)"
-          class="flex-1 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
+          class="flex-1 border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
         <button @click="loadTemplates" :disabled="loadingTemplates"
-          class="bg-primary-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-700 disabled:opacity-50 whitespace-nowrap">
+          class="bg-champagne-500 text-charcoal-900 px-4 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50 whitespace-nowrap">
           {{ loadingTemplates ? 'Loading...' : 'Refresh Recommendations' }}
         </button>
       </div>
 
       <!-- Loading state -->
       <div v-if="loadingTemplates" class="text-center py-12">
-        <div class="inline-block w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
-        <p class="text-gray-500 mt-3">Finding the perfect templates...</p>
+        <div class="inline-block w-8 h-8 border-4 border-champagne-200 border-t-champagne-500 rounded-full animate-spin" />
+        <p class="text-charcoal-500 mt-3">Finding the perfect templates...</p>
       </div>
 
       <template v-else-if="templatesLoaded">
         <!-- Recommended templates -->
         <div v-if="recommendedTemplates.length > 0" class="mb-8">
-          <h2 class="text-lg font-semibold mb-3">Recommended for You</h2>
+          <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-3">Recommended for You</h2>
           <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
             <button v-for="tpl in recommendedTemplates" :key="'rec-' + tpl.id"
               @click="selectTemplate(tpl.id)"
               :class="[
-                'border-2 rounded-lg overflow-hidden text-left transition-all hover:shadow-md',
-                selectedTemplateId === tpl.id ? 'border-primary-600 ring-2 ring-primary-200' : 'border-gray-200'
+                'rounded-xl overflow-hidden text-left transition-all duration-200',
+                selectedTemplateId === tpl.id ? 'border-2 border-champagne-500 ring-2 ring-champagne-500/20' : 'border border-charcoal-200 hover:border-champagne-400'
               ]">
-              <div class="aspect-[3/4] bg-gray-100 overflow-hidden">
+              <div class="aspect-[3/4] bg-charcoal-100 overflow-hidden">
                 <img
                   v-if="tpl.previewImageUrl"
                   :src="tpl.previewImageUrl"
@@ -355,8 +355,8 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
                 />
               </div>
               <div class="p-3">
-                <p class="font-medium text-sm truncate">{{ tpl.name }}</p>
-                <span :class="['text-xs px-2 py-0.5 rounded-full', getCategoryClass(tpl.category)]">
+                <p class="font-display font-semibold text-sm text-charcoal-900 truncate">{{ tpl.name }}</p>
+                <span :class="['text-xs px-2 py-0.5 rounded-full text-charcoal-500', getCategoryClass(tpl.category)]">
                   {{ tpl.category }}
                 </span>
               </div>
@@ -366,18 +366,18 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
 
         <!-- All templates -->
         <div>
-          <h2 class="text-lg font-semibold mb-3">All Templates</h2>
-          <div v-if="allTemplates.length === 0" class="text-center py-8 text-gray-500">
+          <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-3">All Templates</h2>
+          <div v-if="allTemplates.length === 0" class="text-center py-8 text-charcoal-500">
             No templates available yet. Seed the database to add templates.
           </div>
           <div v-else class="grid grid-cols-2 md:grid-cols-3 gap-4">
             <button v-for="tpl in allTemplates" :key="'all-' + tpl.id"
               @click="selectTemplate(tpl.id)"
               :class="[
-                'border-2 rounded-lg overflow-hidden text-left transition-all hover:shadow-md',
-                selectedTemplateId === tpl.id ? 'border-primary-600 ring-2 ring-primary-200' : 'border-gray-200'
+                'rounded-xl overflow-hidden text-left transition-all duration-200',
+                selectedTemplateId === tpl.id ? 'border-2 border-champagne-500 ring-2 ring-champagne-500/20' : 'border border-charcoal-200 hover:border-champagne-400'
               ]">
-              <div class="aspect-[3/4] bg-gray-100 overflow-hidden">
+              <div class="aspect-[3/4] bg-charcoal-100 overflow-hidden">
                 <img
                   v-if="tpl.previewImageUrl"
                   :src="tpl.previewImageUrl"
@@ -386,8 +386,8 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
                 />
               </div>
               <div class="p-3">
-                <p class="font-medium text-sm truncate">{{ tpl.name }}</p>
-                <span :class="['text-xs px-2 py-0.5 rounded-full', getCategoryClass(tpl.category)]">
+                <p class="font-display font-semibold text-sm text-charcoal-900 truncate">{{ tpl.name }}</p>
+                <span :class="['text-xs px-2 py-0.5 rounded-full text-charcoal-500', getCategoryClass(tpl.category)]">
                   {{ tpl.category }}
                 </span>
               </div>
@@ -398,11 +398,11 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
 
       <!-- Navigation -->
       <div class="flex justify-between mt-8">
-        <button @click="currentStep = 1" class="text-gray-600 hover:text-gray-800 font-medium">
+        <button @click="currentStep = 1" class="text-charcoal-700 hover:text-charcoal-900 font-medium">
           &larr; Back
         </button>
         <button @click="confirmTemplate" :disabled="!selectedTemplateId || submitting"
-          class="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700 disabled:opacity-50">
+          class="bg-champagne-500 text-charcoal-900 px-6 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
           {{ submitting ? 'Saving...' : 'Continue to Customization' }}
         </button>
       </div>
@@ -412,42 +412,42 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
     <!-- Step 3: Customization                                             -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <div v-else-if="currentStep === 3">
-      <h1 class="text-2xl font-bold mb-2">Customize Your Invitation</h1>
-      <p class="text-gray-500 mb-6">Personalize the wording and style</p>
+      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">Customize Your Invitation</h1>
+      <p class="text-charcoal-500 mb-6">Personalize the wording and style</p>
 
       <div class="grid md:grid-cols-2 gap-8">
         <!-- Left: Form -->
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium mb-1">Invitation Wording</label>
+            <label class="block text-sm font-medium text-charcoal-700 mb-1">Invitation Wording</label>
             <textarea v-model="wording" rows="5"
               placeholder="Write your invitation text or use AI to generate it..."
-              class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
+              class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
           </div>
 
           <!-- AI Wording Generator -->
-          <div class="border rounded-lg p-4 bg-gray-50">
-            <p class="text-sm font-medium mb-2">Generate with AI</p>
+          <div class="border border-charcoal-200 rounded-lg p-4 bg-ivory-100">
+            <p class="text-sm font-medium text-charcoal-700 mb-2">Generate with AI</p>
             <div class="flex gap-2 mb-3">
               <select v-model="wordingTone"
-                class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                class="border border-charcoal-200 rounded-lg px-4 py-2.5 text-sm text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none">
                 <option value="formal">Formal</option>
                 <option value="casual">Casual</option>
                 <option value="poetic">Poetic</option>
                 <option value="funny">Funny</option>
               </select>
               <button @click="generateWording" :disabled="loadingWording"
-                class="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-50">
+                class="bg-champagne-500 text-charcoal-900 px-4 py-2.5 rounded-full text-sm font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
                 {{ loadingWording ? 'Generating...' : 'Generate Wording' }}
               </button>
             </div>
 
             <!-- Variations -->
             <div v-if="wordingVariations.length > 0" class="space-y-2">
-              <p class="text-xs text-gray-500 mb-1">Click to use:</p>
+              <p class="text-xs text-charcoal-500 mb-1">Click to use:</p>
               <button v-for="(variation, idx) in wordingVariations" :key="idx"
                 @click="pickWording(variation)"
-                class="block w-full text-left text-sm p-3 bg-white border rounded-lg hover:border-primary-400 hover:bg-primary-50 transition-colors">
+                class="block w-full text-left text-sm p-3 bg-white border border-charcoal-200 rounded-lg hover:border-champagne-400 hover:bg-champagne-100 transition-colors">
                 {{ variation }}
               </button>
             </div>
@@ -456,8 +456,8 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
 
         <!-- Right: Live Preview -->
         <div>
-          <p class="text-sm font-medium mb-2 text-gray-500">Live Preview</p>
-          <div v-if="selectedTemplate?.htmlTemplate" class="border rounded-lg overflow-hidden shadow-sm">
+          <p class="text-sm font-medium mb-2 text-charcoal-500">Live Preview</p>
+          <div v-if="selectedTemplate?.htmlTemplate" class="border border-champagne-400 rounded-lg overflow-hidden shadow-sm">
             <InvitationTemplatePreview
               :html-template="selectedTemplate.htmlTemplate"
               :couple-name1="form.coupleName1"
@@ -468,10 +468,10 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
               :wording="wording"
             />
           </div>
-          <div v-else class="border rounded-lg p-8 bg-white text-center shadow-sm">
-            <p class="text-gray-300 italic">Select a template to see the preview</p>
+          <div v-else class="border border-charcoal-200 rounded-lg p-8 bg-white text-center shadow-sm">
+            <p class="text-charcoal-300 italic">Select a template to see the preview</p>
           </div>
-          <p v-if="selectedTemplate" class="text-xs text-gray-400 mt-2 text-center">
+          <p v-if="selectedTemplate" class="text-xs text-charcoal-500 mt-2 text-center">
             Template: {{ selectedTemplate.name }}
           </p>
         </div>
@@ -479,11 +479,11 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
 
       <!-- Navigation -->
       <div class="flex justify-between mt-8">
-        <button @click="currentStep = 2" class="text-gray-600 hover:text-gray-800 font-medium">
+        <button @click="currentStep = 2" class="text-charcoal-700 hover:text-charcoal-900 font-medium">
           &larr; Back
         </button>
         <button @click="saveCustomization" :disabled="submitting"
-          class="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700 disabled:opacity-50">
+          class="bg-champagne-500 text-charcoal-900 px-6 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
           {{ submitting ? 'Saving...' : 'Continue to Preview' }}
         </button>
       </div>
@@ -493,11 +493,11 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
     <!-- Step 4: Preview                                                   -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <div v-else-if="currentStep === 4">
-      <h1 class="text-2xl font-bold mb-2">Preview Your Invitation</h1>
-      <p class="text-gray-500 mb-6">Review how your invitation will look to guests</p>
+      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">Preview Your Invitation</h1>
+      <p class="text-charcoal-500 mb-6">Review how your invitation will look to guests</p>
 
       <div class="max-w-2xl mx-auto">
-        <div v-if="selectedTemplate?.htmlTemplate" class="border rounded-xl overflow-hidden shadow-lg">
+        <div v-if="selectedTemplate?.htmlTemplate" class="border border-champagne-400 rounded-xl overflow-hidden shadow-lg">
           <InvitationTemplatePreview
             :html-template="selectedTemplate.htmlTemplate"
             :couple-name1="form.coupleName1"
@@ -508,22 +508,22 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
             :wording="wording"
           />
         </div>
-        <div v-else class="border rounded-xl p-10 bg-white text-center shadow-lg">
-          <p class="text-gray-300 italic">No template selected</p>
+        <div v-else class="border border-charcoal-200 rounded-xl p-10 bg-white text-center shadow-lg">
+          <p class="text-charcoal-300 italic">No template selected</p>
         </div>
 
-        <p v-if="selectedTemplate" class="text-sm text-gray-400 mt-4 text-center">
+        <p v-if="selectedTemplate" class="text-sm text-charcoal-500 mt-4 text-center">
           Using template: {{ selectedTemplate.name }} ({{ selectedTemplate.category }})
         </p>
       </div>
 
       <!-- Navigation -->
       <div class="flex justify-between mt-8">
-        <button @click="currentStep = 3" class="text-gray-600 hover:text-gray-800 font-medium">
+        <button @click="currentStep = 3" class="text-charcoal-700 hover:text-charcoal-900 font-medium">
           &larr; Back to Customize
         </button>
         <button @click="confirmPreview"
-          class="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700">
+          class="bg-champagne-500 text-charcoal-900 px-6 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200">
           Looks Good, Continue
         </button>
       </div>
@@ -533,44 +533,44 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
     <!-- Step 5: Tier Selection & Payment                                  -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <div v-else-if="currentStep === 5">
-      <h1 class="text-2xl font-bold mb-2">Choose Your Plan</h1>
-      <p class="text-gray-500 mb-6">Select a tier and publish your invitation</p>
+      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">Choose Your Plan</h1>
+      <p class="text-charcoal-500 mb-6">Select a tier and publish your invitation</p>
 
       <!-- Loading state -->
       <div v-if="loadingTiers" class="text-center py-12">
-        <div class="inline-block w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
-        <p class="text-gray-500 mt-3">Loading plans...</p>
+        <div class="inline-block w-8 h-8 border-4 border-champagne-200 border-t-champagne-500 rounded-full animate-spin" />
+        <p class="text-charcoal-500 mt-3">Loading plans...</p>
       </div>
 
       <div v-else class="grid md:grid-cols-3 gap-6">
         <button v-for="tier in tiersList" :key="tier.id"
           @click="selectedTierSlug = tier.slug"
           :class="[
-            'border-2 rounded-xl p-6 text-left transition-all hover:shadow-md',
-            selectedTierSlug === tier.slug ? 'border-primary-600 ring-2 ring-primary-200 bg-primary-50' : 'border-gray-200 bg-white'
+            'rounded-xl p-6 text-left transition-all duration-200 hover:shadow-md',
+            selectedTierSlug === tier.slug ? 'border-2 border-champagne-500 ring-2 ring-champagne-500/20 bg-champagne-50' : 'border border-charcoal-200 bg-white'
           ]">
-          <h3 class="text-lg font-bold mb-1">{{ tier.name }}</h3>
-          <p class="text-2xl font-bold text-primary-600 mb-4">{{ formatPrice(tier.price) }}</p>
-          <ul class="space-y-2 text-sm text-gray-600">
+          <h3 class="font-display font-semibold text-lg text-charcoal-900 mb-1">{{ tier.name }}</h3>
+          <p class="font-display font-bold text-2xl text-charcoal-900 mb-4">{{ formatPrice(tier.price) }}</p>
+          <ul class="space-y-2 text-sm text-charcoal-600">
             <li class="flex items-center gap-2">
-              <span :class="tier.guestLimit ? 'text-gray-400' : 'text-green-500'">
+              <span :class="tier.guestLimit ? 'text-charcoal-400' : 'text-champagne-500'">
                 {{ tier.guestLimit ? `Up to ${tier.guestLimit} guests` : 'Unlimited guests' }}
               </span>
             </li>
             <li v-if="tier.hasEmailDelivery" class="flex items-center gap-2">
-              <span class="text-green-500">&#10003;</span> Email delivery
+              <span class="text-champagne-500">&#10003;</span> Email delivery
             </li>
             <li v-if="tier.hasPdfExport" class="flex items-center gap-2">
-              <span class="text-green-500">&#10003;</span> PDF export
+              <span class="text-champagne-500">&#10003;</span> PDF export
             </li>
             <li v-if="tier.hasAiTextGeneration" class="flex items-center gap-2">
-              <span class="text-green-500">&#10003;</span> AI text generation
+              <span class="text-champagne-500">&#10003;</span> AI text generation
             </li>
             <li v-if="tier.removeBranding" class="flex items-center gap-2">
-              <span class="text-green-500">&#10003;</span> Remove branding
+              <span class="text-champagne-500">&#10003;</span> Remove branding
             </li>
             <li v-if="tier.hasMultipleVariants" class="flex items-center gap-2">
-              <span class="text-green-500">&#10003;</span> Multiple variants
+              <span class="text-champagne-500">&#10003;</span> Multiple variants
             </li>
           </ul>
         </button>
@@ -578,11 +578,11 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
 
       <!-- Navigation -->
       <div class="flex justify-between mt-8">
-        <button @click="currentStep = 4" class="text-gray-600 hover:text-gray-800 font-medium">
+        <button @click="currentStep = 4" class="text-charcoal-700 hover:text-charcoal-900 font-medium">
           &larr; Back
         </button>
         <button @click="payAndPublish" :disabled="!selectedTierSlug || processingPayment"
-          class="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700 disabled:opacity-50">
+          class="bg-champagne-500 text-charcoal-900 px-6 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
           {{ processingPayment ? 'Redirecting to payment...' : 'Pay &amp; Publish' }}
         </button>
       </div>
