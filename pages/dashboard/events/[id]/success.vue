@@ -62,7 +62,7 @@ onMounted(async () => {
     </template>
 
     <NuxtLink :to="`/dashboard/events/${eventId}`"
-      class="bg-champagne-500 text-charcoal-900 px-6 py-2 rounded-full font-medium hover:bg-champagne-600 transition-colors">
+      class="bg-champagne-500 text-white px-6 py-2 rounded-full font-medium hover:bg-champagne-600 transition-colors">
       Go to Event Dashboard
     </NuxtLink>
   </div>

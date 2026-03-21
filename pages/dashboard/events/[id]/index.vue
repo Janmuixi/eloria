@@ -148,7 +148,7 @@ async function downloadPdf() {
 
     <div v-else>
       <!-- Event Info Card -->
-      <div class="bg-white rounded-xl border border-charcoal-200 p-6 mb-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-charcoal-200 p-6 mb-6">
         <div class="flex items-start justify-between">
           <div>
             <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-1">{{ evt.title }}</h1>
@@ -158,7 +158,7 @@ async function downloadPdf() {
           </div>
           <span :class="[
             'rounded-full px-3 py-1 text-xs font-medium',
-            evt.paymentStatus === 'paid' ? 'bg-champagne-500 text-charcoal-900' : 'bg-charcoal-100 text-charcoal-500'
+            evt.paymentStatus === 'paid' ? 'bg-champagne-500 text-white' : 'bg-charcoal-100 text-charcoal-500'
           ]">
             {{ evt.paymentStatus === 'paid' ? 'Active' : 'Pending Payment' }}
           </span>
@@ -187,7 +187,7 @@ async function downloadPdf() {
       </div>
 
       <!-- Invitation Preview -->
-      <div v-if="evt.template?.htmlTemplate" class="bg-white rounded-xl border border-charcoal-200 p-6 mb-6">
+      <div v-if="evt.template?.htmlTemplate" class="bg-white rounded-2xl shadow-sm border border-charcoal-200 p-6 mb-6">
         <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-4">Invitation Preview</h2>
         <div class="border border-champagne-400 rounded-xl overflow-hidden max-w-xl mx-auto">
           <InvitationTemplatePreview
@@ -204,30 +204,30 @@ async function downloadPdf() {
 
       <!-- RSVP Stats -->
       <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-        <div class="bg-ivory-100 border border-charcoal-200 rounded-xl p-4 text-center">
+        <div class="bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-4 text-center">
           <p class="font-display font-bold text-2xl text-charcoal-900">{{ rsvpStats.total }}</p>
           <p class="text-charcoal-500 text-sm">Total Guests</p>
         </div>
-        <div class="bg-ivory-100 border border-charcoal-200 rounded-xl p-4 text-center">
+        <div class="bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-4 text-center">
           <p class="font-display font-bold text-2xl text-green-600">{{ rsvpStats.confirmed }}</p>
           <p class="text-charcoal-500 text-sm">Confirmed</p>
         </div>
-        <div class="bg-ivory-100 border border-charcoal-200 rounded-xl p-4 text-center">
+        <div class="bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-4 text-center">
           <p class="font-display font-bold text-2xl text-red-600">{{ rsvpStats.declined }}</p>
           <p class="text-charcoal-500 text-sm">Declined</p>
         </div>
-        <div class="bg-ivory-100 border border-charcoal-200 rounded-xl p-4 text-center">
+        <div class="bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-4 text-center">
           <p class="font-display font-bold text-2xl text-yellow-600">{{ rsvpStats.maybe }}</p>
           <p class="text-charcoal-500 text-sm">Maybe</p>
         </div>
-        <div class="bg-ivory-100 border border-charcoal-200 rounded-xl p-4 text-center">
+        <div class="bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-4 text-center">
           <p class="font-display font-bold text-2xl text-charcoal-400">{{ rsvpStats.pending }}</p>
           <p class="text-charcoal-500 text-sm">Pending</p>
         </div>
       </div>
 
       <!-- Email & PDF Actions -->
-      <div v-if="evt.paymentStatus === 'paid'" class="bg-white rounded-xl border border-charcoal-200 p-6 mb-6">
+      <div v-if="evt.paymentStatus === 'paid'" class="bg-white rounded-2xl shadow-sm border border-charcoal-200 p-6 mb-6">
         <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-4">Actions</h2>
         <div class="flex flex-wrap gap-3">
           <!-- Send Invitations -->
@@ -235,7 +235,7 @@ async function downloadPdf() {
             v-if="evt.tier?.hasEmailDelivery"
             @click="sendInvitations"
             :disabled="sendingEmails"
-            class="inline-flex items-center gap-2 px-4 py-2.5 bg-champagne-500 text-charcoal-900 rounded-full text-sm font-medium hover:bg-champagne-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            class="inline-flex items-center gap-2 px-4 py-2.5 bg-champagne-500 text-white rounded-full text-sm font-medium hover:bg-champagne-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -273,7 +273,7 @@ async function downloadPdf() {
       </div>
 
       <!-- Danger Zone -->
-      <div class="border border-red-200 rounded-xl p-6 mb-6">
+      <div class="border border-red-200 rounded-2xl shadow-sm p-6 mb-6">
         <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-2">Danger Zone</h2>
         <p class="text-sm text-charcoal-500 mb-4">Permanently delete this event and all its guest data. This action cannot be undone.</p>
         <button
@@ -304,13 +304,13 @@ async function downloadPdf() {
       <!-- Quick Actions -->
       <div class="flex gap-3">
         <NuxtLink :to="`/dashboard/events/${eventId}/guests`"
-          class="flex-1 bg-ivory-100 border border-charcoal-200 rounded-xl p-6 text-center hover:border-champagne-400 hover:shadow-sm transition-all duration-200">
+          class="flex-1 bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-6 text-center hover:border-champagne-400 hover:shadow-md transition-all duration-200">
           <p class="font-medium text-charcoal-900">Manage Guests</p>
           <p class="text-sm text-charcoal-500 mt-1">Add, remove, and track guests</p>
         </NuxtLink>
         <a v-if="evt.paymentStatus === 'paid'"
           :href="invitationUrl" target="_blank" rel="noopener noreferrer"
-          class="flex-1 bg-ivory-100 border border-charcoal-200 rounded-xl p-6 text-center hover:border-champagne-400 hover:shadow-sm transition-all duration-200">
+          class="flex-1 bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-6 text-center hover:border-champagne-400 hover:shadow-md transition-all duration-200">
           <p class="font-medium text-charcoal-900">View Invitation</p>
           <p class="text-sm text-charcoal-500 mt-1">See your public invitation page</p>
         </a>

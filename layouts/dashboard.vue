@@ -25,12 +25,12 @@
         <nav class="px-4 space-y-1">
           <NuxtLink to="/dashboard" @click="sidebarOpen = false"
             class="flex items-center px-3 py-2 rounded-lg text-sm text-charcoal-500 hover:text-charcoal-900 hover:bg-charcoal-100"
-            active-class="bg-champagne-100 border-l-2 border-champagne-500 text-charcoal-900 font-medium">
+            active-class="bg-champagne-100 rounded-lg border-l-2 border-champagne-500 text-charcoal-900 font-medium">
             My Events
           </NuxtLink>
           <NuxtLink to="/dashboard/events/new" @click="sidebarOpen = false"
             class="flex items-center px-3 py-2 rounded-lg text-sm text-charcoal-500 hover:text-charcoal-900 hover:bg-charcoal-100"
-            active-class="bg-champagne-100 border-l-2 border-champagne-500 text-charcoal-900 font-medium">
+            active-class="bg-champagne-100 rounded-lg border-l-2 border-champagne-500 text-charcoal-900 font-medium">
             Create Event
           </NuxtLink>
         </nav>
@@ -45,12 +45,12 @@
       <nav class="px-4 space-y-1">
         <NuxtLink to="/dashboard"
           class="flex items-center px-3 py-2 rounded-lg text-sm text-charcoal-500 hover:text-charcoal-900 hover:bg-charcoal-100"
-          active-class="bg-champagne-100 border-l-2 border-champagne-500 text-charcoal-900 font-medium">
+          active-class="bg-champagne-100 rounded-lg border-l-2 border-champagne-500 text-charcoal-900 font-medium">
           My Events
         </NuxtLink>
         <NuxtLink to="/dashboard/events/new"
           class="flex items-center px-3 py-2 rounded-lg text-sm text-charcoal-500 hover:text-charcoal-900 hover:bg-charcoal-100"
-          active-class="bg-champagne-100 border-l-2 border-champagne-500 text-charcoal-900 font-medium">
+          active-class="bg-champagne-100 rounded-lg border-l-2 border-champagne-500 text-charcoal-900 font-medium">
           Create Event
         </NuxtLink>
       </nav>

@@ -118,14 +118,14 @@ const statusBadgeClass = (status: string) => {
           Import CSV
         </button>
         <button @click="showAddForm = !showAddForm"
-          class="px-4 py-2 bg-champagne-500 text-charcoal-900 rounded-full text-sm font-medium hover:bg-champagne-600 transition-colors">
+          class="px-4 py-2 bg-champagne-500 text-white rounded-full text-sm font-medium hover:bg-champagne-600 transition-colors">
           Add Guest
         </button>
       </div>
     </div>
 
     <!-- Add Guest Form -->
-    <div v-if="showAddForm" class="bg-white rounded-xl border border-charcoal-200 p-4 mb-4">
+    <div v-if="showAddForm" class="bg-white rounded-2xl shadow-sm border border-charcoal-200 p-4 mb-4">
       <h3 class="font-display font-semibold text-charcoal-900 mb-3">Add Guest</h3>
       <form @submit.prevent="addGuest" class="flex gap-3 items-end">
         <div class="flex-1">
@@ -139,7 +139,7 @@ const statusBadgeClass = (status: string) => {
             class="w-full px-3 py-2 border border-charcoal-200 rounded-lg text-sm focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20" />
         </div>
         <button type="submit" :disabled="addLoading"
-          class="px-4 py-2 bg-champagne-500 text-charcoal-900 rounded-full text-sm font-medium hover:bg-champagne-600 disabled:opacity-50 transition-colors">
+          class="px-4 py-2 bg-champagne-500 text-white rounded-full text-sm font-medium hover:bg-champagne-600 disabled:opacity-50 transition-colors">
           {{ addLoading ? 'Adding...' : 'Add' }}
         </button>
         <button type="button" @click="showAddForm = false"
@@ -150,14 +150,14 @@ const statusBadgeClass = (status: string) => {
     </div>
 
     <!-- CSV Import -->
-    <div v-if="showImport" class="bg-white rounded-xl border border-charcoal-200 p-4 mb-4">
+    <div v-if="showImport" class="bg-white rounded-2xl shadow-sm border border-charcoal-200 p-4 mb-4">
       <h3 class="font-display font-semibold text-charcoal-900 mb-3">Import from CSV</h3>
       <p class="text-sm text-charcoal-500 mb-2">Paste CSV data below. Each line: <code>name,email</code> or just <code>name</code></p>
       <textarea v-model="csvText" rows="5" placeholder="John Doe,john@email.com&#10;Jane Smith"
         class="w-full px-3 py-2 border border-charcoal-200 rounded-lg text-sm font-mono focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 mb-3" />
       <div class="flex items-center gap-3">
         <button @click="importCsv" :disabled="importLoading"
-          class="px-4 py-2 bg-champagne-500 text-charcoal-900 rounded-full text-sm font-medium hover:bg-champagne-600 disabled:opacity-50 transition-colors">
+          class="px-4 py-2 bg-champagne-500 text-white rounded-full text-sm font-medium hover:bg-champagne-600 disabled:opacity-50 transition-colors">
           {{ importLoading ? 'Importing...' : 'Import' }}
         </button>
         <button @click="showImport = false"
@@ -174,13 +174,13 @@ const statusBadgeClass = (status: string) => {
     <UiLoadingSpinner v-if="status === 'pending'" />
 
     <!-- Empty state -->
-    <div v-else-if="!guests?.length" class="text-center py-12 bg-white rounded-xl border border-charcoal-200">
+    <div v-else-if="!guests?.length" class="text-center py-12 bg-white rounded-2xl shadow-sm border border-charcoal-200">
       <p class="text-charcoal-500 mb-2">No guests added yet.</p>
       <p class="text-sm text-charcoal-400">Add guests individually or import from CSV.</p>
     </div>
 
     <!-- Guest table -->
-    <div v-else class="bg-white rounded-xl border border-charcoal-200 overflow-hidden">
+    <div v-else class="bg-white rounded-2xl shadow-sm border border-charcoal-200 overflow-hidden">
       <table class="w-full">
         <thead class="bg-ivory-100 border-b border-charcoal-200">
           <tr>

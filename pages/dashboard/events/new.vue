@@ -233,7 +233,7 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
         <div class="flex items-center gap-2">
           <div :class="[
             'w-8 h-8 rounded-full flex items-center justify-center text-sm transition-colors',
-            idx + 1 <= currentStep ? 'bg-champagne-500 text-charcoal-900 font-display font-semibold' : 'bg-charcoal-200 text-charcoal-500 font-display'
+            idx + 1 <= currentStep ? 'bg-champagne-500 text-white font-display font-semibold' : 'bg-charcoal-200 text-charcoal-500 font-display'
           ]">
             {{ idx + 1 }}
           </div>
@@ -305,7 +305,7 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
         </div>
 
         <button type="submit" :disabled="submitting"
-          class="w-full bg-champagne-500 text-charcoal-900 rounded-full py-2.5 font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
+          class="w-full bg-champagne-500 text-white rounded-full py-2.5 font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
           {{ submitting ? 'Creating...' : 'Continue to Template Selection' }}
         </button>
       </form>
@@ -324,7 +324,7 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
           placeholder="Describe your wedding style (e.g., rustic barn wedding, autumn colors)"
           class="flex-1 border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
         <button @click="loadTemplates" :disabled="loadingTemplates"
-          class="bg-champagne-500 text-charcoal-900 px-4 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50 whitespace-nowrap">
+          class="bg-champagne-500 text-white px-4 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50 whitespace-nowrap">
           {{ loadingTemplates ? 'Loading...' : 'Refresh Recommendations' }}
         </button>
       </div>
@@ -343,7 +343,7 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
             <button v-for="tpl in recommendedTemplates" :key="'rec-' + tpl.id"
               @click="selectTemplate(tpl.id)"
               :class="[
-                'rounded-xl overflow-hidden text-left transition-all duration-200',
+                'rounded-2xl overflow-hidden text-left transition-all duration-200',
                 selectedTemplateId === tpl.id ? 'border-2 border-champagne-500 ring-2 ring-champagne-500/20' : 'border border-charcoal-200 hover:border-champagne-400'
               ]">
               <div class="aspect-[3/4] bg-charcoal-100 overflow-hidden">
@@ -374,7 +374,7 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
             <button v-for="tpl in allTemplates" :key="'all-' + tpl.id"
               @click="selectTemplate(tpl.id)"
               :class="[
-                'rounded-xl overflow-hidden text-left transition-all duration-200',
+                'rounded-2xl overflow-hidden text-left transition-all duration-200',
                 selectedTemplateId === tpl.id ? 'border-2 border-champagne-500 ring-2 ring-champagne-500/20' : 'border border-charcoal-200 hover:border-champagne-400'
               ]">
               <div class="aspect-[3/4] bg-charcoal-100 overflow-hidden">
@@ -402,7 +402,7 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
           &larr; Back
         </button>
         <button @click="confirmTemplate" :disabled="!selectedTemplateId || submitting"
-          class="bg-champagne-500 text-charcoal-900 px-6 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
+          class="bg-champagne-500 text-white px-6 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
           {{ submitting ? 'Saving...' : 'Continue to Customization' }}
         </button>
       </div>
@@ -437,7 +437,7 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
                 <option value="funny">Funny</option>
               </select>
               <button @click="generateWording" :disabled="loadingWording"
-                class="bg-champagne-500 text-charcoal-900 px-4 py-2.5 rounded-full text-sm font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
+                class="bg-champagne-500 text-white px-4 py-2.5 rounded-full text-sm font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
                 {{ loadingWording ? 'Generating...' : 'Generate Wording' }}
               </button>
             </div>
@@ -483,7 +483,7 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
           &larr; Back
         </button>
         <button @click="saveCustomization" :disabled="submitting"
-          class="bg-champagne-500 text-charcoal-900 px-6 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
+          class="bg-champagne-500 text-white px-6 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
           {{ submitting ? 'Saving...' : 'Continue to Preview' }}
         </button>
       </div>
@@ -523,7 +523,7 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
           &larr; Back to Customize
         </button>
         <button @click="confirmPreview"
-          class="bg-champagne-500 text-charcoal-900 px-6 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200">
+          class="bg-champagne-500 text-white px-6 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200">
           Looks Good, Continue
         </button>
       </div>
@@ -546,7 +546,7 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
         <button v-for="tier in tiersList" :key="tier.id"
           @click="selectedTierSlug = tier.slug"
           :class="[
-            'rounded-xl p-6 text-left transition-all duration-200 hover:shadow-md',
+            'rounded-2xl p-6 text-left transition-all duration-200 hover:shadow-md',
             selectedTierSlug === tier.slug ? 'border-2 border-champagne-500 ring-2 ring-champagne-500/20 bg-champagne-50' : 'border border-charcoal-200 bg-white'
           ]">
           <h3 class="font-display font-semibold text-lg text-charcoal-900 mb-1">{{ tier.name }}</h3>
@@ -582,7 +582,7 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
           &larr; Back
         </button>
         <button @click="payAndPublish" :disabled="!selectedTierSlug || processingPayment"
-          class="bg-champagne-500 text-charcoal-900 px-6 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
+          class="bg-champagne-500 text-white px-6 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
           {{ processingPayment ? 'Redirecting to payment...' : 'Pay &amp; Publish' }}
         </button>
       </div>

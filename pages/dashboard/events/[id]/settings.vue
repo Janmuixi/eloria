@@ -115,7 +115,7 @@ const tabs = [
       <h1 class="font-display font-semibold text-2xl text-charcoal-900 mb-6">Event Settings</h1>
 
       <!-- Invitation URL -->
-      <div v-if="evt.paymentStatus === 'paid'" class="bg-white rounded-xl border border-charcoal-200 p-6 mb-6">
+      <div v-if="evt.paymentStatus === 'paid'" class="bg-white rounded-2xl shadow-sm border border-charcoal-200 p-6 mb-6">
         <label class="block text-sm font-medium text-charcoal-700 mb-2">Public Invitation Link</label>
         <div class="flex gap-2">
           <input
@@ -132,7 +132,7 @@ const tabs = [
       </div>
 
       <!-- Settings Form -->
-      <form @submit.prevent="saveSettings" class="bg-white rounded-xl border border-charcoal-200 p-6">
+      <form @submit.prevent="saveSettings" class="bg-white rounded-2xl shadow-sm border border-charcoal-200 p-6">
         <div v-if="saveError" class="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">{{ saveError }}</div>
         <div v-if="saveSuccess" class="mb-4 p-3 bg-green-50 text-green-600 rounded-lg text-sm">Settings saved successfully!</div>
 
@@ -188,7 +188,7 @@ const tabs = [
 
         <div class="flex items-center gap-3 mt-6 pt-4 border-t border-charcoal-200">
           <button type="submit" :disabled="saving"
-            class="px-6 py-2 bg-champagne-500 text-charcoal-900 rounded-full text-sm font-medium hover:bg-champagne-600 disabled:opacity-50 transition-colors">
+            class="px-6 py-2 bg-champagne-500 text-white rounded-full text-sm font-medium hover:bg-champagne-600 disabled:opacity-50 transition-colors">
             {{ saving ? 'Saving...' : 'Save Changes' }}
           </button>
           <NuxtLink to="/dashboard/events/new"
