@@ -39,8 +39,8 @@ interface Tier {
   <div class="py-20">
     <div class="max-w-6xl mx-auto px-6">
       <div class="text-center mb-16">
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">Simple, transparent pricing</h1>
-        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        <h1 class="font-display font-bold text-4xl text-charcoal-900 mb-4">Simple, transparent pricing</h1>
+        <p class="text-lg text-charcoal-500 max-w-2xl mx-auto">
           Choose the plan that fits your wedding. Start free and upgrade anytime.
         </p>
       </div>
@@ -49,86 +49,86 @@ interface Tier {
         <div
           v-for="tier in (tiers as Tier[])"
           :key="tier.id"
-          class="relative bg-white rounded-xl border-2 p-8 flex flex-col"
-          :class="isPremium(tier.slug) ? 'border-primary-500 shadow-lg' : 'border-gray-200'"
+          class="relative rounded-xl p-8 flex flex-col"
+          :class="isPremium(tier.slug) ? 'bg-ivory-100 border-2 border-champagne-500 shadow-lg' : 'bg-ivory-100 border border-charcoal-200'"
         >
           <!-- Popular badge -->
           <div
             v-if="isPremium(tier.slug)"
-            class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary-600 text-white text-xs font-semibold px-3 py-1 rounded-full"
+            class="absolute -top-3 left-1/2 -translate-x-1/2 bg-champagne-500 text-charcoal-900 rounded-full text-xs font-semibold px-3 py-1"
           >
             Most Popular
           </div>
 
           <div class="mb-6">
-            <h2 class="text-xl font-bold text-gray-900">{{ tier.name }}</h2>
+            <h2 class="text-xl font-bold text-charcoal-900">{{ tier.name }}</h2>
             <div class="mt-2">
-              <span class="text-4xl font-bold text-gray-900">{{ formatPrice(tier.price) }}</span>
-              <span v-if="tier.price > 0" class="text-gray-500 text-sm ml-1">one-time</span>
+              <span class="font-display font-bold text-4xl text-charcoal-900">{{ formatPrice(tier.price) }}</span>
+              <span v-if="tier.price > 0" class="text-charcoal-500 text-sm ml-1">one-time</span>
             </div>
           </div>
 
           <!-- Features -->
           <ul class="space-y-3 mb-8 flex-1">
             <li class="flex items-center gap-2 text-sm">
-              <svg class="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
-              <span class="text-gray-700">{{ formatGuestLimit(tier.guestLimit) }}</span>
+              <span class="text-charcoal-500">{{ formatGuestLimit(tier.guestLimit) }}</span>
             </li>
             <li class="flex items-center gap-2 text-sm">
-              <svg v-if="tier.hasEmailDelivery" class="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg v-if="tier.hasEmailDelivery" class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
-              <svg v-else class="w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg v-else class="w-5 h-5 text-charcoal-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              <span :class="tier.hasEmailDelivery ? 'text-gray-700' : 'text-gray-400'">Email delivery</span>
+              <span :class="tier.hasEmailDelivery ? 'text-charcoal-500' : 'text-charcoal-300'">Email delivery</span>
             </li>
             <li class="flex items-center gap-2 text-sm">
-              <svg v-if="tier.hasPdfExport" class="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg v-if="tier.hasPdfExport" class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
-              <svg v-else class="w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg v-else class="w-5 h-5 text-charcoal-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              <span :class="tier.hasPdfExport ? 'text-gray-700' : 'text-gray-400'">PDF export</span>
+              <span :class="tier.hasPdfExport ? 'text-charcoal-500' : 'text-charcoal-300'">PDF export</span>
             </li>
             <li class="flex items-center gap-2 text-sm">
-              <svg v-if="tier.hasAiTextGeneration" class="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg v-if="tier.hasAiTextGeneration" class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
-              <svg v-else class="w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg v-else class="w-5 h-5 text-charcoal-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              <span :class="tier.hasAiTextGeneration ? 'text-gray-700' : 'text-gray-400'">AI text generation</span>
+              <span :class="tier.hasAiTextGeneration ? 'text-charcoal-500' : 'text-charcoal-300'">AI text generation</span>
             </li>
             <li class="flex items-center gap-2 text-sm">
-              <svg v-if="tier.removeBranding" class="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg v-if="tier.removeBranding" class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
-              <svg v-else class="w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg v-else class="w-5 h-5 text-charcoal-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              <span :class="tier.removeBranding ? 'text-gray-700' : 'text-gray-400'">Custom branding</span>
+              <span :class="tier.removeBranding ? 'text-charcoal-500' : 'text-charcoal-300'">Custom branding</span>
             </li>
             <li class="flex items-center gap-2 text-sm">
-              <svg v-if="tier.hasMultipleVariants" class="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg v-if="tier.hasMultipleVariants" class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
-              <svg v-else class="w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg v-else class="w-5 h-5 text-charcoal-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              <span :class="tier.hasMultipleVariants ? 'text-gray-700' : 'text-gray-400'">Multiple variants</span>
+              <span :class="tier.hasMultipleVariants ? 'text-charcoal-500' : 'text-charcoal-300'">Multiple variants</span>
             </li>
           </ul>
 
           <NuxtLink
             to="/auth/register"
-            class="block text-center font-semibold py-2.5 rounded-lg transition-colors"
+            class="block text-center font-medium py-2.5 transition-all duration-200"
             :class="isPremium(tier.slug)
-              ? 'bg-primary-600 text-white hover:bg-primary-700'
-              : 'border-2 border-gray-200 text-gray-700 hover:border-primary-300 hover:text-primary-600'"
+              ? 'bg-champagne-500 text-charcoal-900 rounded-full hover:bg-champagne-600'
+              : 'border border-charcoal-900 text-charcoal-900 rounded-full hover:bg-charcoal-100'"
           >
             Get Started
           </NuxtLink>
