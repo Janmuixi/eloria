@@ -7,24 +7,6 @@ useSeoMeta({
   ogType: 'website',
 })
 
-const carouselImages = [
-  '/carousel/image1.jpeg',
-  '/carousel/image2.jpeg',
-]
-const activeSlide = ref(0)
-
-let interval: ReturnType<typeof setInterval> | null = null
-
-onMounted(() => {
-  interval = setInterval(() => {
-    activeSlide.value = (activeSlide.value + 1) % carouselImages.length
-  }, 5000)
-})
-
-onUnmounted(() => {
-  if (interval) clearInterval(interval)
-})
-
 const features = [
   {
     title: 'AI-Powered Design',
@@ -52,111 +34,86 @@ const steps = [
 
 <template>
   <div>
-    <!-- Hero with carousel -->
-    <section class="relative h-[600px] md:h-[700px] overflow-hidden">
-      <!-- Carousel images -->
-      <div
-        v-for="(src, idx) in carouselImages"
-        :key="src"
-        class="absolute inset-0 transition-opacity duration-1500 ease-in-out"
-        :class="idx === activeSlide ? 'opacity-100' : 'opacity-0'"
-      >
-        <img
-          :src="src"
-          :alt="`Wedding inspiration ${idx + 1}`"
-          class="w-full h-full object-cover grayscale"
-        />
-      </div>
-
-      <!-- Dark overlay -->
-      <div class="absolute inset-0 bg-primary-950/60" />
-
-      <!-- Content -->
-      <div class="relative z-10 h-full flex items-center justify-center">
-        <div class="max-w-4xl mx-auto px-6 text-center">
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-ivory-50 tracking-tight" style="text-shadow: 0 2px 8px rgba(0,0,0,0.4)">
-            Create Beautiful Wedding Invitations
-          </h1>
-          <p class="mt-6 text-lg md:text-xl text-ivory-200 max-w-2xl mx-auto" style="text-shadow: 0 1px 4px rgba(0,0,0,0.3)">
-            Design stunning, personalized invitations in minutes. Share them anywhere, track RSVPs in real time, and make your big day unforgettable.
-          </p>
-          <div class="mt-10">
-            <NuxtLink
-              to="/auth/register"
-              class="inline-block bg-ivory-50 text-primary-900 text-lg font-semibold px-8 py-3 rounded-lg hover:bg-white transition-colors shadow-lg"
-            >
-              Get Started
-            </NuxtLink>
-          </div>
-
-          <!-- Carousel dots -->
-          <div class="mt-10 flex items-center justify-center gap-2">
-            <button
-              v-for="(_, idx) in carouselImages"
-              :key="idx"
-              @click="activeSlide = idx"
-              class="w-2 h-2 rounded-full transition-all duration-300"
-              :class="idx === activeSlide ? 'bg-ivory-50 w-6' : 'bg-ivory-50/40 hover:bg-ivory-50/60'"
-              :aria-label="`Go to slide ${idx + 1}`"
-            />
-          </div>
-        </div>
+    <!-- Hero -->
+    <section class="py-28 md:py-36">
+      <div class="max-w-6xl mx-auto px-6 text-center">
+        <h1 class="font-display font-bold text-5xl md:text-6xl lg:text-7xl text-charcoal-900 tracking-tight">
+          Your Wedding, Beautifully Invited
+        </h1>
+        <p class="text-lg text-charcoal-500 max-w-xl mx-auto mt-6">
+          Design stunning, personalized invitations in minutes. Share them anywhere, track RSVPs in real time.
+        </p>
+        <NuxtLink
+          to="/auth/register"
+          class="bg-champagne-500 text-charcoal-900 rounded-full px-8 py-3 font-medium hover:bg-champagne-600 transition-all duration-200 hover:scale-[1.02] mt-8 inline-block"
+        >
+          Create Your Invitation
+        </NuxtLink>
       </div>
     </section>
 
-    <!-- Features Grid -->
-    <section class="py-20">
+    <!-- Divider -->
+    <div class="max-w-5xl mx-auto border-t border-champagne-400/30"></div>
+
+    <!-- Features -->
+    <section class="py-20 md:py-28">
       <div class="max-w-6xl mx-auto px-6">
-        <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Everything you need</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <h2 class="font-display font-semibold text-3xl text-charcoal-900 text-center mb-16">Everything you need</h2>
+        <div class="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto">
           <div
             v-for="feature in features"
             :key="feature.title"
-            class="bg-white border border-gray-100 rounded-xl p-8 text-center shadow-sm"
+            class="text-center"
           >
             <!-- Icon -->
-            <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <svg v-if="feature.icon === 'sparkles'" class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-14 h-14 bg-champagne-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <svg v-if="feature.icon === 'sparkles'" class="w-6 h-6 text-champagne-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
               </svg>
-              <svg v-else-if="feature.icon === 'share'" class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg v-else-if="feature.icon === 'share'" class="w-6 h-6 text-champagne-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
               </svg>
-              <svg v-else class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg v-else class="w-6 h-6 text-champagne-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ feature.title }}</h3>
-            <p class="text-gray-500 text-sm leading-relaxed">{{ feature.description }}</p>
+            <h3 class="font-display font-semibold text-lg text-charcoal-900 mb-2">{{ feature.title }}</h3>
+            <p class="text-charcoal-500 text-sm">{{ feature.description }}</p>
           </div>
         </div>
       </div>
     </section>
+
+    <!-- Divider -->
+    <div class="max-w-5xl mx-auto border-t border-champagne-400/30"></div>
 
     <!-- How It Works -->
-    <section class="bg-ivory-50 py-20">
-      <div class="max-w-4xl mx-auto px-6">
-        <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">How it works</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <section class="py-20 md:py-28">
+      <div class="max-w-6xl mx-auto px-6">
+        <h2 class="font-display font-semibold text-3xl text-charcoal-900 text-center mb-16">How it works</h2>
+        <div class="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
           <div v-for="step in steps" :key="step.number" class="text-center">
-            <div class="w-10 h-10 bg-primary-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold">
+            <div class="font-display font-bold text-3xl text-champagne-500 mb-3">
               {{ step.number }}
             </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ step.title }}</h3>
-            <p class="text-gray-500 text-sm leading-relaxed">{{ step.description }}</p>
+            <h3 class="font-display font-semibold text-lg text-charcoal-900 mb-2">{{ step.title }}</h3>
+            <p class="text-charcoal-500 text-sm">{{ step.description }}</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Pricing Summary -->
-    <section class="py-20">
-      <div class="max-w-3xl mx-auto px-6 text-center">
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">Simple, transparent pricing</h2>
-        <p class="text-gray-600 mb-8">Start free with our Basic plan. Upgrade anytime for more features, higher guest limits, and premium templates.</p>
+    <!-- Divider -->
+    <div class="max-w-5xl mx-auto border-t border-champagne-400/30"></div>
+
+    <!-- Pricing Teaser -->
+    <section class="py-20 md:py-28 text-center">
+      <div class="max-w-6xl mx-auto px-6">
+        <h2 class="font-display font-semibold text-3xl text-charcoal-900 mb-4">Simple, transparent pricing</h2>
+        <p class="text-charcoal-500 mb-8 max-w-xl mx-auto">Start free with our Basic plan. Upgrade anytime for more features, higher guest limits, and premium templates.</p>
         <NuxtLink
           to="/pricing"
-          class="inline-block border-2 border-primary-600 text-primary-600 font-semibold px-6 py-2.5 rounded-lg hover:bg-primary-50 transition-colors"
+          class="text-champagne-600 font-medium hover:text-champagne-500 underline"
         >
           View Pricing
         </NuxtLink>
@@ -164,13 +121,13 @@ const steps = [
     </section>
 
     <!-- Final CTA -->
-    <section class="bg-primary-900 py-16">
-      <div class="max-w-3xl mx-auto px-6 text-center">
-        <h2 class="text-3xl font-bold text-ivory-100 mb-4">Ready to create your perfect invitation?</h2>
-        <p class="text-primary-300 mb-8">Join thousands of couples who chose Eloria for their special day.</p>
+    <section class="bg-charcoal-900 py-20 md:py-28">
+      <div class="max-w-6xl mx-auto px-6 text-center">
+        <h2 class="font-display font-bold text-3xl text-ivory-50 mb-4">Ready to create your perfect invitation?</h2>
+        <p class="text-charcoal-300 mb-8">Join thousands of couples who chose Eloria for their special day.</p>
         <NuxtLink
           to="/auth/register"
-          class="inline-block bg-ivory-100 text-primary-900 font-semibold px-8 py-3 rounded-lg hover:bg-ivory-200 transition-colors shadow-sm"
+          class="bg-champagne-500 text-charcoal-900 rounded-full px-8 py-3 font-medium hover:bg-champagne-600 transition-all duration-200 inline-block"
         >
           Get Started Free
         </NuxtLink>
