@@ -497,7 +497,7 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
       <p class="text-charcoal-500 mb-6">Review how your invitation will look to guests</p>
 
       <div class="max-w-2xl mx-auto">
-        <div v-if="selectedTemplate?.htmlTemplate" class="border border-champagne-400 rounded-xl overflow-hidden shadow-lg">
+        <div v-if="selectedTemplate?.htmlTemplate" class="border border-champagne-400 rounded-2xl overflow-hidden shadow-lg">
           <InvitationTemplatePreview
             :html-template="selectedTemplate.htmlTemplate"
             :couple-name1="form.coupleName1"
@@ -508,7 +508,7 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
             :wording="wording"
           />
         </div>
-        <div v-else class="border border-charcoal-200 rounded-xl p-10 bg-white text-center shadow-lg">
+        <div v-else class="border border-charcoal-200 rounded-2xl p-10 bg-white text-center shadow-lg">
           <p class="text-charcoal-300 italic">No template selected</p>
         </div>
 

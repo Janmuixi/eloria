@@ -189,7 +189,7 @@ async function downloadPdf() {
       <!-- Invitation Preview -->
       <div v-if="evt.template?.htmlTemplate" class="bg-white rounded-2xl shadow-sm border border-charcoal-200 p-6 mb-6">
         <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-4">Invitation Preview</h2>
-        <div class="border border-champagne-400 rounded-xl overflow-hidden max-w-xl mx-auto">
+        <div class="border border-champagne-400 rounded-2xl overflow-hidden max-w-xl mx-auto">
           <InvitationTemplatePreview
             :html-template="evt.template.htmlTemplate"
             :couple-name1="evt.coupleName1"
