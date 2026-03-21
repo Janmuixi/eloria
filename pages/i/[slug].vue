@@ -172,17 +172,17 @@ useSeoMeta({
 
             <div class="space-y-3 mb-6">
               <label class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors"
-                :class="rsvpForm.rsvpStatus === 'confirmed' ? 'border-green-300 bg-green-50' : 'border-charcoal-100 hover:bg-ivory-50'"
+                :class="rsvpForm.rsvpStatus === 'confirmed' ? 'border-green-300 bg-green-50' : 'border-charcoal-100 hover:bg-ivory-50'">
                 <input type="radio" v-model="rsvpForm.rsvpStatus" value="confirmed" class="text-green-600" />
                 <span class="text-sm font-medium">Joyfully Accept</span>
               </label>
               <label class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors"
-                :class="rsvpForm.rsvpStatus === 'declined' ? 'border-red-300 bg-red-50' : 'border-charcoal-100 hover:bg-ivory-50'"
+                :class="rsvpForm.rsvpStatus === 'declined' ? 'border-red-300 bg-red-50' : 'border-charcoal-100 hover:bg-ivory-50'">
                 <input type="radio" v-model="rsvpForm.rsvpStatus" value="declined" class="text-red-600" />
                 <span class="text-sm font-medium">Respectfully Decline</span>
               </label>
               <label class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors"
-                :class="rsvpForm.rsvpStatus === 'maybe' ? 'border-yellow-300 bg-yellow-50' : 'border-charcoal-100 hover:bg-ivory-50'"
+                :class="rsvpForm.rsvpStatus === 'maybe' ? 'border-yellow-300 bg-yellow-50' : 'border-charcoal-100 hover:bg-ivory-50'">
                 <input type="radio" v-model="rsvpForm.rsvpStatus" value="maybe" class="text-yellow-600" />
                 <span class="text-sm font-medium">Maybe</span>
               </label>
