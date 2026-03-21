@@ -1,32 +1,36 @@
 import type { Config } from 'tailwindcss'
 
 export default {
+  content: [],
   theme: {
     extend: {
+      fontFamily: {
+        display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
+      },
       transitionDuration: {
         '1500': '1500ms',
       },
       colors: {
-        primary: {
-          50: '#f1f4f8',
-          100: '#dde4ef',
-          200: '#bac8dc',
-          300: '#8ea3c3',
-          400: '#6180ab',
-          500: '#43608f',
-          600: '#314571',
-          700: '#253558',
-          800: '#1a2640',
-          900: '#101722',
-          950: '#0b0f18',
+        charcoal: {
+          900: '#1a1a1a',
+          700: '#3d3d3d',
+          500: '#6b6b6b',
+          300: '#b0b0b0',
+          200: '#e0e0e0',
+          100: '#f0f0f0',
+        },
+        champagne: {
+          600: '#b8944f',
+          500: '#c9a96e',
+          400: '#d4bc8a',
+          100: '#faf6ee',
         },
         ivory: {
-          50: '#FEFDF9',
-          100: '#FBF8F0',
+          50: '#FDFCF9',
+          100: '#FAF8F3',
           200: '#F5EFDF',
           300: '#EDE4CC',
-          400: '#DDD0AF',
-          500: '#C4B48A',
         },
       },
     },
