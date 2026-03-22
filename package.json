@@ -10,7 +10,7 @@
     "postinstall": "nuxt prepare",
     "db:seed": "npx tsx server/db/seed.ts",
     "db:seed-templates": "npx tsx server/db/seed-templates.ts",
-    "db:push": "npx drizzle-kit push",
+    "db:push": "mkdir -p db && npx drizzle-kit push",
     "db:generate": "npx drizzle-kit generate"
   },
   "dependencies": {
