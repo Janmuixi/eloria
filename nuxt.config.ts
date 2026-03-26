@@ -14,4 +14,13 @@ export default defineNuxtConfig({
       ],
     },
   },
+  runtimeConfig: {
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    JWT_SECRET: process.env.JWT_SECRET,
+    BASE_URL: process.env.BASE_URL,
+    DATABASE_URL: process.env.DATABASE_URL,
+  },
 })
