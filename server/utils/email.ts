@@ -12,6 +12,35 @@ function getResend(): Resend {
   return resend
 }
 
+interface SendVerificationParams {
+  to: string
+  userName: string
+  verificationUrl: string
+}
+
+export async function sendVerificationEmail(params: SendVerificationParams) {
+  const client = getResend()
+
+  return client.emails.send({
+    from: 'Eloria <noreply@muixisoftware.tech>',
+    to: params.to,
+    subject: 'Verify your email - Eloria',
+    html: `
+      <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; text-align: center; padding: 40px 20px;">
+        <h1 style="font-size: 24px; color: #333;">Verify your email</h1>
+        <p style="font-size: 16px; color: #666;">
+          Hi ${params.userName},<br><br>
+          Please verify your email address by clicking the button below.
+        </p>
+        <a href="${params.verificationUrl}" style="display: inline-block; background: #314571; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; margin-top: 20px; font-size: 16px;">
+          Verify Email
+        </a>
+        <p style="font-size: 12px; color: #999; margin-top: 30px;">This link expires in 24 hours.</p>
+      </div>
+    `,
+  })
+}
+
 interface SendInvitationParams {
   to: string
   guestName: string
@@ -25,7 +54,7 @@ export async function sendInvitationEmail(params: SendInvitationParams) {
   const client = getResend()
 
   return client.emails.send({
-    from: 'Eloria <invitations@yourdomain.com>',
+    from: 'Eloria <invitations@muixisoftware.tech>',
     to: params.to,
     subject: `You're invited to ${params.coupleName1} & ${params.coupleName2}'s wedding`,
     html: `

@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { requireAuth } from '~/server/utils/auth'
+import { sendVerificationEmail } from '~/server/utils/email'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-me'
 
@@ -21,26 +22,10 @@ export default defineEventHandler(async (event) => {
 
   // Send via Resend if configured, otherwise log to console for development
   if (process.env.RESEND_API_KEY) {
-    const { Resend } = await import('resend')
-    const resend = new Resend(process.env.RESEND_API_KEY)
-
-    await resend.emails.send({
-      from: 'Eloria <noreply@yourdomain.com>',
+    await sendVerificationEmail({
       to: user.email,
-      subject: 'Verify your email - Eloria',
-      html: `
-        <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; text-align: center; padding: 40px 20px;">
-          <h1 style="font-size: 24px; color: #333;">Verify your email</h1>
-          <p style="font-size: 16px; color: #666;">
-            Hi ${user.name},<br><br>
-            Please verify your email address by clicking the button below.
-          </p>
-          <a href="${verificationUrl}" style="display: inline-block; background: #314571; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; margin-top: 20px; font-size: 16px;">
-            Verify Email
-          </a>
-          <p style="font-size: 12px; color: #999; margin-top: 30px;">This link expires in 24 hours.</p>
-        </div>
-      `,
+      userName: user.name,
+      verificationUrl,
     })
   } else {
     console.log(`[DEV] Verification URL for ${user.email}: ${verificationUrl}`)
