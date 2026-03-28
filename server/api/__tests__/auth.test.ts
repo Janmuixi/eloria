@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import jwt from 'jsonwebtoken'
 import { createTestDb, createTestUser, type TestDb } from '../../__helpers__/db'
 import { createMockEvent } from '../../__helpers__/event'
+import { resolveEnvVar } from '~/server/utils/resolve-env-var'
 
 let testDb: TestDb
 
@@ -18,7 +19,7 @@ vi.mock('resend', () => ({
 }))
 
 vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({
-  JWT_SECRET: 'dev-secret-change-me',
+  JWT_SECRET: 'test-secret',
 })))
 
 const registerHandler = (await import('../auth/register.post')).default
@@ -37,6 +38,16 @@ function authEvent(userId: number, email: string, overrides?: Parameters<typeof 
 describe('Auth API', () => {
   beforeEach(() => {
     testDb = createTestDb()
+  })
+
+  beforeEach(() => {
+    vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({
+      JWT_SECRET: 'test-secret',
+    })))
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
   })
 
   describe('POST /api/auth/register', () => {
@@ -203,7 +214,7 @@ describe('Auth API', () => {
         name: 'Verify User',
       })
 
-      const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-me'
+      const JWT_SECRET = resolveEnvVar('JWT_SECRET', 'dev-secret-change-me')
       const token = jwt.sign(
         { email: dbUser.email, purpose: 'email-verification' },
         JWT_SECRET,
@@ -232,7 +243,7 @@ describe('Auth API', () => {
     })
 
     it('rejects wrong purpose token (400)', async () => {
-      const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-me'
+      const JWT_SECRET = resolveEnvVar('JWT_SECRET', 'dev-secret-change-me')
       const token = jwt.sign(
         { email: 'verify@example.com', purpose: 'password-reset' },
         JWT_SECRET,
