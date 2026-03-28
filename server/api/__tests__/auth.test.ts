@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import jwt from 'jsonwebtoken'
 import { createTestDb, createTestUser, type TestDb } from '../../__helpers__/db'
 import { createMockEvent } from '../../__helpers__/event'
@@ -16,6 +16,10 @@ vi.mock('resend', () => ({
     this.emails = { send: vi.fn().mockResolvedValue({ id: 'mock' }) }
   }),
 }))
+
+vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({
+  JWT_SECRET: 'dev-secret-change-me',
+})))
 
 const registerHandler = (await import('../auth/register.post')).default
 const loginHandler = (await import('../auth/login.post')).default
