@@ -31,6 +31,8 @@ export const users = sqliteTable('users', {
   passwordHash: text('password_hash').notNull(),
   name: text('name').notNull(),
   emailVerified: integer('email_verified', { mode: 'boolean' }).default(false),
+  resetToken: text('reset_token'),
+  resetTokenExpiresAt: text('reset_token_expires_at'),
   createdAt: text('created_at').default(new Date().toISOString()),
 })
 
