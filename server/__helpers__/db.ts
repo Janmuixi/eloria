@@ -32,6 +32,8 @@ export function createTestDb() {
       password_hash TEXT NOT NULL,
       name TEXT NOT NULL,
       email_verified INTEGER DEFAULT 0,
+      reset_token TEXT,
+      reset_token_expires_at TEXT,
       created_at TEXT DEFAULT (datetime('now'))
     );
 
