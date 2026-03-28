@@ -32,6 +32,12 @@ vi.mock('stripe', () => ({
   }),
 }))
 
+vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({
+  STRIPE_SECRET_KEY: 'sk_test_real_key',
+  STRIPE_WEBHOOK_SECRET: 'whsec_test',
+  BASE_URL: 'http://localhost:3000',
+})))
+
 const createCheckoutHandler = (await import('../payments/create-checkout.post')).default
 const verifyHandler = (await import('../payments/verify.post')).default
 const webhookHandler = (await import('../payments/webhook.post')).default
@@ -43,28 +49,12 @@ function authEvent(userId: number, email: string, overrides?: Parameters<typeof 
   return createMockEvent({ ...overrides, cookies: { auth_token: token } })
 }
 
-let savedEnv: Record<string, string | undefined>
-
 describe('Payments API', () => {
   beforeEach(() => {
     testDb = createTestDb()
-    savedEnv = {
-      STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
-      STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
-      BASE_URL: process.env.BASE_URL,
-    }
-    process.env.STRIPE_SECRET_KEY = 'sk_test_real_key'
-    process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test'
-    process.env.BASE_URL = 'http://localhost:3000'
     mockCheckoutCreate.mockClear()
     mockSessionRetrieve.mockClear()
     mockConstructEvent.mockClear()
-  })
-
-  afterEach(() => {
-    process.env.STRIPE_SECRET_KEY = savedEnv.STRIPE_SECRET_KEY
-    process.env.STRIPE_WEBHOOK_SECRET = savedEnv.STRIPE_WEBHOOK_SECRET
-    process.env.BASE_URL = savedEnv.BASE_URL
   })
 
   describe('POST /api/payments/create-checkout', () => {
