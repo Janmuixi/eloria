@@ -23,6 +23,10 @@ vi.mock('openai', () => ({
   }),
 }))
 
+vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({
+  OPENAI_API_KEY: 'sk-real-key',
+})))
+
 const generateWordingHandler = (await import('../ai/generate-wording.post')).default
 const recommendTemplatesHandler = (await import('../ai/recommend-templates.post')).default
 
@@ -33,19 +37,12 @@ function authEvent(userId: number, email: string, overrides?: Parameters<typeof 
   return createMockEvent({ ...overrides, cookies: { auth_token: token } })
 }
 
-let savedApiKey: string | undefined
-
 beforeEach(() => {
-  savedApiKey = process.env.OPENAI_API_KEY
+  mockCreate.mockReset()
 })
 
 afterEach(() => {
-  if (savedApiKey !== undefined) {
-    process.env.OPENAI_API_KEY = savedApiKey
-  } else {
-    delete process.env.OPENAI_API_KEY
-  }
-  mockCreate.mockReset()
+  vi.unstubAllGlobals()
 })
 
 describe('AI API', () => {
@@ -55,7 +52,7 @@ describe('AI API', () => {
 
   describe('POST /api/ai/generate-wording', () => {
     it('returns 3 fallback variations when no OPENAI_API_KEY', async () => {
-      delete process.env.OPENAI_API_KEY
+      vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({ })))
       const user = await createTestUser(testDb, { email: 'ai@test.com' })
 
       const event = authEvent(user.id, user.email, {
@@ -79,7 +76,9 @@ describe('AI API', () => {
     })
 
     it('calls OpenAI when key is configured', async () => {
-      process.env.OPENAI_API_KEY = 'sk-real-key'
+      vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({
+        OPENAI_API_KEY: 'sk-real-key',
+      })))
       const user = await createTestUser(testDb, { email: 'ai2@test.com' })
 
       mockCreate.mockResolvedValue({
@@ -135,7 +134,7 @@ describe('AI API', () => {
 
   describe('POST /api/ai/recommend-templates', () => {
     it('returns fallback recommendations when no API key', async () => {
-      delete process.env.OPENAI_API_KEY
+      vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({ })))
       seedTiers(testDb).run()
       seedTemplate(testDb, 1)
       seedTemplate(testDb, 2)
