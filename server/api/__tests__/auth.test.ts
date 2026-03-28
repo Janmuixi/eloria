@@ -18,10 +18,6 @@ vi.mock('resend', () => ({
   }),
 }))
 
-vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({
-  JWT_SECRET: 'test-secret',
-})))
-
 const registerHandler = (await import('../auth/register.post')).default
 const loginHandler = (await import('../auth/login.post')).default
 const logoutHandler = (await import('../auth/logout.post')).default
@@ -38,16 +34,6 @@ function authEvent(userId: number, email: string, overrides?: Parameters<typeof 
 describe('Auth API', () => {
   beforeEach(() => {
     testDb = createTestDb()
-  })
-
-  beforeEach(() => {
-    vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({
-      JWT_SECRET: 'test-secret',
-    })))
-  })
-
-  afterEach(() => {
-    vi.unstubAllGlobals()
   })
 
   describe('POST /api/auth/register', () => {
