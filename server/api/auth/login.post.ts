@@ -3,6 +3,7 @@ import { users } from '../../db/schema'
 import { eq } from 'drizzle-orm'
 import { verifyPassword } from '../../utils/password'
 import { createToken } from '../../utils/auth'
+import { resolveEnvVar } from '~/server/utils/resolve-env-var'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -42,7 +43,7 @@ export default defineEventHandler(async (event) => {
 
   setCookie(event, 'auth_token', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: resolveEnvVar('NODE_ENV') === 'production',
     sameSite: 'lax',
     maxAge: 60 * 60 * 24 * 7, // 7 days
     path: '/',

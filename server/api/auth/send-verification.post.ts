@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken'
 import { requireAuth } from '~/server/utils/auth'
 import { sendVerificationEmail } from '~/server/utils/email'
+import { resolveEnvVar } from '~/server/utils/resolve-env-var'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-me'
+const JWT_SECRET = resolveEnvVar('JWT_SECRET', 'dev-secret-change-me')
 
 export default defineEventHandler(async (event) => {
   const user = await requireAuth(event)
@@ -17,7 +18,7 @@ export default defineEventHandler(async (event) => {
     { expiresIn: '24h' },
   )
 
-  const baseUrl = process.env.BASE_URL || 'http://localhost:3000'
+  const baseUrl = resolveEnvVar('BASE_URL', 'http://localhost:3000')
   const verificationUrl = `${baseUrl}/auth/verify?token=${token}`
 
   // Send via Resend if configured, otherwise log to console for development
