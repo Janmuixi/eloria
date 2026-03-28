@@ -2,8 +2,10 @@ import Database from 'better-sqlite3'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
 import { templates, tiers } from './schema'
 import { eq } from 'drizzle-orm'
+import { resolveEnvVar } from '../utils/resolve-env-var'
 
-const sqlite = new Database(process.env.DATABASE_URL?.replace('file:', '') || './db/eloria.db')
+const dbUrl = resolveEnvVar('DATABASE_URL', 'file:./db/eloria.db')
+const sqlite = new Database(dbUrl.replace('file:', '') || './db/eloria.db')
 const db = drizzle(sqlite, { schema: { templates, tiers } })
 
 const rusticAutumnHtml = `<!DOCTYPE html>
