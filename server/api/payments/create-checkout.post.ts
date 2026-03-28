@@ -3,9 +3,10 @@ import { requireAuth } from '~/server/utils/auth'
 import { db } from '~/server/db'
 import { events, tiers } from '~/server/db/schema'
 import { eq, and } from 'drizzle-orm'
+import { resolveEnvVar } from '~/server/utils/resolve-env-var'
 
 export default defineEventHandler(async (event) => {
-  const stripeKey = process.env.STRIPE_SECRET_KEY
+  const stripeKey = resolveEnvVar('STRIPE_SECRET_KEY')
   if (!stripeKey || stripeKey.startsWith('sk_test_...')) {
     throw createError({ statusCode: 500, statusMessage: 'Stripe not configured' })
   }
@@ -34,6 +35,7 @@ export default defineEventHandler(async (event) => {
   // Update event with selected tier
   await db.update(events).set({ tierId: tier.id }).where(eq(events.id, eventId))
 
+  const baseUrl = resolveEnvVar('BASE_URL', 'http://localhost:3000')
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     line_items: [{
@@ -48,8 +50,8 @@ export default defineEventHandler(async (event) => {
       quantity: 1,
     }],
     mode: 'payment',
-    success_url: `${process.env.BASE_URL}/dashboard/events/${eventId}/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.BASE_URL}/dashboard/events/new?step=5&eventId=${eventId}`,
+    success_url: `${baseUrl}/dashboard/events/${eventId}/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${baseUrl}/dashboard/events/new?step=5&eventId=${eventId}`,
     metadata: { eventId: eventId.toString(), tierId: tier.id.toString() },
   })
 

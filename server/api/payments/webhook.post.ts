@@ -2,10 +2,11 @@ import Stripe from 'stripe'
 import { db } from '~/server/db'
 import { events } from '~/server/db/schema'
 import { eq } from 'drizzle-orm'
+import { resolveEnvVar } from '~/server/utils/resolve-env-var'
 
 export default defineEventHandler(async (event) => {
-  const stripeKey = process.env.STRIPE_SECRET_KEY
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
+  const stripeKey = resolveEnvVar('STRIPE_SECRET_KEY')
+  const webhookSecret = resolveEnvVar('STRIPE_WEBHOOK_SECRET')
 
   if (!stripeKey || !webhookSecret) {
     throw createError({ statusCode: 500, statusMessage: 'Stripe not configured' })

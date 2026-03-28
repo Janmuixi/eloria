@@ -3,9 +3,10 @@ import { requireAuth } from '~/server/utils/auth'
 import { db } from '~/server/db'
 import { events } from '~/server/db/schema'
 import { eq, and } from 'drizzle-orm'
+import { resolveEnvVar } from '~/server/utils/resolve-env-var'
 
 export default defineEventHandler(async (event) => {
-  const stripeKey = process.env.STRIPE_SECRET_KEY
+  const stripeKey = resolveEnvVar('STRIPE_SECRET_KEY')
   if (!stripeKey || stripeKey.startsWith('sk_test_...')) {
     throw createError({ statusCode: 500, statusMessage: 'Stripe not configured' })
   }
