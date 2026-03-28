@@ -1,4 +1,4 @@
-export function resolveEnvVar(name: string, defaultValue?: string) {
+export function resolveEnvVar(name: string, defaultValue?: string): string | undefined {
   const runtimeConfig = useRuntimeConfig()
-  return runtimeConfig[name] ?? process.env[name] ?? defaultValue
+  return (runtimeConfig[name] as string) ?? process.env[name] ?? defaultValue
 }
