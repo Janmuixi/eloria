@@ -1,11 +1,12 @@
 import { requireAuth } from '~/server/utils/auth'
+import { resolveEnvVar } from '~/server/utils/resolve-env-var'
 
 export default defineEventHandler(async (event) => {
   await requireAuth(event)
   const body = await readBody(event)
   const { coupleName1, coupleName2, date, venue, tone } = body
 
-  const apiKey = process.env.OPENAI_API_KEY
+  const apiKey = resolveEnvVar('OPENAI_API_KEY')
   if (!apiKey || apiKey.startsWith('sk-...')) {
     // Fallback wording
     return {
