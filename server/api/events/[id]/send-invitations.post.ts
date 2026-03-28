@@ -3,12 +3,14 @@ import { sendInvitationEmail } from '~/server/utils/email'
 import { db } from '~/server/db'
 import { events, guests } from '~/server/db/schema'
 import { eq, and, isNull, isNotNull } from 'drizzle-orm'
+import { resolveEnvVar } from '~/server/utils/resolve-env-var'
 
 export default defineEventHandler(async (event) => {
   const user = await requireAuth(event)
   const eventId = parseInt(getRouterParam(event, 'id')!)
 
-  if (!process.env.RESEND_API_KEY) {
+  const resendApiKey = resolveEnvVar('RESEND_API_KEY')
+  if (!resendApiKey) {
     throw createError({
       statusCode: 500,
       statusMessage: 'Email delivery is not configured. RESEND_API_KEY is missing.',
@@ -45,7 +47,7 @@ export default defineEventHandler(async (event) => {
     return { sent: 0, failed: 0, message: 'No pending invitations to send' }
   }
 
-  const baseUrl = process.env.BASE_URL || 'http://localhost:3000'
+  const baseUrl = resolveEnvVar('BASE_URL', 'http://localhost:3000')
   let sent = 0
   let failed = 0
 

@@ -3,6 +3,7 @@ import { requireAuth } from '~/server/utils/auth'
 import { db } from '~/server/db'
 import { events } from '~/server/db/schema'
 import { eq, and } from 'drizzle-orm'
+import { resolveEnvVar } from '~/server/utils/resolve-env-var'
 
 export default defineEventHandler(async (event) => {
   const user = await requireAuth(event)
@@ -25,7 +26,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 403, statusMessage: 'Event must be paid to export PDF' })
   }
 
-  const baseUrl = process.env.BASE_URL || 'http://localhost:3000'
+  const baseUrl = resolveEnvVar('BASE_URL', 'http://localhost:3000')
 
   const browser = await puppeteer.launch({
     headless: true,
