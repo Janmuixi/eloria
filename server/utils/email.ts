@@ -1,13 +1,15 @@
 import { Resend } from 'resend'
+import { resolveEnvVar } from './resolve-env-var'
 
 let resend: Resend | null = null
 
 function getResend(): Resend {
-  if (!process.env.RESEND_API_KEY) {
+  const apiKey = resolveEnvVar('RESEND_API_KEY')
+  if (!apiKey) {
     throw new Error('RESEND_API_KEY is not configured')
   }
   if (!resend) {
-    resend = new Resend(process.env.RESEND_API_KEY)
+    resend = new Resend(apiKey)
   }
   return resend
 }
