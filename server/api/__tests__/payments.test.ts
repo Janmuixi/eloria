@@ -32,16 +32,6 @@ vi.mock('stripe', () => ({
   }),
 }))
 
-vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({
-  STRIPE_SECRET_KEY: 'sk_test_real_key',
-  STRIPE_WEBHOOK_SECRET: 'whsec_test',
-  BASE_URL: 'http://localhost:3000',
-})))
-
-const createCheckoutHandler = (await import('../payments/create-checkout.post')).default
-const verifyHandler = (await import('../payments/verify.post')).default
-const webhookHandler = (await import('../payments/webhook.post')).default
-
 const { createToken } = await import('../../utils/auth')
 
 function authEvent(userId: number, email: string, overrides?: Parameters<typeof createMockEvent>[0]) {
@@ -50,15 +40,28 @@ function authEvent(userId: number, email: string, overrides?: Parameters<typeof 
 }
 
 describe('Payments API', () => {
+  const originalEnv = process.env
+
   beforeEach(() => {
     testDb = createTestDb()
+    process.env = { ...originalEnv }
+    process.env.STRIPE_SECRET_KEY = 'sk_test_real_key'
+    process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test'
+    process.env.BASE_URL = 'http://localhost:3000'
     mockCheckoutCreate.mockClear()
     mockSessionRetrieve.mockClear()
     mockConstructEvent.mockClear()
   })
 
+  afterEach(() => {
+    process.env = originalEnv
+    vi.unstubAllGlobals()
+  })
+
   describe('POST /api/payments/create-checkout', () => {
     it('creates a Stripe checkout session', async () => {
+      vi.resetModules()
+      const handler = (await import('../payments/create-checkout.post')).default
       seedTiers(testDb).run()
       const user = await createTestUser(testDb, { email: 'pay@test.com', name: 'Payer' })
       const evt = createTestEvent(testDb, user!.id, { title: 'Pay Wedding' })
@@ -68,7 +71,7 @@ describe('Payments API', () => {
         body: { eventId: evt!.id, tierSlug: 'premium' },
       })
 
-      const result = await createCheckoutHandler(event)
+      const result = await handler(event)
 
       expect(result).toEqual({ url: 'https://checkout.stripe.com/test' })
       expect(mockCheckoutCreate).toHaveBeenCalledOnce()
@@ -83,6 +86,8 @@ describe('Payments API', () => {
     })
 
     it('rejects nonexistent event (404)', async () => {
+      vi.resetModules()
+      const handler = (await import('../payments/create-checkout.post')).default
       seedTiers(testDb).run()
       const user = await createTestUser(testDb, { email: 'noevt@test.com', name: 'NoEvent' })
 
@@ -91,12 +96,14 @@ describe('Payments API', () => {
         body: { eventId: 99999, tierSlug: 'premium' },
       })
 
-      await expect(createCheckoutHandler(event)).rejects.toMatchObject({
+      await expect(handler(event)).rejects.toMatchObject({
         statusCode: 404,
       })
     })
 
     it('rejects invalid tier slug (400)', async () => {
+      vi.resetModules()
+      const handler = (await import('../payments/create-checkout.post')).default
       seedTiers(testDb).run()
       const user = await createTestUser(testDb, { email: 'badtier@test.com', name: 'BadTier' })
       const evt = createTestEvent(testDb, user!.id, { title: 'Bad Tier Wedding' })
@@ -106,7 +113,7 @@ describe('Payments API', () => {
         body: { eventId: evt!.id, tierSlug: 'nonexistent-tier' },
       })
 
-      await expect(createCheckoutHandler(event)).rejects.toMatchObject({
+      await expect(handler(event)).rejects.toMatchObject({
         statusCode: 400,
       })
     })
@@ -114,6 +121,8 @@ describe('Payments API', () => {
 
   describe('POST /api/payments/verify', () => {
     it('marks event as paid when Stripe confirms', async () => {
+      vi.resetModules()
+      const handler = (await import('../payments/verify.post')).default
       seedTiers(testDb).run()
       const user = await createTestUser(testDb, { email: 'verify@test.com', name: 'Verifier' })
       const evt = createTestEvent(testDb, user!.id, {
@@ -135,12 +144,11 @@ describe('Payments API', () => {
         body: { sessionId: 'cs_test_123', eventId: evt!.id },
       })
 
-      const result = await verifyHandler(event)
+      const result = await handler(event)
 
       expect(result).toEqual({ status: 'paid' })
       expect(mockSessionRetrieve).toHaveBeenCalledWith('cs_test_123')
 
-      // Verify DB was updated
       const { events } = await import('../../db/schema')
       const { eq } = await import('drizzle-orm')
       const updated = testDb.select().from(events).where(eq(events.id, evt!.id)).all()
@@ -149,6 +157,8 @@ describe('Payments API', () => {
     })
 
     it('returns existing paid status without calling Stripe', async () => {
+      vi.resetModules()
+      const handler = (await import('../payments/verify.post')).default
       const user = await createTestUser(testDb, { email: 'already@test.com', name: 'Already' })
       const evt = createTestEvent(testDb, user!.id, {
         title: 'Already Paid',
@@ -160,7 +170,7 @@ describe('Payments API', () => {
         body: { sessionId: 'cs_test_456', eventId: evt!.id },
       })
 
-      const result = await verifyHandler(event)
+      const result = await handler(event)
 
       expect(result).toEqual({ status: 'paid' })
       expect(mockSessionRetrieve).not.toHaveBeenCalled()
@@ -169,6 +179,8 @@ describe('Payments API', () => {
 
   describe('POST /api/payments/webhook', () => {
     it('processes checkout.session.completed event', async () => {
+      vi.resetModules()
+      const handler = (await import('../payments/webhook.post')).default
       seedTiers(testDb).run()
       const user = await createTestUser(testDb, { email: 'hook@test.com', name: 'Hooker' })
       const evt = createTestEvent(testDb, user!.id, {
@@ -193,9 +205,6 @@ describe('Payments API', () => {
 
       const rawBody = JSON.stringify(stripeEvent)
 
-      // Create a mock event with raw body for readRawBody.
-      // readRawBody checks event._requestBody first — set it to the raw string
-      // (not a parsed object) so it returns the raw body directly.
       const event = createMockEvent({
         method: 'POST',
         headers: {
@@ -205,7 +214,7 @@ describe('Payments API', () => {
       })
       ;(event as any)._requestBody = rawBody
 
-      const result = await webhookHandler(event)
+      const result = await handler(event)
 
       expect(result).toEqual({ received: true })
       expect(mockConstructEvent).toHaveBeenCalledWith(
@@ -214,7 +223,6 @@ describe('Payments API', () => {
         'whsec_test',
       )
 
-      // Verify DB was updated
       const { events } = await import('../../db/schema')
       const { eq } = await import('drizzle-orm')
       const updated = testDb.select().from(events).where(eq(events.id, evt!.id)).all()

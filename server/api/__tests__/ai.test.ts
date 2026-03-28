@@ -23,10 +23,6 @@ vi.mock('openai', () => ({
   }),
 }))
 
-vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({
-  OPENAI_API_KEY: 'sk-real-key',
-})))
-
 const generateWordingHandler = (await import('../ai/generate-wording.post')).default
 const recommendTemplatesHandler = (await import('../ai/recommend-templates.post')).default
 
@@ -46,13 +42,22 @@ afterEach(() => {
 })
 
 describe('AI API', () => {
+  const originalEnv = process.env
+
   beforeEach(async () => {
     testDb = createTestDb()
+    process.env = { ...originalEnv }
+  })
+
+  afterEach(() => {
+    process.env = originalEnv
   })
 
   describe('POST /api/ai/generate-wording', () => {
     it('returns 3 fallback variations when no OPENAI_API_KEY', async () => {
-      vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({ })))
+      delete process.env.OPENAI_API_KEY
+      vi.resetModules()
+      const handler = (await import('../ai/generate-wording.post')).default
       const user = await createTestUser(testDb, { email: 'ai@test.com' })
 
       const event = authEvent(user.id, user.email, {
@@ -66,7 +71,7 @@ describe('AI API', () => {
         },
       })
 
-      const result = await generateWordingHandler(event)
+      const result = await handler(event)
 
       expect(result.variations).toHaveLength(3)
       expect(result.variations[0]).toContain('Alice')
@@ -76,9 +81,9 @@ describe('AI API', () => {
     })
 
     it('calls OpenAI when key is configured', async () => {
-      vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({
-        OPENAI_API_KEY: 'sk-real-key',
-      })))
+      process.env.OPENAI_API_KEY = 'sk-real-key'
+      vi.resetModules()
+      const handler = (await import('../ai/generate-wording.post')).default
       const user = await createTestUser(testDb, { email: 'ai2@test.com' })
 
       mockCreate.mockResolvedValue({
@@ -108,7 +113,7 @@ describe('AI API', () => {
         },
       })
 
-      const result = await generateWordingHandler(event)
+      const result = await handler(event)
 
       expect(mockCreate).toHaveBeenCalledOnce()
       expect(result.variations).toHaveLength(3)
@@ -134,7 +139,9 @@ describe('AI API', () => {
 
   describe('POST /api/ai/recommend-templates', () => {
     it('returns fallback recommendations when no API key', async () => {
-      vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({ })))
+      delete process.env.OPENAI_API_KEY
+      vi.resetModules()
+      const handler = (await import('../ai/recommend-templates.post')).default
       seedTiers(testDb).run()
       seedTemplate(testDb, 1)
       seedTemplate(testDb, 2)
@@ -152,7 +159,7 @@ describe('AI API', () => {
         },
       })
 
-      const result = await recommendTemplatesHandler(event)
+      const result = await handler(event)
 
       expect(result.recommended).toBeDefined()
       expect(result.all).toBeDefined()

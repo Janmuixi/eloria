@@ -1,6 +1,5 @@
 export function resolveEnvVar(name: string, defaultValue: string): string
 export function resolveEnvVar(name: string, defaultValue?: string): string | undefined
 export function resolveEnvVar(name: string, defaultValue?: string): string | undefined {
-  const runtimeConfig = useRuntimeConfig()
-  return (runtimeConfig[name] as string) ?? process.env[name] ?? defaultValue
+  return process.env[name] ?? defaultValue
 }
