@@ -1,5 +1,6 @@
 import { requireAuth } from '~/server/utils/auth'
 import { db } from '~/server/db'
+import { resolveEnvVar } from '~/server/utils/resolve-env-var'
 
 export default defineEventHandler(async (event) => {
   await requireAuth(event)
@@ -10,7 +11,7 @@ export default defineEventHandler(async (event) => {
   })
 
   // If no OpenAI key, return all templates as-is
-  const apiKey = process.env.OPENAI_API_KEY
+  const apiKey = resolveEnvVar('OPENAI_API_KEY')
   if (!apiKey || apiKey.startsWith('sk-...')) {
     return { recommended: allTemplates.slice(0, 5), all: allTemplates }
   }
