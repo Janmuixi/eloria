@@ -22,7 +22,8 @@ export default defineEventHandler(async (event) => {
   const verificationUrl = `${baseUrl}/auth/verify?token=${token}`
 
   // Send via Resend if configured, otherwise log to console for development
-  if (process.env.RESEND_API_KEY) {
+  const resendApiKey = resolveEnvVar('RESEND_API_KEY')
+  if (resendApiKey) {
     await sendVerificationEmail({
       to: user.email,
       userName: user.name,
