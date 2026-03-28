@@ -74,3 +74,32 @@ export async function sendInvitationEmail(params: SendInvitationParams) {
     `,
   })
 }
+
+interface SendPasswordResetParams {
+  to: string
+  userName: string
+  resetUrl: string
+}
+
+export async function sendPasswordResetEmail(params: SendPasswordResetParams) {
+  const client = getResend()
+
+  return client.emails.send({
+    from: 'Eloria <noreply@muixisoftware.tech>',
+    to: params.to,
+    subject: 'Reset your password - Eloria',
+    html: `
+      <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; text-align: center; padding: 40px 20px;">
+        <h1 style="font-size: 24px; color: #333;">Reset Your Password</h1>
+        <p style="font-size: 16px; color: #666;">
+          Hi ${params.userName},<br><br>
+          We received a request to reset your password. Click the button below to create a new one.
+        </p>
+        <a href="${params.resetUrl}" style="display: inline-block; background: #314571; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; margin-top: 20px; font-size: 16px;">
+          Reset Password
+        </a>
+        <p style="font-size: 12px; color: #999; margin-top: 30px;">This link expires in 24 hours. If you didn't request this, you can safely ignore this email.</p>
+      </div>
+    `,
+  })
+}

@@ -17,7 +17,7 @@ vi.mock('resend', () => ({
 }))
 
 vi.mock('~/server/utils/email', () => ({
-  sendVerificationEmail: vi.fn().mockResolvedValue({ id: 'mock-email-id' }),
+  sendPasswordResetEmail: vi.fn().mockResolvedValue({ id: 'mock-email-id' }),
 }))
 
 const requestResetHandler = (await import('../auth/request-reset.post')).default

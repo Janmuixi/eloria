@@ -2,7 +2,7 @@ import { db } from '../../db'
 import { users } from '../../db/schema'
 import { eq } from 'drizzle-orm'
 import { generateResetToken } from '~/server/utils/reset-token'
-import { sendVerificationEmail } from '~/server/utils/email'
+import { sendPasswordResetEmail } from '~/server/utils/email'
 import { resolveEnvVar } from '~/server/utils/resolve-env-var'
 
 export default defineEventHandler(async (event) => {
@@ -41,10 +41,10 @@ export default defineEventHandler(async (event) => {
 
   const baseUrl = resolveEnvVar('BASE_URL', 'http://localhost:3000')
 
-  await sendVerificationEmail({
+  await sendPasswordResetEmail({
     to: user.email,
     userName: user.name || 'User',
-    verificationUrl: `${baseUrl}/reset-password?token=${token}`,
+    resetUrl: `${baseUrl}/auth/reset-password?token=${token}`,
   })
 
   return {
