@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
 const mockSend = vi.fn().mockResolvedValue({ id: 'mock-id' })
 
@@ -10,9 +10,15 @@ vi.mock('resend', () => ({
 
 describe('email utils', () => {
   beforeEach(() => {
+    vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({
+      RESEND_API_KEY: 're_test_key',
+    })))
     vi.resetModules()
     mockSend.mockClear()
-    process.env.RESEND_API_KEY = 're_test_key'
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
   })
 
   it('sendVerificationEmail calls Resend with correct params', async () => {
@@ -56,7 +62,8 @@ describe('email utils', () => {
   })
 
   it('throws when RESEND_API_KEY is not configured', async () => {
-    delete process.env.RESEND_API_KEY
+    vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({ })))
+    vi.resetModules()
 
     const { sendVerificationEmail } = await import('../email')
 
