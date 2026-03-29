@@ -1,4 +1,6 @@
 <script setup lang="ts">
+definePageMeta({ layout: 'blank' })
+
 const route = useRoute()
 const slug = route.params.slug as string
 const guestToken = computed(() => route.query.g as string | undefined)
@@ -23,7 +25,6 @@ const rsvpForm = reactive({
 })
 
 const rsvpSubmitting = ref(false)
-const rsvpSuccess = ref(false)
 const rsvpError = ref('')
 
 watch(guestData, (data) => {
@@ -48,7 +49,6 @@ async function submitRsvp() {
         plusOneName: rsvpForm.plusOneName,
       },
     })
-    rsvpSuccess.value = true
     await refreshGuest()
   } catch (e: any) {
     rsvpError.value = e.data?.statusMessage || 'Something went wrong'
@@ -149,15 +149,15 @@ useSeoMeta({
             <p class="text-charcoal-300">Please use the personal link sent to you to RSVP.</p>
           </div>
 
-          <!-- Success state -->
-          <div v-else-if="rsvpSuccess">
+          <!-- Already RSVP'd -->
+          <div v-else-if="guestData?.rsvpStatus && guestData.rsvpStatus !== 'pending'">
             <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span class="text-green-600 text-xl">&#10003;</span>
             </div>
             <p class="text-lg font-medium text-charcoal-900 mb-1">Thank you, {{ guestData?.name }}!</p>
             <p class="text-charcoal-300">
-              <template v-if="rsvpForm.rsvpStatus === 'confirmed'">We can't wait to celebrate with you!</template>
-              <template v-else-if="rsvpForm.rsvpStatus === 'declined'">We're sorry you can't make it.</template>
+              <template v-if="guestData.rsvpStatus === 'confirmed'">We can't wait to celebrate with you!</template>
+              <template v-else-if="guestData.rsvpStatus === 'declined'">We're sorry you can't make it.</template>
               <template v-else>We hope to see you there!</template>
             </p>
           </div>
