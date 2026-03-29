@@ -22,6 +22,7 @@ logs
 *.db
 *.db-wal
 *.db-shm
+*.sqlite
 
 # Local env files
 .env

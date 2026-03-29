@@ -14,6 +14,10 @@ import {
   setResponseStatus,
 } from 'h3'
 
+const mockRuntimeConfig: Record<string, string | undefined> = {}
+
+const useRuntimeConfig = () => mockRuntimeConfig
+
 const globals: Record<string, unknown> = {
   defineEventHandler,
   createError,
@@ -28,6 +32,7 @@ const globals: Record<string, unknown> = {
   getRequestHeaders,
   setResponseHeaders,
   setResponseStatus,
+  useRuntimeConfig,
 }
 
 for (const [name, fn] of Object.entries(globals)) {
