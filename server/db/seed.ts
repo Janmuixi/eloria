@@ -1,9 +1,8 @@
 import Database from 'better-sqlite3'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
 import { tiers } from './schema'
-import { resolveEnvVar } from '../utils/resolve-env-var'
 
-const dbUrl = resolveEnvVar('DATABASE_URL', 'file:./db/eloria.db')
+const dbUrl = process.env.DATABASE_URL || 'file:./db/eloria.db'
 const sqlite = new Database(dbUrl.replace('file:', '') || './db/eloria.db')
 const db = drizzle(sqlite)
 
