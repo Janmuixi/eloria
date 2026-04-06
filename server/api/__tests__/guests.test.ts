@@ -4,6 +4,7 @@ import {
   createTestUser,
   createTestEvent,
   createTestGuest,
+  seedTiers,
   type TestDb,
 } from '../../__helpers__/db'
 import { createMockEvent } from '../../__helpers__/event'
@@ -97,6 +98,78 @@ describe('Guests API', () => {
       await expect(addHandler(event)).rejects.toMatchObject({
         statusCode: 400,
       })
+    })
+
+    it('rejects adding a guest when tier guest limit is reached (403)', async () => {
+      seedTiers(testDb)
+      // Basic tier (id=1) has guestLimit=50
+      const limitedEvt = createTestEvent(testDb, user.id, { tierId: 1, paymentStatus: 'paid' })
+
+      // Add 50 guests to reach the limit
+      for (let i = 0; i < 50; i++) {
+        createTestGuest(testDb, limitedEvt.id, { name: `Guest ${i}` })
+      }
+
+      const event = authEvent(user.id, user.email, {
+        method: 'POST',
+        params: { id: String(limitedEvt.id) },
+        body: { name: 'One Too Many' },
+      })
+
+      await expect(addHandler(event)).rejects.toMatchObject({
+        statusCode: 403,
+        statusMessage: 'Guest limit reached for your plan (50)',
+      })
+    })
+
+    it('allows adding a guest when under tier guest limit', async () => {
+      seedTiers(testDb)
+      const limitedEvt = createTestEvent(testDb, user.id, { tierId: 1, paymentStatus: 'paid' })
+
+      // Add 49 guests — one under the limit
+      for (let i = 0; i < 49; i++) {
+        createTestGuest(testDb, limitedEvt.id, { name: `Guest ${i}` })
+      }
+
+      const event = authEvent(user.id, user.email, {
+        method: 'POST',
+        params: { id: String(limitedEvt.id) },
+        body: { name: 'Just Fits' },
+      })
+
+      const result = await addHandler(event)
+      expect(result.name).toBe('Just Fits')
+    })
+
+    it('allows unlimited guests when tier has no guest limit (Pro)', async () => {
+      seedTiers(testDb)
+      // Pro tier (id=3) has guestLimit=null
+      const proEvt = createTestEvent(testDb, user.id, { tierId: 3, paymentStatus: 'paid' })
+
+      for (let i = 0; i < 100; i++) {
+        createTestGuest(testDb, proEvt.id, { name: `Guest ${i}` })
+      }
+
+      const event = authEvent(user.id, user.email, {
+        method: 'POST',
+        params: { id: String(proEvt.id) },
+        body: { name: 'No Limit' },
+      })
+
+      const result = await addHandler(event)
+      expect(result.name).toBe('No Limit')
+    })
+
+    it('allows adding guests when event has no tier assigned', async () => {
+      // No tier assigned (tierId: null) — wizard flow before payment
+      const event = authEvent(user.id, user.email, {
+        method: 'POST',
+        params: { id: String(evt.id) },
+        body: { name: 'Pre-Payment Guest' },
+      })
+
+      const result = await addHandler(event)
+      expect(result.name).toBe('Pre-Payment Guest')
     })
   })
 
