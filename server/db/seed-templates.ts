@@ -525,11 +525,16 @@ async function seedTemplates() {
     console.error('Basic tier not found. Run db:seed first.')
     process.exit(1)
   }
-  const basicTierId = basicTier[0].id
+  const basicTierId = basicTier[0]?.id
+  if (!basicTierId) {
+    console.error('Basic tier not found. Run db:seed first.')
+    process.exit(1)
+  }
 
   await db.insert(templates).values([
     {
       name: 'Rustic Autumn',
+      slug: 'rustic-autumn',
       category: 'rustic',
       previewImageUrl: '/images/templates/rustic-autumn.jpg',
       htmlTemplate: rusticAutumnHtml,
@@ -554,6 +559,7 @@ async function seedTemplates() {
       previewImageUrl: '/images/templates/modern-minimal.jpg',
       htmlTemplate: modernMinimalHtml,
       cssTemplate: modernMinimalCss,
+      slug: 'modern-minimal',
       colorScheme: JSON.stringify({
         primary: '#314571',
         secondary: '#8ea3c3',
@@ -574,6 +580,7 @@ async function seedTemplates() {
       previewImageUrl: '/images/templates/classic-elegant.jpg',
       htmlTemplate: classicElegantHtml,
       cssTemplate: classicElegantCss,
+      slug: 'classic-elegant',
       colorScheme: JSON.stringify({
         primary: '#c9a84c',
         secondary: '#a89a80',

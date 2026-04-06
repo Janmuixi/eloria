@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { t } = useI18n()
 const props = defineProps<{
   htmlTemplate: string
   coupleName1: string
@@ -13,12 +14,12 @@ const iframeRef = ref<HTMLIFrameElement | null>(null)
 
 const renderedHtml = computed(() => {
   let html = props.htmlTemplate
-  html = html.replace(/\{\{coupleName1\}\}/g, props.coupleName1 || 'Partner 1')
-  html = html.replace(/\{\{coupleName2\}\}/g, props.coupleName2 || 'Partner 2')
-  html = html.replace(/\{\{date\}\}/g, props.date || 'Wedding Date')
-  html = html.replace(/\{\{venue\}\}/g, props.venue || 'Venue')
-  html = html.replace(/\{\{venueAddress\}\}/g, props.venueAddress || 'Address')
-  html = html.replace(/\{\{wording\}\}/g, props.wording || 'Your invitation wording will appear here.')
+  html = html.replace(/\{\{coupleName1\}\}/g, props.coupleName1 || t('templatePreview.partner1'))
+  html = html.replace(/\{\{coupleName2\}\}/g, props.coupleName2 || t('templatePreview.partner2'))
+  html = html.replace(/\{\{date\}\}/g, props.date || t('templatePreview.weddingDate'))
+  html = html.replace(/\{\{venue\}\}/g, props.venue || t('templatePreview.venue'))
+  html = html.replace(/\{\{venueAddress\}\}/g, props.venueAddress || t('templatePreview.address'))
+  html = html.replace(/\{\{wording\}\}/g, props.wording || t('templatePreview.wordingPlaceholder'))
   return html
 })
 
@@ -64,6 +65,6 @@ onMounted(() => {
     class="w-full border-0 rounded-lg"
     style="height: 600px; pointer-events: none;"
     sandbox="allow-same-origin"
-    title="Invitation preview"
+    :title="t('templatePreview.iframeTitle')"
   />
 </template>

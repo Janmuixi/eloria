@@ -1,6 +1,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'blank' })
 
+const { t, locale } = useI18n()
 const route = useRoute()
 const slug = route.params.slug as string
 const guestToken = computed(() => route.query.g as string | undefined)
@@ -9,7 +10,7 @@ const isPrint = computed(() => route.query.print === 'true')
 const { data: invitation, error } = await useFetch(`/api/invitations/${slug}`)
 
 if (error.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Invitation not found' })
+  throw createError({ statusCode: 404, statusMessage: t('errors.invitationNotFound') })
 }
 
 // RSVP form state
@@ -51,7 +52,7 @@ async function submitRsvp() {
     })
     await refreshGuest()
   } catch (e: any) {
-    rsvpError.value = e.data?.statusMessage || 'Something went wrong'
+    rsvpError.value = e.data?.statusMessage || t('errors.somethingWentWrong')
   } finally {
     rsvpSubmitting.value = false
   }
@@ -59,7 +60,7 @@ async function submitRsvp() {
 
 function formatDate(dateStr: string) {
   const date = new Date(dateStr + 'T12:00:00')
-  return date.toLocaleDateString('en-US', {
+  return date.toLocaleDateString(locale.value, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -69,16 +70,16 @@ function formatDate(dateStr: string) {
 
 useSeoMeta({
   title: () => invitation.value
-    ? `${invitation.value.coupleName1} & ${invitation.value.coupleName2}'s Wedding`
-    : 'Wedding Invitation',
+    ? t('seo.weddingInvitation', { name: `${invitation.value.coupleName1} & ${invitation.value.coupleName2}` })
+    : t('rsvp.weddingInvitation'),
   description: () => invitation.value
-    ? `You're invited to ${invitation.value.coupleName1} & ${invitation.value.coupleName2}'s wedding on ${formatDate(invitation.value.date)}.`
+    ? t('rsvp.youreInvited', { couple1: invitation.value.coupleName1, couple2: invitation.value.coupleName2, date: formatDate(invitation.value.date) })
     : '',
   ogTitle: () => invitation.value
-    ? `${invitation.value.coupleName1} & ${invitation.value.coupleName2}'s Wedding`
-    : 'Wedding Invitation',
+    ? t('seo.weddingInvitation', { name: `${invitation.value.coupleName1} & ${invitation.value.coupleName2}` })
+    : t('rsvp.weddingInvitation'),
   ogDescription: () => invitation.value
-    ? `Join us on ${formatDate(invitation.value.date)} at ${invitation.value.venue}`
+    ? t('rsvp.joinUs', { date: formatDate(invitation.value.date), venue: invitation.value.venue })
     : '',
   ogType: 'website',
 })
@@ -90,7 +91,7 @@ useSeoMeta({
 
       <!-- Hero -->
       <section class="text-center mb-16">
-        <p class="text-sm uppercase tracking-[0.3em] text-champagne-500 mb-6">Together with their families</p>
+        <p class="text-sm uppercase tracking-[0.3em] text-champagne-500 mb-6">{{ $t('rsvp.togetherWithFamilies') }}</p>
         <h1 class="font-serif text-5xl md:text-6xl text-charcoal-900 leading-tight mb-4">
           {{ invitation.coupleName1 }}
         </h1>
@@ -119,7 +120,7 @@ useSeoMeta({
 
       <!-- Venue -->
       <section class="text-center mb-16">
-        <h2 class="font-serif text-2xl text-charcoal-900 mb-4">Venue</h2>
+        <h2 class="font-serif text-2xl text-charcoal-900 mb-4">{{ $t('rsvp.venue') }}</h2>
         <p class="text-lg font-medium text-charcoal-700 mb-1">{{ invitation.venue }}</p>
         <p class="text-charcoal-300 mb-4">{{ invitation.venueAddress }}</p>
         <a
@@ -135,18 +136,18 @@ useSeoMeta({
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
-          View on Map
+          {{ $t('rsvp.viewOnMap') }}
         </a>
       </section>
 
       <!-- RSVP Section -->
       <section v-if="!isPrint" class="mb-16">
         <div class="bg-white rounded-2xl shadow-sm border border-charcoal-100 p-8 text-center">
-          <h2 class="font-serif text-2xl text-charcoal-900 mb-6">RSVP</h2>
+          <h2 class="font-serif text-2xl text-charcoal-900 mb-6">{{ $t('rsvp.title') }}</h2>
 
           <!-- No token -->
           <div v-if="!guestToken">
-            <p class="text-charcoal-300">Please use the personal link sent to you to RSVP.</p>
+            <p class="text-charcoal-300">{{ $t('rsvp.usePersonalLink') }}</p>
           </div>
 
           <!-- Already RSVP'd -->
@@ -154,18 +155,18 @@ useSeoMeta({
             <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span class="text-green-600 text-xl">&#10003;</span>
             </div>
-            <p class="text-lg font-medium text-charcoal-900 mb-1">Thank you, {{ guestData?.name }}!</p>
+            <p class="text-lg font-medium text-charcoal-900 mb-1">{{ $t('rsvp.thankYou', { name: guestData?.name }) }}</p>
             <p class="text-charcoal-300">
-              <template v-if="guestData.rsvpStatus === 'confirmed'">We can't wait to celebrate with you!</template>
-              <template v-else-if="guestData.rsvpStatus === 'declined'">We're sorry you can't make it.</template>
-              <template v-else>We hope to see you there!</template>
+              <template v-if="guestData.rsvpStatus === 'confirmed'">{{ $t('rsvp.cantWait') }}</template>
+              <template v-else-if="guestData.rsvpStatus === 'declined'">{{ $t('rsvp.sorryMissYou') }}</template>
+              <template v-else>{{ $t('rsvp.hopeToSee') }}</template>
             </p>
           </div>
 
           <!-- RSVP Form -->
           <div v-else-if="guestData">
             <p class="text-charcoal-500 mb-6">
-              Dear <span class="font-medium">{{ guestData.name }}</span>, please let us know if you'll be joining us.
+              {{ $t('rsvp.dearGuest', { name: guestData.name }) }}
             </p>
 
             <div v-if="rsvpError" class="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg">{{ rsvpError }}</div>
@@ -174,17 +175,17 @@ useSeoMeta({
               <label class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors"
                 :class="rsvpForm.rsvpStatus === 'confirmed' ? 'border-green-300 bg-green-50' : 'border-charcoal-100 hover:bg-ivory-50'">
                 <input type="radio" v-model="rsvpForm.rsvpStatus" value="confirmed" class="text-green-600" />
-                <span class="text-sm font-medium">Joyfully Accept</span>
+                <span class="text-sm font-medium">{{ $t('rsvp.accept') }}</span>
               </label>
               <label class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors"
                 :class="rsvpForm.rsvpStatus === 'declined' ? 'border-red-300 bg-red-50' : 'border-charcoal-100 hover:bg-ivory-50'">
                 <input type="radio" v-model="rsvpForm.rsvpStatus" value="declined" class="text-red-600" />
-                <span class="text-sm font-medium">Respectfully Decline</span>
+                <span class="text-sm font-medium">{{ $t('rsvp.decline') }}</span>
               </label>
               <label class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors"
                 :class="rsvpForm.rsvpStatus === 'maybe' ? 'border-yellow-300 bg-yellow-50' : 'border-charcoal-100 hover:bg-ivory-50'">
                 <input type="radio" v-model="rsvpForm.rsvpStatus" value="maybe" class="text-yellow-600" />
-                <span class="text-sm font-medium">Maybe</span>
+                <span class="text-sm font-medium">{{ $t('rsvp.maybe') }}</span>
               </label>
             </div>
 
@@ -192,13 +193,13 @@ useSeoMeta({
             <div v-if="rsvpForm.rsvpStatus === 'confirmed'" class="mb-6 text-left">
               <label class="flex items-center gap-3 mb-3 cursor-pointer">
                 <input type="checkbox" v-model="rsvpForm.plusOne" class="rounded text-champagne-600" />
-                <span class="text-sm font-medium text-charcoal-500">I'll be bringing a plus one</span>
+                <span class="text-sm font-medium text-charcoal-500">{{ $t('rsvp.plusOne') }}</span>
               </label>
               <input
                 v-if="rsvpForm.plusOne"
                 v-model="rsvpForm.plusOneName"
                 type="text"
-                placeholder="Plus one's name"
+                :placeholder="$t('rsvp.plusOneName')"
                 class="w-full px-3 py-2 border border-charcoal-200 rounded-lg text-sm focus:ring-2 focus:ring-champagne-500 focus:border-champagne-500"
               />
             </div>
@@ -208,20 +209,20 @@ useSeoMeta({
               :disabled="!rsvpForm.rsvpStatus || rsvpSubmitting"
               class="w-full bg-champagne-600 text-white py-3 rounded-lg font-medium hover:bg-champagne-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {{ rsvpSubmitting ? 'Submitting...' : 'Submit RSVP' }}
+              {{ rsvpSubmitting ? $t('rsvp.submitting') : $t('rsvp.submit') }}
             </button>
           </div>
 
           <!-- Loading -->
           <div v-else>
-            <p class="text-charcoal-200">Loading...</p>
+            <p class="text-charcoal-200">{{ $t('common.loading') }}</p>
           </div>
         </div>
       </section>
 
       <!-- Footer -->
       <footer v-if="!isPrint && !invitation.removeBranding" class="text-center pt-8 border-t border-charcoal-100">
-        <p class="text-xs text-charcoal-200">Powered by <span class="font-medium">Eloria</span></p>
+        <p class="text-xs text-charcoal-200">{{ $t('rsvp.poweredBy') }}</p>
       </footer>
     </div>
   </div>

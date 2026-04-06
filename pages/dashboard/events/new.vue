@@ -2,6 +2,7 @@
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const route = useRoute()
+const { t } = useI18n()
 
 // ─── Wizard state ──────────────────────────────────────────────────────────
 const currentStep = ref(parseInt(route.query.step as string) || 1)
@@ -33,7 +34,7 @@ async function submitDetails() {
     eventId.value = data.id
     currentStep.value = 2
   } catch (e: any) {
-    error.value = e.data?.statusMessage || 'Failed to create event'
+    error.value = e.data?.statusMessage || t('errors.failedToCreateEvent')
   } finally {
     submitting.value = false
   }
@@ -64,7 +65,7 @@ async function loadTemplates() {
     allTemplates.value = data.all
     templatesLoaded.value = true
   } catch (e: any) {
-    error.value = e.data?.statusMessage || 'Failed to load templates'
+    error.value = e.data?.statusMessage || t('errors.failedToLoadTemplates')
   } finally {
     loadingTemplates.value = false
   }
@@ -88,7 +89,7 @@ async function confirmTemplate() {
     })
     currentStep.value = 3
   } catch (e: any) {
-    error.value = e.data?.statusMessage || 'Failed to save template'
+    error.value = e.data?.statusMessage || t('errors.failedToSaveTemplate')
   } finally {
     submitting.value = false
   }
@@ -122,7 +123,7 @@ async function generateWording() {
     })
     wordingVariations.value = data.variations
   } catch (e: any) {
-    error.value = e.data?.statusMessage || 'Failed to generate wording'
+    error.value = e.data?.statusMessage || t('errors.failedToGenerateWording')
   } finally {
     loadingWording.value = false
   }
@@ -148,7 +149,7 @@ async function saveCustomization() {
     })
     currentStep.value = 4
   } catch (e: any) {
-    error.value = e.data?.statusMessage || 'Failed to save customization'
+    error.value = e.data?.statusMessage || t('errors.failedToSaveCustomization')
   } finally {
     submitting.value = false
   }
@@ -170,7 +171,7 @@ async function loadTiers() {
   try {
     tiersList.value = await $fetch<any[]>('/api/tiers')
   } catch (e: any) {
-    error.value = e.data?.statusMessage || 'Failed to load tiers'
+    error.value = e.data?.statusMessage || t('errors.failedToLoadTiers')
   } finally {
     loadingTiers.value = false
   }
@@ -202,7 +203,7 @@ async function payAndPublish() {
       window.location.href = data.url
     }
   } catch (e: any) {
-    error.value = e.data?.statusMessage || 'Failed to start payment. Stripe may not be configured.'
+    error.value = e.data?.statusMessage || t('errors.failedToStartPayment')
     processingPayment.value = false
   }
 }
@@ -222,7 +223,7 @@ function getCategoryClass(category: string) {
   return categoryColors[category?.toLowerCase()] || 'bg-charcoal-100 text-charcoal-800'
 }
 
-const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
+const stepLabels = computed(() => [t('eventForm.stepDetails'), t('eventForm.stepTemplate'), t('eventForm.stepCustomize'), t('eventForm.stepPreview'), t('eventForm.stepPayment')])
 </script>
 
 <template>
@@ -246,67 +247,67 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
     <!-- Global error -->
     <div v-if="error" class="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4">
       {{ error }}
-      <button @click="error = ''" class="ml-2 underline text-sm text-red-600">dismiss</button>
+      <button @click="error = ''" class="ml-2 underline text-sm text-red-600">{{ $t('common.dismiss') }}</button>
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <!-- Step 1: Event Details                                             -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <div v-if="currentStep === 1" class="max-w-2xl mx-auto">
-      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-6">Event Details</h1>
+      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-6">{{ $t('eventForm.title') }}</h1>
       <form @submit.prevent="submitDetails" class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-charcoal-700 mb-1">Event Title (for your dashboard)</label>
-          <input v-model="form.title" type="text" required placeholder="Our Wedding"
+          <label class="block text-sm font-medium text-charcoal-700 mb-1">{{ $t('eventForm.eventTitle') }}</label>
+          <input v-model="form.title" type="text" required :placeholder="$t('eventForm.eventTitlePlaceholder')"
             class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-charcoal-700 mb-1">Partner 1 Name</label>
-            <input v-model="form.coupleName1" type="text" required placeholder="Maria"
+            <label class="block text-sm font-medium text-charcoal-700 mb-1">{{ $t('eventForm.partner1Name') }}</label>
+            <input v-model="form.coupleName1" type="text" required :placeholder="$t('eventForm.partner1Placeholder')"
               class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-charcoal-700 mb-1">Partner 2 Name</label>
-            <input v-model="form.coupleName2" type="text" required placeholder="James"
+            <label class="block text-sm font-medium text-charcoal-700 mb-1">{{ $t('eventForm.partner2Name') }}</label>
+            <input v-model="form.coupleName2" type="text" required :placeholder="$t('eventForm.partner2Placeholder')"
               class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
           </div>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-charcoal-700 mb-1">Wedding Date</label>
+          <label class="block text-sm font-medium text-charcoal-700 mb-1">{{ $t('eventForm.weddingDate') }}</label>
           <input v-model="form.date" type="date" required
             class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-charcoal-700 mb-1">Venue Name</label>
-          <input v-model="form.venue" type="text" required placeholder="The Grand Ballroom"
+          <label class="block text-sm font-medium text-charcoal-700 mb-1">{{ $t('eventForm.venueName') }}</label>
+          <input v-model="form.venue" type="text" required :placeholder="$t('eventForm.venuePlaceholder')"
             class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-charcoal-700 mb-1">Venue Address</label>
-          <input v-model="form.venueAddress" type="text" required placeholder="123 Wedding Lane, City"
+          <label class="block text-sm font-medium text-charcoal-700 mb-1">{{ $t('eventForm.venueAddress') }}</label>
+          <input v-model="form.venueAddress" type="text" required :placeholder="$t('eventForm.venueAddressPlaceholder')"
             class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-charcoal-700 mb-1">Map Link (optional)</label>
-          <input v-model="form.venueMapUrl" type="url" placeholder="https://maps.google.com/..."
+          <label class="block text-sm font-medium text-charcoal-700 mb-1">{{ $t('eventForm.mapLink') }}</label>
+          <input v-model="form.venueMapUrl" type="url" :placeholder="$t('eventForm.mapLinkPlaceholder')"
             class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-charcoal-700 mb-1">Additional Details (optional)</label>
-          <textarea v-model="form.description" rows="3" placeholder="Any additional information for your guests..."
+          <label class="block text-sm font-medium text-charcoal-700 mb-1">{{ $t('eventForm.additionalDetails') }}</label>
+          <textarea v-model="form.description" rows="3" :placeholder="$t('eventForm.additionalDetailsPlaceholder')"
             class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
         </div>
 
         <button type="submit" :disabled="submitting"
           class="w-full bg-champagne-500 text-white rounded-full py-2.5 font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
-          {{ submitting ? 'Creating...' : 'Continue to Template Selection' }}
+          {{ submitting ? $t('eventForm.creating') : $t('eventForm.continueToTemplate') }}
         </button>
       </form>
     </div>
@@ -315,30 +316,30 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
     <!-- Step 2: Template Selection                                        -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <div v-else-if="currentStep === 2">
-      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">Choose a Template</h1>
-      <p class="text-charcoal-500 mb-6">Select a design for your wedding invitation</p>
+      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">{{ $t('templateSelection.title') }}</h1>
+      <p class="text-charcoal-500 mb-6">{{ $t('templateSelection.subtitle') }}</p>
 
       <!-- Style description + AI button -->
       <div class="flex gap-3 mb-6">
         <input v-model="styleDescription" type="text"
-          placeholder="Describe your wedding style (e.g., rustic barn wedding, autumn colors)"
+          :placeholder="$t('templateSelection.stylePlaceholder')"
           class="flex-1 border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
         <button @click="loadTemplates" :disabled="loadingTemplates"
           class="bg-champagne-500 text-white px-4 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50 whitespace-nowrap">
-          {{ loadingTemplates ? 'Loading...' : 'Refresh Recommendations' }}
+          {{ loadingTemplates ? $t('common.loading') : $t('templateSelection.refreshRecommendations') }}
         </button>
       </div>
 
       <!-- Loading state -->
       <div v-if="loadingTemplates" class="text-center py-12">
         <div class="inline-block w-8 h-8 border-4 border-champagne-200 border-t-champagne-500 rounded-full animate-spin" />
-        <p class="text-charcoal-500 mt-3">Finding the perfect templates...</p>
+        <p class="text-charcoal-500 mt-3">{{ $t('templateSelection.loadingTemplates') }}</p>
       </div>
 
       <template v-else-if="templatesLoaded">
         <!-- Recommended templates -->
         <div v-if="recommendedTemplates.length > 0" class="mb-8">
-          <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-3">Recommended for You</h2>
+          <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-3">{{ $t('templateSelection.recommendedForYou') }}</h2>
           <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
             <button v-for="tpl in recommendedTemplates" :key="'rec-' + tpl.id"
               @click="selectTemplate(tpl.id)"
@@ -366,9 +367,9 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
 
         <!-- All templates -->
         <div>
-          <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-3">All Templates</h2>
+          <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-3">{{ $t('templateSelection.allTemplates') }}</h2>
           <div v-if="allTemplates.length === 0" class="text-center py-8 text-charcoal-500">
-            No templates available yet. Seed the database to add templates.
+            {{ $t('templateSelection.noTemplates') }}
           </div>
           <div v-else class="grid grid-cols-2 md:grid-cols-3 gap-4">
             <button v-for="tpl in allTemplates" :key="'all-' + tpl.id"
@@ -399,11 +400,11 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
       <!-- Navigation -->
       <div class="flex justify-between mt-8">
         <button @click="currentStep = 1" class="text-charcoal-700 hover:text-charcoal-900 font-medium">
-          &larr; Back
+          &larr; {{ $t('common.back') }}
         </button>
         <button @click="confirmTemplate" :disabled="!selectedTemplateId || submitting"
           class="bg-champagne-500 text-white px-6 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
-          {{ submitting ? 'Saving...' : 'Continue to Customization' }}
+          {{ submitting ? $t('templateSelection.saving') : $t('templateSelection.continueToCustomization') }}
         </button>
       </div>
     </div>
@@ -412,39 +413,39 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
     <!-- Step 3: Customization                                             -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <div v-else-if="currentStep === 3">
-      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">Customize Your Invitation</h1>
-      <p class="text-charcoal-500 mb-6">Personalize the wording and style</p>
+      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">{{ $t('customization.title') }}</h1>
+      <p class="text-charcoal-500 mb-6">{{ $t('customization.subtitle') }}</p>
 
       <div class="grid md:grid-cols-2 gap-8">
         <!-- Left: Form -->
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-charcoal-700 mb-1">Invitation Wording</label>
+            <label class="block text-sm font-medium text-charcoal-700 mb-1">{{ $t('customization.invitationWording') }}</label>
             <textarea v-model="wording" rows="5"
-              placeholder="Write your invitation text or use AI to generate it..."
+              :placeholder="$t('customization.wordingPlaceholder')"
               class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
           </div>
 
           <!-- AI Wording Generator -->
           <div class="border border-charcoal-200 rounded-lg p-4 bg-ivory-100">
-            <p class="text-sm font-medium text-charcoal-700 mb-2">Generate with AI</p>
+            <p class="text-sm font-medium text-charcoal-700 mb-2">{{ $t('customization.generateWithAi') }}</p>
             <div class="flex gap-2 mb-3">
               <select v-model="wordingTone"
                 class="border border-charcoal-200 rounded-lg px-4 py-2.5 text-sm text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none">
-                <option value="formal">Formal</option>
-                <option value="casual">Casual</option>
-                <option value="poetic">Poetic</option>
-                <option value="funny">Funny</option>
+                <option value="formal">{{ $t('customization.tones.formal') }}</option>
+                <option value="casual">{{ $t('customization.tones.casual') }}</option>
+                <option value="poetic">{{ $t('customization.tones.poetic') }}</option>
+                <option value="funny">{{ $t('customization.tones.funny') }}</option>
               </select>
               <button @click="generateWording" :disabled="loadingWording"
                 class="bg-champagne-500 text-white px-4 py-2.5 rounded-full text-sm font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
-                {{ loadingWording ? 'Generating...' : 'Generate Wording' }}
+                {{ loadingWording ? $t('customization.generatingWording') : $t('customization.generateWording') }}
               </button>
             </div>
 
             <!-- Variations -->
             <div v-if="wordingVariations.length > 0" class="space-y-2">
-              <p class="text-xs text-charcoal-500 mb-1">Click to use:</p>
+              <p class="text-xs text-charcoal-500 mb-1">{{ $t('customization.clickToUse') }}</p>
               <button v-for="(variation, idx) in wordingVariations" :key="idx"
                 @click="pickWording(variation)"
                 class="block w-full text-left text-sm p-3 bg-white border border-charcoal-200 rounded-lg hover:border-champagne-400 hover:bg-champagne-100 transition-colors">
@@ -456,7 +457,7 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
 
         <!-- Right: Live Preview -->
         <div>
-          <p class="text-sm font-medium mb-2 text-charcoal-500">Live Preview</p>
+          <p class="text-sm font-medium mb-2 text-charcoal-500">{{ $t('customization.livePreview') }}</p>
           <div v-if="selectedTemplate?.htmlTemplate" class="border border-champagne-400 rounded-lg overflow-hidden shadow-sm">
             <InvitationTemplatePreview
               :html-template="selectedTemplate.htmlTemplate"
@@ -469,10 +470,10 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
             />
           </div>
           <div v-else class="border border-charcoal-200 rounded-lg p-8 bg-white text-center shadow-sm">
-            <p class="text-charcoal-300 italic">Select a template to see the preview</p>
+            <p class="text-charcoal-300 italic">{{ $t('customization.selectTemplateForPreview') }}</p>
           </div>
           <p v-if="selectedTemplate" class="text-xs text-charcoal-500 mt-2 text-center">
-            Template: {{ selectedTemplate.name }}
+            {{ $t('customization.templateLabel', { name: selectedTemplate.name }) }}
           </p>
         </div>
       </div>
@@ -480,11 +481,11 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
       <!-- Navigation -->
       <div class="flex justify-between mt-8">
         <button @click="currentStep = 2" class="text-charcoal-700 hover:text-charcoal-900 font-medium">
-          &larr; Back
+          &larr; {{ $t('common.back') }}
         </button>
         <button @click="saveCustomization" :disabled="submitting"
           class="bg-champagne-500 text-white px-6 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
-          {{ submitting ? 'Saving...' : 'Continue to Preview' }}
+          {{ submitting ? $t('customization.saving') : $t('customization.continueToPreview') }}
         </button>
       </div>
     </div>
@@ -493,8 +494,8 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
     <!-- Step 4: Preview                                                   -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <div v-else-if="currentStep === 4">
-      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">Preview Your Invitation</h1>
-      <p class="text-charcoal-500 mb-6">Review how your invitation will look to guests</p>
+      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">{{ $t('preview.title') }}</h1>
+      <p class="text-charcoal-500 mb-6">{{ $t('preview.subtitle') }}</p>
 
       <div class="max-w-2xl mx-auto">
         <div v-if="selectedTemplate?.htmlTemplate" class="border border-champagne-400 rounded-2xl overflow-hidden shadow-lg">
@@ -509,22 +510,22 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
           />
         </div>
         <div v-else class="border border-charcoal-200 rounded-2xl p-10 bg-white text-center shadow-lg">
-          <p class="text-charcoal-300 italic">No template selected</p>
+          <p class="text-charcoal-300 italic">{{ $t('preview.noTemplate') }}</p>
         </div>
 
         <p v-if="selectedTemplate" class="text-sm text-charcoal-500 mt-4 text-center">
-          Using template: {{ selectedTemplate.name }} ({{ selectedTemplate.category }})
+          {{ $t('preview.usingTemplate', { name: selectedTemplate.name, category: selectedTemplate.category }) }}
         </p>
       </div>
 
       <!-- Navigation -->
       <div class="flex justify-between mt-8">
         <button @click="currentStep = 3" class="text-charcoal-700 hover:text-charcoal-900 font-medium">
-          &larr; Back to Customize
+          &larr; {{ $t('preview.backToCustomize') }}
         </button>
         <button @click="confirmPreview"
           class="bg-champagne-500 text-white px-6 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200">
-          Looks Good, Continue
+          {{ $t('preview.looksGood') }}
         </button>
       </div>
     </div>
@@ -533,13 +534,13 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
     <!-- Step 5: Tier Selection & Payment                                  -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <div v-else-if="currentStep === 5">
-      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">Choose Your Plan</h1>
-      <p class="text-charcoal-500 mb-6">Select a tier and publish your invitation</p>
+      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">{{ $t('payment.title') }}</h1>
+      <p class="text-charcoal-500 mb-6">{{ $t('payment.subtitle') }}</p>
 
       <!-- Loading state -->
       <div v-if="loadingTiers" class="text-center py-12">
         <div class="inline-block w-8 h-8 border-4 border-champagne-200 border-t-champagne-500 rounded-full animate-spin" />
-        <p class="text-charcoal-500 mt-3">Loading plans...</p>
+        <p class="text-charcoal-500 mt-3">{{ $t('payment.loadingPlans') }}</p>
       </div>
 
       <div v-else class="grid md:grid-cols-3 gap-6">
@@ -554,23 +555,23 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
           <ul class="space-y-2 text-sm text-charcoal-600">
             <li class="flex items-center gap-2">
               <span :class="tier.guestLimit ? 'text-charcoal-400' : 'text-champagne-500'">
-                {{ tier.guestLimit ? `Up to ${tier.guestLimit} guests` : 'Unlimited guests' }}
+                {{ tier.guestLimit ? $t('payment.upToGuests', { count: tier.guestLimit }) : $t('payment.unlimitedGuests') }}
               </span>
             </li>
             <li v-if="tier.hasEmailDelivery" class="flex items-center gap-2">
-              <span class="text-champagne-500">&#10003;</span> Email delivery
+              <span class="text-champagne-500">&#10003;</span> {{ $t('payment.emailDelivery') }}
             </li>
             <li v-if="tier.hasPdfExport" class="flex items-center gap-2">
-              <span class="text-champagne-500">&#10003;</span> PDF export
+              <span class="text-champagne-500">&#10003;</span> {{ $t('payment.pdfExport') }}
             </li>
             <li v-if="tier.hasAiTextGeneration" class="flex items-center gap-2">
-              <span class="text-champagne-500">&#10003;</span> AI text generation
+              <span class="text-champagne-500">&#10003;</span> {{ $t('payment.aiTextGeneration') }}
             </li>
             <li v-if="tier.removeBranding" class="flex items-center gap-2">
-              <span class="text-champagne-500">&#10003;</span> Remove branding
+              <span class="text-champagne-500">&#10003;</span> {{ $t('payment.removeBranding') }}
             </li>
             <li v-if="tier.hasMultipleVariants" class="flex items-center gap-2">
-              <span class="text-champagne-500">&#10003;</span> Multiple variants
+              <span class="text-champagne-500">&#10003;</span> {{ $t('payment.multipleVariants') }}
             </li>
           </ul>
         </button>
@@ -579,11 +580,11 @@ const stepLabels = ['Details', 'Template', 'Customize', 'Preview', 'Payment']
       <!-- Navigation -->
       <div class="flex justify-between mt-8">
         <button @click="currentStep = 4" class="text-charcoal-700 hover:text-charcoal-900 font-medium">
-          &larr; Back
+          &larr; {{ $t('common.back') }}
         </button>
         <button @click="payAndPublish" :disabled="!selectedTierSlug || processingPayment"
           class="bg-champagne-500 text-white px-6 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
-          {{ processingPayment ? 'Redirecting to payment...' : 'Pay &amp; Publish' }}
+          {{ processingPayment ? $t('payment.redirecting') : $t('payment.payAndPublish') }}
         </button>
       </div>
     </div>

@@ -1,7 +1,9 @@
 <script setup lang="ts">
+const { t } = useI18n()
+
 useSeoMeta({
-  title: 'Wedding Invitation Templates - Eloria',
-  description: 'Browse our collection of beautiful wedding invitation templates. Rustic, modern, elegant, and more.',
+  title: t('templates.seoTitle'),
+  description: t('templates.seoDescription'),
 })
 
 const categories = ['All', 'rustic', 'modern', 'elegant', 'minimal', 'classic'] as const
@@ -57,9 +59,9 @@ function onImageError(templateId: number) {
   <div class="py-20">
     <div class="max-w-6xl mx-auto px-6">
       <div class="text-center mb-12">
-        <h1 class="font-display font-semibold text-4xl text-charcoal-900 mb-4">Invitation Templates</h1>
+        <h1 class="font-display font-semibold text-4xl text-charcoal-900 mb-4">{{ $t('templates.title') }}</h1>
         <p class="text-lg text-charcoal-500 max-w-2xl mx-auto">
-          Browse our collection of professionally designed wedding invitation templates. Find the perfect match for your style.
+          {{ $t('templates.subtitle') }}
         </p>
       </div>
 
@@ -74,7 +76,7 @@ function onImageError(templateId: number) {
             ? 'bg-champagne-500 text-white rounded-full'
             : 'bg-charcoal-100 text-charcoal-500 rounded-full hover:bg-charcoal-200'"
         >
-          {{ cat === 'All' ? 'All' : cat.charAt(0).toUpperCase() + cat.slice(1) }}
+          {{ cat === 'All' ? $t('templates.all') : cat.charAt(0).toUpperCase() + cat.slice(1) }}
         </button>
       </div>
 
@@ -119,7 +121,7 @@ function onImageError(templateId: number) {
                 v-if="!isBasicTier(template)"
                 class="text-xs font-medium px-2 py-0.5 rounded-full bg-champagne-100 text-champagne-600"
               >
-                Premium
+                {{ $t('common.premium') }}
               </span>
             </div>
             <h3 class="font-display font-semibold text-charcoal-900">{{ template.name }}</h3>
@@ -134,8 +136,8 @@ function onImageError(templateId: number) {
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
         </div>
-        <h2 class="text-xl font-semibold text-charcoal-900 mb-2">Templates coming soon!</h2>
-        <p class="text-charcoal-500">We're designing beautiful invitations for you. Check back soon.</p>
+        <h2 class="text-xl font-semibold text-charcoal-900 mb-2">{{ $t('templates.comingSoonTitle') }}</h2>
+        <p class="text-charcoal-500">{{ $t('templates.comingSoonDescription') }}</p>
       </div>
     </div>
   </div>

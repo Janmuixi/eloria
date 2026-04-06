@@ -16,6 +16,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@nuxtjs/i18n": "^10.2.4",
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^12.8.0",
     "drizzle-orm": "^0.45.1",

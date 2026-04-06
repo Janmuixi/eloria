@@ -1,26 +1,27 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
+const { t } = useI18n()
 const { data: events, status } = await useFetch('/api/events')
 </script>
 
 <template>
   <div>
     <div class="flex items-center justify-between mb-6">
-      <h1 class="font-display font-bold text-2xl text-charcoal-900">My Events</h1>
+      <h1 class="font-display font-bold text-2xl text-charcoal-900">{{ $t('dashboard.myEvents') }}</h1>
       <NuxtLink to="/dashboard/events/new"
         class="bg-champagne-500 text-white rounded-full px-5 py-2 font-medium hover:bg-champagne-600 transition-all duration-200">
-        Create New Event
+        {{ $t('dashboard.createNewEvent') }}
       </NuxtLink>
     </div>
 
     <UiLoadingSpinner v-if="status === 'pending'" />
 
     <div v-else-if="!events?.length" class="text-center py-12">
-      <p class="text-charcoal-500 mb-4">You haven't created any events yet.</p>
+      <p class="text-charcoal-500 mb-4">{{ $t('dashboard.noEvents') }}</p>
       <NuxtLink to="/dashboard/events/new"
         class="bg-champagne-500 text-white rounded-full px-5 py-2 font-medium hover:bg-champagne-600 transition-all duration-200">
-        Create Your First Event
+        {{ $t('dashboard.createFirstEvent') }}
       </NuxtLink>
     </div>
 
@@ -36,11 +37,11 @@ const { data: events, status } = await useFetch('/api/events')
             'rounded-full px-3 py-1 text-xs font-medium',
             evt.paymentStatus === 'paid' ? 'bg-champagne-500 text-white' : 'bg-charcoal-100 text-charcoal-500'
           ]">
-            {{ evt.paymentStatus === 'paid' ? 'Active' : 'Pending Payment' }}
+            {{ evt.paymentStatus === 'paid' ? $t('common.active') : $t('common.pendingPayment') }}
           </span>
           <NuxtLink :to="`/dashboard/events/${evt.id}`"
             class="text-charcoal-700 hover:text-charcoal-900 font-medium hover:underline">
-            Manage
+            {{ $t('common.manage') }}
           </NuxtLink>
         </div>
       </div>

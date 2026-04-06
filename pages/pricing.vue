@@ -1,18 +1,20 @@
 <script setup lang="ts">
+const { t } = useI18n()
+
 useSeoMeta({
-  title: 'Pricing - Eloria',
-  description: 'Simple per-event pricing for your wedding invitations. Choose from Basic, Premium, or Pro plans.',
+  title: t('pricing.seoTitle'),
+  description: t('pricing.seoDescription'),
 })
 
 const { data: tiers } = await useFetch('/api/tiers')
 
 function formatPrice(cents: number): string {
-  if (cents === 0) return 'Free'
+  if (cents === 0) return t('common.free')
   return `$${(cents / 100).toFixed(cents % 100 === 0 ? 0 : 2)}`
 }
 
 function formatGuestLimit(limit: number | null): string {
-  return limit ? `${limit} guests` : 'Unlimited guests'
+  return limit ? t('pricing.guests', { count: limit }) : t('pricing.unlimitedGuests')
 }
 
 function isPremium(slug: string): boolean {
@@ -39,9 +41,9 @@ interface Tier {
   <div class="py-20">
     <div class="max-w-6xl mx-auto px-6">
       <div class="text-center mb-16">
-        <h1 class="font-display font-semibold text-4xl text-charcoal-900 mb-4">Simple, transparent pricing</h1>
+        <h1 class="font-display font-semibold text-4xl text-charcoal-900 mb-4">{{ $t('pricing.title') }}</h1>
         <p class="text-lg text-charcoal-500 max-w-2xl mx-auto">
-          Choose the plan that fits your wedding. Start free and upgrade anytime.
+          {{ $t('pricing.subtitle') }}
         </p>
       </div>
 
@@ -57,14 +59,14 @@ interface Tier {
             v-if="isPremium(tier.slug)"
             class="absolute -top-3 left-1/2 -translate-x-1/2 bg-champagne-500 text-white rounded-full text-xs font-semibold px-3 py-1"
           >
-            Most Popular
+            {{ $t('pricing.mostPopular') }}
           </div>
 
           <div class="mb-6">
             <h2 class="text-xl font-semibold text-charcoal-900">{{ tier.name }}</h2>
             <div class="mt-2">
               <span class="font-display font-bold text-4xl text-charcoal-900">{{ formatPrice(tier.price) }}</span>
-              <span v-if="tier.price > 0" class="text-charcoal-500 text-sm ml-1">one-time</span>
+              <span v-if="tier.price > 0" class="text-charcoal-500 text-sm ml-1">{{ $t('common.oneTime') }}</span>
             </div>
           </div>
 
@@ -83,7 +85,7 @@ interface Tier {
               <svg v-else class="w-5 h-5 text-charcoal-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              <span :class="tier.hasEmailDelivery ? 'text-charcoal-500' : 'text-charcoal-300'">Email delivery</span>
+              <span :class="tier.hasEmailDelivery ? 'text-charcoal-500' : 'text-charcoal-300'">{{ $t('pricing.emailDelivery') }}</span>
             </li>
             <li class="flex items-center gap-2 text-sm">
               <svg v-if="tier.hasPdfExport" class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,7 +94,7 @@ interface Tier {
               <svg v-else class="w-5 h-5 text-charcoal-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              <span :class="tier.hasPdfExport ? 'text-charcoal-500' : 'text-charcoal-300'">PDF export</span>
+              <span :class="tier.hasPdfExport ? 'text-charcoal-500' : 'text-charcoal-300'">{{ $t('pricing.pdfExport') }}</span>
             </li>
             <li class="flex items-center gap-2 text-sm">
               <svg v-if="tier.hasAiTextGeneration" class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -101,7 +103,7 @@ interface Tier {
               <svg v-else class="w-5 h-5 text-charcoal-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              <span :class="tier.hasAiTextGeneration ? 'text-charcoal-500' : 'text-charcoal-300'">AI text generation</span>
+              <span :class="tier.hasAiTextGeneration ? 'text-charcoal-500' : 'text-charcoal-300'">{{ $t('pricing.aiTextGeneration') }}</span>
             </li>
             <li class="flex items-center gap-2 text-sm">
               <svg v-if="tier.removeBranding" class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -110,7 +112,7 @@ interface Tier {
               <svg v-else class="w-5 h-5 text-charcoal-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              <span :class="tier.removeBranding ? 'text-charcoal-500' : 'text-charcoal-300'">Custom branding</span>
+              <span :class="tier.removeBranding ? 'text-charcoal-500' : 'text-charcoal-300'">{{ $t('pricing.customBranding') }}</span>
             </li>
             <li class="flex items-center gap-2 text-sm">
               <svg v-if="tier.hasMultipleVariants" class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,7 +121,7 @@ interface Tier {
               <svg v-else class="w-5 h-5 text-charcoal-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              <span :class="tier.hasMultipleVariants ? 'text-charcoal-500' : 'text-charcoal-300'">Multiple variants</span>
+              <span :class="tier.hasMultipleVariants ? 'text-charcoal-500' : 'text-charcoal-300'">{{ $t('pricing.multipleVariants') }}</span>
             </li>
           </ul>
 
@@ -130,7 +132,7 @@ interface Tier {
               ? 'bg-champagne-500 text-white rounded-full hover:bg-champagne-600 hover:shadow-md'
               : 'border border-charcoal-900 text-charcoal-900 rounded-full hover:bg-charcoal-100 hover:shadow-md'"
           >
-            Get Started
+            {{ $t('nav.getStarted') }}
           </NuxtLink>
         </div>
       </div>

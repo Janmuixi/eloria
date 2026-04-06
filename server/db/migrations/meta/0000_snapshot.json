@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "00000000-0000-0000-0000-000000000000",
+  "id": "37d88f44-8eb1-4fcc-b068-6ee11e91b604",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "events": {
@@ -113,6 +113,14 @@
           "notNull": false,
           "autoincrement": false
         },
+        "language": {
+          "name": "language",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'en'"
+        },
         "slug": {
           "name": "slug",
           "type": "text",
@@ -125,7 +133,8 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "'2026-04-05T18:50:39.267Z'"
         }
       },
       "indexes": {
@@ -269,7 +278,8 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "'2026-04-05T18:50:39.267Z'"
         }
       },
       "indexes": {
@@ -312,6 +322,13 @@
         },
         "name": {
           "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "slug": {
+          "name": "slug",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -378,10 +395,19 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "'2026-04-05T18:50:39.267Z'"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "templates_slug_unique": {
+          "name": "templates_slug_unique",
+          "columns": [
+            "slug"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {
         "templates_minimum_tier_id_tiers_id_fk": {
           "name": "templates_minimum_tier_id_tiers_id_fk",
@@ -491,7 +517,8 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "'2026-04-05T18:50:39.266Z'"
         }
       },
       "indexes": {
@@ -547,12 +574,27 @@
           "autoincrement": false,
           "default": false
         },
+        "reset_token": {
+          "name": "reset_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "reset_token_expires_at": {
+          "name": "reset_token_expires_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "'2026-04-05T18:50:39.266Z'"
         }
       },
       "indexes": {

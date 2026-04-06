@@ -26,12 +26,12 @@
           <NuxtLink to="/dashboard" @click="sidebarOpen = false"
             class="flex items-center px-3 py-2 rounded-lg text-sm text-charcoal-500 hover:text-charcoal-900 hover:bg-charcoal-100"
             active-class="bg-champagne-100 rounded-lg border-l-2 border-champagne-500 text-charcoal-900 font-medium">
-            My Events
+            {{ t('dashboard.myEvents') }}
           </NuxtLink>
           <NuxtLink to="/dashboard/events/new" @click="sidebarOpen = false"
             class="flex items-center px-3 py-2 rounded-lg text-sm text-charcoal-500 hover:text-charcoal-900 hover:bg-charcoal-100"
             active-class="bg-champagne-100 rounded-lg border-l-2 border-champagne-500 text-charcoal-900 font-medium">
-            Create Event
+            {{ t('dashboard.createEvent') }}
           </NuxtLink>
         </nav>
       </aside>
@@ -46,12 +46,12 @@
         <NuxtLink to="/dashboard"
           class="flex items-center px-3 py-2 rounded-lg text-sm text-charcoal-500 hover:text-charcoal-900 hover:bg-charcoal-100"
           active-class="bg-champagne-100 rounded-lg border-l-2 border-champagne-500 text-charcoal-900 font-medium">
-          My Events
+          {{ t('dashboard.myEvents') }}
         </NuxtLink>
         <NuxtLink to="/dashboard/events/new"
           class="flex items-center px-3 py-2 rounded-lg text-sm text-charcoal-500 hover:text-charcoal-900 hover:bg-charcoal-100"
           active-class="bg-champagne-100 rounded-lg border-l-2 border-champagne-500 text-charcoal-900 font-medium">
-          Create Event
+          {{ t('dashboard.createEvent') }}
         </NuxtLink>
       </nav>
     </aside>
@@ -59,10 +59,10 @@
     <!-- Main -->
     <div class="lg:pl-64">
       <header class="bg-white border-b border-charcoal-200 px-6 py-4 flex items-center justify-between">
-        <h2 class="text-lg font-semibold text-charcoal-900">Dashboard</h2>
+        <h2 class="text-lg font-semibold text-charcoal-900">{{ t('dashboard.title') }}</h2>
         <div class="flex items-center gap-4">
           <span class="text-sm text-charcoal-700">{{ user?.name }}</span>
-          <button @click="logout" class="text-sm text-charcoal-500 hover:text-charcoal-700 hover:underline">Sign out</button>
+          <button @click="logout" class="text-sm text-charcoal-500 hover:text-charcoal-700 hover:underline">{{ t('nav.signOut') }}</button>
         </div>
       </header>
       <div class="p-6">
@@ -73,6 +73,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
 const { user, logout, fetchUser, loading } = useAuth()
 const sidebarOpen = ref(false)
 

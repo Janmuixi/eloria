@@ -1,16 +1,17 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
+const { t, locale } = useI18n()
 const route = useRoute()
 const eventId = route.params.id as string
 
 const { data: evt, status } = await useFetch(`/api/events/${eventId}`)
 
-const tabs = [
-  { label: 'Overview', to: `/dashboard/events/${eventId}` },
-  { label: 'Guests', to: `/dashboard/events/${eventId}/guests` },
-  { label: 'Settings', to: `/dashboard/events/${eventId}/settings` },
-]
+const tabs = computed(() => [
+  { label: t('eventDetail.tabOverview'), to: `/dashboard/events/${eventId}` },
+  { label: t('eventDetail.tabGuests'), to: `/dashboard/events/${eventId}/guests` },
+  { label: t('eventDetail.tabSettings'), to: `/dashboard/events/${eventId}/settings` },
+])
 
 const invitationUrl = computed(() => {
   if (!evt.value) return ''
@@ -35,7 +36,7 @@ async function copyLink() {
 
 function formatDate(dateStr: string) {
   const date = new Date(dateStr + 'T12:00:00')
-  return date.toLocaleDateString('en-US', {
+  return date.toLocaleDateString(locale.value, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -70,7 +71,7 @@ async function sendInvitations() {
     })
     emailResult.value = result as { sent: number; failed: number; message?: string }
   } catch (e: any) {
-    emailError.value = e.data?.statusMessage || 'Failed to send invitations'
+    emailError.value = e.data?.statusMessage || t('errors.failedToSendInvitations')
   } finally {
     sendingEmails.value = false
   }
@@ -86,7 +87,7 @@ async function deleteEvent() {
     await $fetch(`/api/events/${eventId}`, { method: 'DELETE' })
     navigateTo('/dashboard')
   } catch (e: any) {
-    alert(e.data?.statusMessage || 'Failed to delete event')
+    alert(e.data?.statusMessage || t('errors.failedToDeleteEvent'))
     deleting.value = false
     showDeleteConfirm.value = false
   }
@@ -110,7 +111,7 @@ async function downloadPdf() {
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
   } catch (e: any) {
-    alert(e.data?.statusMessage || 'Failed to generate PDF')
+    alert(e.data?.statusMessage || t('errors.failedToGeneratePdf'))
   } finally {
     downloadingPdf.value = false
   }
@@ -120,7 +121,7 @@ async function downloadPdf() {
 <template>
   <div>
     <NuxtLink to="/dashboard" class="text-sm text-charcoal-500 hover:text-charcoal-900 hover:underline mb-4 block">
-      &larr; Back to Events
+      &larr; {{ $t('eventDetail.backToEvents') }}
     </NuxtLink>
 
     <!-- Tabs -->
@@ -143,7 +144,7 @@ async function downloadPdf() {
     <UiLoadingSpinner v-if="status === 'pending'" />
 
     <div v-else-if="!evt" class="text-center py-12">
-      <p class="text-charcoal-500">Event not found.</p>
+      <p class="text-charcoal-500">{{ $t('eventDetail.eventNotFound') }}</p>
     </div>
 
     <div v-else>
@@ -160,13 +161,13 @@ async function downloadPdf() {
             'rounded-full px-3 py-1 text-xs font-medium',
             evt.paymentStatus === 'paid' ? 'bg-champagne-500 text-white' : 'bg-charcoal-100 text-charcoal-500'
           ]">
-            {{ evt.paymentStatus === 'paid' ? 'Active' : 'Pending Payment' }}
+            {{ evt.paymentStatus === 'paid' ? $t('common.active') : $t('common.pendingPayment') }}
           </span>
         </div>
 
         <!-- Invitation Link -->
         <div v-if="evt.paymentStatus === 'paid'" class="mt-4 pt-4 border-t border-charcoal-200">
-          <label class="block text-sm font-medium text-charcoal-700 mb-1">Public Invitation Link</label>
+          <label class="block text-sm font-medium text-charcoal-700 mb-1">{{ $t('eventDetail.publicInvitationLink') }}</label>
           <div class="flex gap-2">
             <input
               type="text"
@@ -176,11 +177,11 @@ async function downloadPdf() {
             />
             <button @click="copyLink"
               class="px-4 py-2 border border-charcoal-200 rounded-full text-sm font-medium text-charcoal-700 hover:border-champagne-400 hover:shadow-sm transition-all duration-200">
-              {{ copied ? 'Copied!' : 'Copy' }}
+              {{ copied ? $t('common.copied') : $t('common.copy') }}
             </button>
             <a :href="invitationUrl" target="_blank" rel="noopener noreferrer"
               class="px-4 py-2 border border-charcoal-200 rounded-full text-sm font-medium text-charcoal-700 hover:border-champagne-400 hover:shadow-sm transition-all duration-200">
-              View
+              {{ $t('common.view') }}
             </a>
           </div>
         </div>
@@ -188,7 +189,7 @@ async function downloadPdf() {
 
       <!-- Invitation Preview -->
       <div v-if="evt.template?.htmlTemplate" class="bg-white rounded-2xl shadow-sm border border-charcoal-200 p-6 mb-6">
-        <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-4">Invitation Preview</h2>
+        <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-4">{{ $t('eventDetail.invitationPreview') }}</h2>
         <div class="border border-champagne-400 rounded-2xl overflow-hidden max-w-xl mx-auto">
           <InvitationTemplatePreview
             :html-template="evt.template.htmlTemplate"
@@ -206,29 +207,29 @@ async function downloadPdf() {
       <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
         <div class="bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-4 text-center">
           <p class="font-display font-bold text-2xl text-charcoal-900">{{ rsvpStats.total }}</p>
-          <p class="text-charcoal-500 text-sm">Total Guests</p>
+          <p class="text-charcoal-500 text-sm">{{ $t('eventDetail.totalGuests') }}</p>
         </div>
         <div class="bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-4 text-center">
           <p class="font-display font-bold text-2xl text-green-600">{{ rsvpStats.confirmed }}</p>
-          <p class="text-charcoal-500 text-sm">Confirmed</p>
+          <p class="text-charcoal-500 text-sm">{{ $t('eventDetail.confirmed') }}</p>
         </div>
         <div class="bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-4 text-center">
           <p class="font-display font-bold text-2xl text-red-600">{{ rsvpStats.declined }}</p>
-          <p class="text-charcoal-500 text-sm">Declined</p>
+          <p class="text-charcoal-500 text-sm">{{ $t('eventDetail.declined') }}</p>
         </div>
         <div class="bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-4 text-center">
           <p class="font-display font-bold text-2xl text-yellow-600">{{ rsvpStats.maybe }}</p>
-          <p class="text-charcoal-500 text-sm">Maybe</p>
+          <p class="text-charcoal-500 text-sm">{{ $t('eventDetail.maybe') }}</p>
         </div>
         <div class="bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-4 text-center">
           <p class="font-display font-bold text-2xl text-charcoal-400">{{ rsvpStats.pending }}</p>
-          <p class="text-charcoal-500 text-sm">Pending</p>
+          <p class="text-charcoal-500 text-sm">{{ $t('eventDetail.pending') }}</p>
         </div>
       </div>
 
       <!-- Email & PDF Actions -->
       <div v-if="evt.paymentStatus === 'paid'" class="bg-white rounded-2xl shadow-sm border border-charcoal-200 p-6 mb-6">
-        <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-4">Actions</h2>
+        <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-4">{{ $t('eventDetail.actions') }}</h2>
         <div class="flex flex-wrap gap-3">
           <!-- Send Invitations -->
           <button
@@ -241,7 +242,7 @@ async function downloadPdf() {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
-            {{ sendingEmails ? 'Sending...' : 'Send Invitations' }}
+            {{ sendingEmails ? $t('eventDetail.sending') : $t('eventDetail.sendInvitations') }}
           </button>
 
           <!-- Download PDF -->
@@ -255,7 +256,7 @@ async function downloadPdf() {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            {{ downloadingPdf ? 'Generating...' : 'Download PDF' }}
+            {{ downloadingPdf ? $t('eventDetail.generating') : $t('eventDetail.downloadPdf') }}
           </button>
         </div>
 
@@ -264,7 +265,7 @@ async function downloadPdf() {
           :class="emailResult.failed ? 'bg-yellow-50 text-yellow-700' : 'bg-green-50 text-green-700'">
           <template v-if="emailResult.message">{{ emailResult.message }}</template>
           <template v-else>
-            Sent {{ emailResult.sent }} invitation{{ emailResult.sent !== 1 ? 's' : '' }}<template v-if="emailResult.failed">, {{ emailResult.failed }} failed</template>.
+            {{ $t('eventDetail.sentCount', { sent: emailResult.sent }, emailResult.sent) }}<template v-if="emailResult.failed">{{ $t('eventDetail.failedCount', { failed: emailResult.failed }) }}</template>.
           </template>
         </div>
         <div v-if="emailError" class="mt-3 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
@@ -274,29 +275,29 @@ async function downloadPdf() {
 
       <!-- Danger Zone -->
       <div class="border border-red-200 rounded-2xl shadow-sm p-6 mb-6">
-        <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-2">Danger Zone</h2>
-        <p class="text-sm text-charcoal-500 mb-4">Permanently delete this event and all its guest data. This action cannot be undone.</p>
+        <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-2">{{ $t('eventDetail.dangerZone') }}</h2>
+        <p class="text-sm text-charcoal-500 mb-4">{{ $t('eventDetail.dangerZoneDescription') }}</p>
         <button
           v-if="!showDeleteConfirm"
           @click="showDeleteConfirm = true"
           class="px-4 py-2 border border-red-300 text-red-600 rounded-full text-sm font-medium hover:bg-red-50 transition-colors"
         >
-          Delete Event
+          {{ $t('eventDetail.deleteEvent') }}
         </button>
         <div v-else class="flex items-center gap-3">
-          <p class="text-sm text-red-600 font-medium">Are you sure?</p>
+          <p class="text-sm text-red-600 font-medium">{{ $t('eventDetail.confirmDelete') }}</p>
           <button
             @click="deleteEvent"
             :disabled="deleting"
             class="px-4 py-2 bg-red-600 text-white rounded-full text-sm font-medium hover:bg-red-700 disabled:opacity-50"
           >
-            {{ deleting ? 'Deleting...' : 'Yes, delete permanently' }}
+            {{ deleting ? $t('eventDetail.deleting') : $t('eventDetail.deleteConfirm') }}
           </button>
           <button
             @click="showDeleteConfirm = false"
             class="px-4 py-2 border border-charcoal-200 rounded-full text-sm font-medium text-charcoal-600 hover:border-champagne-400 transition-colors"
           >
-            Cancel
+            {{ $t('common.cancel') }}
           </button>
         </div>
       </div>
@@ -305,14 +306,14 @@ async function downloadPdf() {
       <div class="flex gap-3">
         <NuxtLink :to="`/dashboard/events/${eventId}/guests`"
           class="flex-1 bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-6 text-center hover:border-champagne-400 hover:shadow-md transition-all duration-200">
-          <p class="font-medium text-charcoal-900">Manage Guests</p>
-          <p class="text-sm text-charcoal-500 mt-1">Add, remove, and track guests</p>
+          <p class="font-medium text-charcoal-900">{{ $t('eventDetail.manageGuests') }}</p>
+          <p class="text-sm text-charcoal-500 mt-1">{{ $t('eventDetail.manageGuestsDescription') }}</p>
         </NuxtLink>
         <a v-if="evt.paymentStatus === 'paid'"
           :href="invitationUrl" target="_blank" rel="noopener noreferrer"
           class="flex-1 bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-6 text-center hover:border-champagne-400 hover:shadow-md transition-all duration-200">
-          <p class="font-medium text-charcoal-900">View Invitation</p>
-          <p class="text-sm text-charcoal-500 mt-1">See your public invitation page</p>
+          <p class="font-medium text-charcoal-900">{{ $t('eventDetail.viewInvitation') }}</p>
+          <p class="text-sm text-charcoal-500 mt-1">{{ $t('eventDetail.viewInvitationDescription') }}</p>
         </a>
       </div>
     </div>

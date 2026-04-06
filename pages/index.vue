@@ -1,35 +1,37 @@
 <script setup lang="ts">
+const { t } = useI18n()
+
 useSeoMeta({
-  title: 'Eloria - Beautiful Wedding Invitations',
-  description: 'Create stunning wedding invitations with AI-powered design. Send via link, email, or print. Track RSVPs in real-time.',
-  ogTitle: 'Eloria - Beautiful Wedding Invitations',
-  ogDescription: 'Create stunning wedding invitations with AI-powered design.',
+  title: t('landing.seoTitle'),
+  description: t('landing.seoDescription'),
+  ogTitle: t('landing.seoTitle'),
+  ogDescription: t('landing.seoDescription'),
   ogType: 'website',
 })
 
-const features = [
+const features = computed(() => [
   {
-    title: 'AI-Powered Design',
-    description: 'AI recommends the perfect template for your style, making it effortless to find a design you love.',
+    title: t('landing.featureAiTitle'),
+    description: t('landing.featureAiDescription'),
     icon: 'sparkles',
   },
   {
-    title: 'Send Everywhere',
-    description: 'Share your invitation via link, email, or printable PDF. Reach every guest the way that works best.',
+    title: t('landing.featureSendTitle'),
+    description: t('landing.featureSendDescription'),
     icon: 'share',
   },
   {
-    title: 'Track RSVPs',
-    description: 'Know who\'s coming with real-time RSVP tracking. No more guessing or follow-up calls.',
+    title: t('landing.featureRsvpTitle'),
+    description: t('landing.featureRsvpDescription'),
     icon: 'chart',
   },
-]
+])
 
-const steps = [
-  { number: 1, title: 'Describe your style', description: 'Tell us about your wedding theme and preferences.' },
-  { number: 2, title: 'Customize your invitation', description: 'Personalize every detail — colors, fonts, wording, and layout.' },
-  { number: 3, title: 'Share with guests', description: 'Send your invitation by link, email, or download a PDF.' },
-]
+const steps = computed(() => [
+  { number: 1, title: t('landing.step1Title'), description: t('landing.step1Description') },
+  { number: 2, title: t('landing.step2Title'), description: t('landing.step2Description') },
+  { number: 3, title: t('landing.step3Title'), description: t('landing.step3Description') },
+])
 </script>
 
 <template>
@@ -38,16 +40,16 @@ const steps = [
     <section class="py-28 md:py-36">
       <div class="max-w-6xl mx-auto px-6 text-center">
         <h1 class="font-display font-bold text-5xl md:text-6xl lg:text-7xl text-charcoal-900">
-          Your Wedding, Beautifully Invited
+          {{ $t('landing.heroTitle') }}
         </h1>
         <p class="text-lg text-charcoal-500 max-w-xl mx-auto mt-6">
-          Design stunning, personalized invitations in minutes. Share them anywhere, track RSVPs in real time.
+          {{ $t('landing.heroSubtitle') }}
         </p>
         <NuxtLink
           to="/auth/register"
           class="bg-champagne-500 text-white rounded-full px-8 py-3 font-medium hover:bg-champagne-600 hover:shadow-md transition-all duration-200 mt-8 inline-block"
         >
-          Create Your Invitation
+          {{ $t('landing.heroCta') }}
         </NuxtLink>
       </div>
     </section>
@@ -58,7 +60,7 @@ const steps = [
     <!-- Features -->
     <section class="py-20 md:py-28">
       <div class="max-w-6xl mx-auto px-6">
-        <h2 class="font-display font-semibold text-3xl text-charcoal-900 text-center mb-16">Everything you need</h2>
+        <h2 class="font-display font-semibold text-3xl text-charcoal-900 text-center mb-16">{{ $t('landing.featuresTitle') }}</h2>
         <div class="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto">
           <div
             v-for="feature in features"
@@ -90,7 +92,7 @@ const steps = [
     <!-- How It Works -->
     <section class="py-20 md:py-28">
       <div class="max-w-6xl mx-auto px-6">
-        <h2 class="font-display font-semibold text-3xl text-charcoal-900 text-center mb-16">How it works</h2>
+        <h2 class="font-display font-semibold text-3xl text-charcoal-900 text-center mb-16">{{ $t('landing.howItWorksTitle') }}</h2>
         <div class="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
           <div v-for="step in steps" :key="step.number" class="text-center">
             <div class="font-display font-bold text-3xl text-champagne-500 mb-3">
@@ -109,13 +111,13 @@ const steps = [
     <!-- Pricing Teaser -->
     <section class="py-20 md:py-28 text-center">
       <div class="max-w-6xl mx-auto px-6">
-        <h2 class="font-display font-semibold text-3xl text-charcoal-900 mb-4">Simple, transparent pricing</h2>
-        <p class="text-charcoal-500 mb-8 max-w-xl mx-auto">Start free with our Basic plan. Upgrade anytime for more features, higher guest limits, and premium templates.</p>
+        <h2 class="font-display font-semibold text-3xl text-charcoal-900 mb-4">{{ $t('landing.pricingTitle') }}</h2>
+        <p class="text-charcoal-500 mb-8 max-w-xl mx-auto">{{ $t('landing.pricingSubtitle') }}</p>
         <NuxtLink
           to="/pricing"
           class="text-champagne-600 font-medium hover:text-champagne-500 underline"
         >
-          View Pricing
+          {{ $t('landing.viewPricing') }}
         </NuxtLink>
       </div>
     </section>
@@ -123,13 +125,13 @@ const steps = [
     <!-- Final CTA -->
     <section class="bg-charcoal-900 py-20 md:py-28">
       <div class="max-w-6xl mx-auto px-6 text-center">
-        <h2 class="font-display font-semibold text-3xl text-ivory-50 mb-4">Ready to create your perfect invitation?</h2>
-        <p class="text-charcoal-300 mb-8">Join thousands of couples who chose Eloria for their special day.</p>
+        <h2 class="font-display font-semibold text-3xl text-ivory-50 mb-4">{{ $t('landing.ctaTitle') }}</h2>
+        <p class="text-charcoal-300 mb-8">{{ $t('landing.ctaSubtitle') }}</p>
         <NuxtLink
           to="/auth/register"
           class="bg-champagne-500 text-white rounded-full px-8 py-3 font-medium hover:bg-champagne-600 hover:shadow-md transition-all duration-200 inline-block"
         >
-          Get Started Free
+          {{ $t('landing.ctaButton') }}
         </NuxtLink>
       </div>
     </section>

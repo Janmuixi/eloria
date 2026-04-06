@@ -1,5 +1,7 @@
 <script setup lang="ts">
+const { t } = useI18n()
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
+useHead({ title: t('success.seoTitle') })
 const route = useRoute()
 const eventId = route.params.id
 const sessionId = route.query.session_id as string | undefined
@@ -22,10 +24,10 @@ onMounted(async () => {
     })
     verified.value = data.status === 'paid'
     if (!verified.value) {
-      error.value = 'Payment is still processing. Please check back shortly.'
+      error.value = t('success.paymentStillProcessing')
     }
   } catch {
-    error.value = 'Could not verify payment. Please check your event dashboard.'
+    error.value = t('success.paymentVerificationFailed')
   } finally {
     verifying.value = false
   }
@@ -39,8 +41,8 @@ onMounted(async () => {
       <div class="w-16 h-16 bg-charcoal-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
         <span class="text-charcoal-500 text-2xl">&#8987;</span>
       </div>
-      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">Verifying Payment...</h1>
-      <p class="text-charcoal-500 mb-6">Please wait while we confirm your payment.</p>
+      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">{{ t('success.verifyingPayment') }}</h1>
+      <p class="text-charcoal-500 mb-6">{{ t('success.verifyingDescription') }}</p>
     </template>
 
     <!-- Success state -->
@@ -48,8 +50,8 @@ onMounted(async () => {
       <div class="w-16 h-16 bg-champagne-100 rounded-full flex items-center justify-center mx-auto mb-4">
         <span class="text-champagne-500 text-2xl">&#10003;</span>
       </div>
-      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">Payment Successful!</h1>
-      <p class="text-charcoal-500 mb-6">Your invitation is now live. Share it with your guests!</p>
+      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">{{ t('success.paymentSuccessful') }}</h1>
+      <p class="text-charcoal-500 mb-6">{{ t('success.invitationLive') }}</p>
     </template>
 
     <!-- Error/pending state -->
@@ -57,13 +59,13 @@ onMounted(async () => {
       <div class="w-16 h-16 bg-champagne-100 rounded-full flex items-center justify-center mx-auto mb-4">
         <span class="text-champagne-600 text-2xl">&#9888;</span>
       </div>
-      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">Payment Processing</h1>
+      <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">{{ t('success.paymentProcessing') }}</h1>
       <p class="text-charcoal-500 mb-6">{{ error }}</p>
     </template>
 
     <NuxtLink :to="`/dashboard/events/${eventId}`"
       class="bg-champagne-500 text-white px-6 py-2 rounded-full font-medium hover:bg-champagne-600 transition-colors">
-      Go to Event Dashboard
+      {{ t('success.goToDashboard') }}
     </NuxtLink>
   </div>
 </template>

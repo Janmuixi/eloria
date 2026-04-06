@@ -45,6 +45,7 @@ export const usersRelations = relations(users, ({ many }) => ({
 export const templates = sqliteTable('templates', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
+  slug: text('slug').notNull().unique(),
   category: text('category').notNull(),
   previewImageUrl: text('preview_image_url').notNull(),
   htmlTemplate: text('html_template').notNull(),
@@ -81,6 +82,7 @@ export const events = sqliteTable('events', {
   tierId: integer('tier_id').references(() => tiers.id),
   paymentStatus: text('payment_status').notNull().default('pending'),
   stripePaymentId: text('stripe_payment_id'),
+  language: text('language').notNull().default('en'),
   slug: text('slug').notNull().unique(),
   createdAt: text('created_at').default(new Date().toISOString()),
 })
