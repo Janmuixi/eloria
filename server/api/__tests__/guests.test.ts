@@ -225,5 +225,50 @@ describe('Guests API', () => {
         statusCode: 400,
       })
     })
+
+    it('rejects import when it would exceed tier guest limit (403)', async () => {
+      seedTiers(testDb)
+      const limitedEvt = createTestEvent(testDb, user.id, { tierId: 1, paymentStatus: 'paid' })
+
+      // Add 48 guests — 2 remaining
+      for (let i = 0; i < 48; i++) {
+        createTestGuest(testDb, limitedEvt.id, { name: `Guest ${i}` })
+      }
+
+      // Try to import 3 guests — exceeds limit by 1
+      const csv = 'Alice,alice@example.com\nBob,bob@example.com\nCharlie,charlie@example.com'
+
+      const event = authEvent(user.id, user.email, {
+        method: 'POST',
+        params: { id: String(limitedEvt.id) },
+        body: { csv },
+      })
+
+      await expect(importHandler(event)).rejects.toMatchObject({
+        statusCode: 403,
+        statusMessage: 'Import would exceed guest limit for your plan (50). You can add 2 more guests.',
+      })
+    })
+
+    it('allows import when within tier guest limit', async () => {
+      seedTiers(testDb)
+      const limitedEvt = createTestEvent(testDb, user.id, { tierId: 1, paymentStatus: 'paid' })
+
+      // Add 47 guests — 3 remaining
+      for (let i = 0; i < 47; i++) {
+        createTestGuest(testDb, limitedEvt.id, { name: `Guest ${i}` })
+      }
+
+      const csv = 'Alice,alice@example.com\nBob,bob@example.com\nCharlie,charlie@example.com'
+
+      const event = authEvent(user.id, user.email, {
+        method: 'POST',
+        params: { id: String(limitedEvt.id) },
+        body: { csv },
+      })
+
+      const result = await importHandler(event)
+      expect(result).toEqual({ imported: 3 })
+    })
   })
 })

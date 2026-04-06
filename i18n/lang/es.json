@@ -177,7 +177,12 @@
     "tableHeaderRsvp": "Estado RSVP",
     "tableHeaderActions": "Acciones",
     "noEmail": "—",
-    "confirmRemove": "¿Eliminar este invitado?"
+    "confirmRemove": "¿Eliminar este invitado?",
+    "guestCount": "{current} / {limit} invitados",
+    "guestCountUnlimited": "{current} invitados",
+    "guestLimitReached": "Límite de invitados alcanzado para tu plan ({limit}). Mejora tu plan para añadir más.",
+    "importLimitExceeded": "La importación excedería tu límite de invitados ({limit}). Puedes añadir {remaining} más.",
+    "upgradePlan": "Mejorar Plan"
   },
   "settings": {
     "title": "Configuración del Evento",

@@ -177,7 +177,12 @@
     "tableHeaderRsvp": "RSVP Status",
     "tableHeaderActions": "Actions",
     "noEmail": "—",
-    "confirmRemove": "Remove this guest?"
+    "confirmRemove": "Remove this guest?",
+    "guestCount": "{current} / {limit} guests",
+    "guestCountUnlimited": "{current} guests",
+    "guestLimitReached": "Guest limit reached for your plan ({limit}). Upgrade to add more.",
+    "importLimitExceeded": "Import would exceed your guest limit ({limit}). You can add {remaining} more.",
+    "upgradePlan": "Upgrade Plan"
   },
   "settings": {
     "title": "Event Settings",

@@ -1,7 +1,7 @@
 import { requireAuth } from '~/server/utils/auth'
 import { db } from '~/server/db'
 import { events, guests } from '~/server/db/schema'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, count } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
   const user = await requireAuth(event)
@@ -10,6 +10,7 @@ export default defineEventHandler(async (event) => {
 
   const evt = await db.query.events.findFirst({
     where: and(eq(events.id, id), eq(events.userId, user.id)),
+    with: { tier: true },
   })
 
   if (!evt) throw createError({ statusCode: 404, statusMessage: 'Event not found' })
@@ -37,6 +38,22 @@ export default defineEventHandler(async (event) => {
 
   if (values.length === 0) {
     throw createError({ statusCode: 400, statusMessage: 'No valid entries found in CSV' })
+  }
+
+  // Enforce guest limit if tier is assigned and has a limit
+  if (evt.tier?.guestLimit != null) {
+    const [{ value: currentCount }] = await db
+      .select({ value: count() })
+      .from(guests)
+      .where(eq(guests.eventId, id))
+
+    const remaining = evt.tier.guestLimit - currentCount
+    if (values.length > remaining) {
+      throw createError({
+        statusCode: 403,
+        statusMessage: `Import would exceed guest limit for your plan (${evt.tier.guestLimit}). You can add ${remaining} more guests.`,
+      })
+    }
   }
 
   await db.insert(guests).values(values)

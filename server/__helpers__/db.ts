@@ -40,6 +40,7 @@ export function createTestDb() {
     CREATE TABLE templates (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
+      slug TEXT NOT NULL UNIQUE,
       category TEXT NOT NULL,
       preview_image_url TEXT NOT NULL,
       html_template TEXT NOT NULL,
@@ -67,6 +68,7 @@ export function createTestDb() {
       tier_id INTEGER REFERENCES tiers(id),
       payment_status TEXT NOT NULL DEFAULT 'pending',
       stripe_payment_id TEXT,
+      language TEXT NOT NULL DEFAULT 'en',
       slug TEXT NOT NULL UNIQUE,
       created_at TEXT DEFAULT (datetime('now'))
     );
@@ -128,12 +130,13 @@ export function seedTiers(db: TestDb) {
       removeBranding: true,
       hasMultipleVariants: true,
     },
-  ])
+  ]).run()
 }
 
 export function seedTemplate(db: TestDb, tierId: number) {
   const rows = db.insert(templates).values({
     name: 'Test Template',
+    slug: `test-template-${Math.random().toString(36).substring(2, 6)}`,
     category: 'classic',
     previewImageUrl: '/test.png',
     htmlTemplate: '<div>{{coupleName1}} & {{coupleName2}}</div>',

@@ -6,6 +6,16 @@ const route = useRoute()
 const eventId = route.params.id as string
 
 const { data: guests, refresh: refreshGuests, status } = await useFetch(`/api/events/${eventId}/guests`)
+const { data: evt } = await useFetch(`/api/events/${eventId}`)
+
+const guestLimit = computed(() => evt.value?.tier?.guestLimit ?? null)
+const guestCountLabel = computed(() => {
+  const current = guests.value?.length ?? 0
+  if (guestLimit.value != null) {
+    return t('guests.guestCount', { current, limit: guestLimit.value })
+  }
+  return t('guests.guestCountUnlimited', { current })
+})
 
 const tabs = computed(() => [
   { label: t('eventDetail.tabOverview'), to: `/dashboard/events/${eventId}` },
@@ -17,10 +27,12 @@ const tabs = computed(() => [
 const showAddForm = ref(false)
 const addForm = reactive({ name: '', email: '' })
 const addLoading = ref(false)
+const addError = ref('')
 
 async function addGuest() {
   if (!addForm.name.trim()) return
   addLoading.value = true
+  addError.value = ''
   try {
     await $fetch(`/api/events/${eventId}/guests`, {
       method: 'POST',
@@ -30,8 +42,12 @@ async function addGuest() {
     addForm.email = ''
     showAddForm.value = false
     await refreshGuests()
-  } catch (e) {
-    console.error('Failed to add guest:', e)
+  } catch (e: any) {
+    if (e?.response?.status === 403) {
+      addError.value = t('guests.guestLimitReached', { limit: guestLimit.value })
+    } else {
+      addError.value = t('errors.somethingWentWrong')
+    }
   } finally {
     addLoading.value = false
   }
@@ -54,10 +70,13 @@ const csvText = ref('')
 const importLoading = ref(false)
 const importResult = ref<{ imported: number } | null>(null)
 
+const importError = ref('')
+
 async function importCsv() {
   if (!csvText.value.trim()) return
   importLoading.value = true
   importResult.value = null
+  importError.value = ''
   try {
     const result = await $fetch(`/api/events/${eventId}/guests/import`, {
       method: 'POST',
@@ -66,8 +85,13 @@ async function importCsv() {
     importResult.value = result
     csvText.value = ''
     await refreshGuests()
-  } catch (e) {
-    console.error('Failed to import CSV:', e)
+  } catch (e: any) {
+    if (e?.response?.status === 403) {
+      const remaining = guestLimit.value != null ? guestLimit.value - (guests.value?.length ?? 0) : 0
+      importError.value = t('guests.importLimitExceeded', { limit: guestLimit.value, remaining: Math.max(0, remaining) })
+    } else {
+      importError.value = t('errors.somethingWentWrong')
+    }
   } finally {
     importLoading.value = false
   }
@@ -110,7 +134,7 @@ const statusBadgeClass = (status: string) => {
       <div>
         <h1 class="font-display font-semibold text-2xl text-charcoal-900">
           {{ t('guests.guestList') }}
-          <span v-if="guests" class="text-base font-normal text-charcoal-500">({{ guests.length }})</span>
+          <span v-if="guests" class="text-base font-normal text-charcoal-500">({{ guestCountLabel }})</span>
         </h1>
       </div>
       <div class="flex gap-2">
@@ -148,6 +172,13 @@ const statusBadgeClass = (status: string) => {
           {{ t('common.cancel') }}
         </button>
       </form>
+      <div v-if="addError" class="mt-3 flex items-center justify-between bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+        <p class="text-sm text-red-700">{{ addError }}</p>
+        <NuxtLink v-if="addError.includes(String(guestLimit))" to="/pricing"
+          class="ml-4 px-3 py-1 bg-champagne-500 text-white rounded-full text-xs font-medium hover:bg-champagne-600 transition-colors whitespace-nowrap">
+          {{ t('guests.upgradePlan') }}
+        </NuxtLink>
+      </div>
     </div>
 
     <!-- CSV Import -->
@@ -168,6 +199,13 @@ const statusBadgeClass = (status: string) => {
         <span v-if="importResult" class="text-sm text-green-600">
           {{ t('guests.importSuccess', { count: importResult.imported }) }}
         </span>
+      </div>
+      <div v-if="importError" class="mt-3 flex items-center justify-between bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+        <p class="text-sm text-red-700">{{ importError }}</p>
+        <NuxtLink v-if="importError.includes(String(guestLimit))" to="/pricing"
+          class="ml-4 px-3 py-1 bg-champagne-500 text-white rounded-full text-xs font-medium hover:bg-champagne-600 transition-colors whitespace-nowrap">
+          {{ t('guests.upgradePlan') }}
+        </NuxtLink>
       </div>
     </div>
 
