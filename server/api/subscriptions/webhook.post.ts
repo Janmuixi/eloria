@@ -32,14 +32,23 @@ export default defineEventHandler(async (event) => {
     const userId = parseInt(session.metadata?.userId || '0')
 
     if (userId && session.subscription && session.customer) {
+      const stripeSubscription = await stripe.subscriptions.retrieve(session.subscription as string) as unknown as Stripe.Subscription & { current_period_start: number; current_period_end: number }
+
       await db.insert(subscriptions).values({
         userId,
         stripeSubscriptionId: session.subscription as string,
         stripeCustomerId: session.customer as string,
-        status: 'active',
-        price: 4900,
-        currentPeriodStart: new Date().toISOString(),
-        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        status: stripeSubscription.status,
+        price: stripeSubscription.items.data[0]?.price.unit_amount || 4900,
+        currentPeriodStart: new Date(stripeSubscription.current_period_start * 1000).toISOString(),
+        currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000).toISOString(),
+      }).onConflictDoUpdate({
+        target: subscriptions.stripeSubscriptionId,
+        set: {
+          status: stripeSubscription.status,
+          currentPeriodStart: new Date(stripeSubscription.current_period_start * 1000).toISOString(),
+          currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000).toISOString(),
+        },
       })
     }
   }
