@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import jwt from 'jsonwebtoken'
-import { createTestDb, createTestUser, type TestDb } from '../../__helpers__/db'
+import { createTestDb, createTestUser, createTestEvent, type TestDb } from '../../__helpers__/db'
 import { createMockEvent } from '../../__helpers__/event'
 import { resolveEnvVar } from '~/server/utils/resolve-env-var'
 
@@ -23,6 +23,7 @@ const loginHandler = (await import('../auth/login.post')).default
 const logoutHandler = (await import('../auth/logout.post')).default
 const meHandler = (await import('../auth/me.get')).default
 const verifyHandler = (await import('../auth/verify.post')).default
+const statsHandler = (await import('../auth/me/stats.get')).default
 
 const { createToken } = await import('../../utils/auth')
 
@@ -243,6 +244,49 @@ describe('Auth API', () => {
 
       await expect(verifyHandler(event)).rejects.toMatchObject({
         statusCode: 400,
+      })
+    })
+  })
+
+  describe('GET /api/auth/me/stats', () => {
+    it('returns event count of 0 when user has no events', async () => {
+      const user = await createTestUser(testDb, { email: 'stats-zero@example.com' })
+      const event = authEvent(user.id, user.email)
+
+      const result = await statsHandler(event)
+
+      expect(result.eventCount).toBe(0)
+    })
+
+    it('returns correct event count for a user with events', async () => {
+      const user = await createTestUser(testDb, { email: 'stats-events@example.com' })
+      createTestEvent(testDb, user.id)
+      createTestEvent(testDb, user.id)
+      const event = authEvent(user.id, user.email)
+
+      const result = await statsHandler(event)
+
+      expect(result.eventCount).toBe(2)
+    })
+
+    it('only counts events belonging to the authenticated user', async () => {
+      const user = await createTestUser(testDb, { email: 'stats-owner@example.com' })
+      const otherUser = await createTestUser(testDb, { email: 'stats-other@example.com' })
+      createTestEvent(testDb, user.id)
+      createTestEvent(testDb, otherUser.id)
+      createTestEvent(testDb, otherUser.id)
+      const event = authEvent(user.id, user.email)
+
+      const result = await statsHandler(event)
+
+      expect(result.eventCount).toBe(1)
+    })
+
+    it('rejects unauthenticated requests with 401', async () => {
+      const event = createMockEvent({})
+
+      await expect(statsHandler(event)).rejects.toMatchObject({
+        statusCode: 401,
       })
     })
   })
