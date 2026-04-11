@@ -24,6 +24,9 @@ logs
 *.db-shm
 *.sqlite
 
+# Brainstorm mockups
+.superpowers/
+
 # Local env files
 .env
 .env.*
