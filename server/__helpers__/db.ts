@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
 import * as schema from '../db/schema'
-import { tiers, users, templates, events, guests } from '../db/schema'
+import { tiers, users, templates, events, guests, subscriptions } from '../db/schema'
 
 export type TestDb = ReturnType<typeof createTestDb>
 
@@ -34,6 +34,7 @@ export function createTestDb() {
       email_verified INTEGER DEFAULT 0,
       reset_token TEXT,
       reset_token_expires_at TEXT,
+      stripe_customer_id TEXT,
       created_at TEXT DEFAULT (datetime('now'))
     );
 
@@ -85,6 +86,19 @@ export function createTestDb() {
       token TEXT NOT NULL UNIQUE,
       email_sent_at TEXT,
       email_opened_at TEXT,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE subscriptions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL REFERENCES users(id),
+      stripe_subscription_id TEXT NOT NULL UNIQUE,
+      stripe_customer_id TEXT NOT NULL,
+      status TEXT NOT NULL,
+      price INTEGER NOT NULL,
+      current_period_start TEXT,
+      current_period_end TEXT,
+      canceled_at TEXT,
       created_at TEXT DEFAULT (datetime('now'))
     );
   `)
@@ -186,6 +200,21 @@ export function createTestGuest(db: TestDb, eventId: number, overrides?: Partial
     rsvpStatus: overrides?.rsvpStatus || 'pending',
     plusOne: overrides?.plusOne ?? false,
     plusOneName: overrides?.plusOneName ?? null,
+  }).returning().all()
+  return rows[0]
+}
+
+export function createTestSubscription(db: TestDb, userId: number, overrides?: Partial<{
+  stripeSubscriptionId: string; stripeCustomerId: string; status: string;
+  price: number; currentPeriodEnd: string | null;
+}>) {
+  const rows = db.insert(subscriptions).values({
+    userId,
+    stripeSubscriptionId: overrides?.stripeSubscriptionId || `sub_test_${crypto.randomUUID()}`,
+    stripeCustomerId: overrides?.stripeCustomerId || 'cus_test',
+    status: overrides?.status || 'active',
+    price: overrides?.price ?? 4900,
+    currentPeriodEnd: overrides?.currentPeriodEnd ?? null,
   }).returning().all()
   return rows[0]
 }
