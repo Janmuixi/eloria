@@ -24,10 +24,11 @@ describe('Templates API', () => {
 
   describe('GET /api/templates', () => {
     it('lists all templates with tier relation', async () => {
-      seedTiers(testDb).run()
+      seedTiers(testDb)
       testDb.insert(templates).values([
         {
           name: 'Classic Elegance',
+          slug: 'classic-elegance',
           category: 'classic',
           previewImageUrl: '/classic.png',
           htmlTemplate: '<div>Classic</div>',
@@ -39,6 +40,7 @@ describe('Templates API', () => {
         },
         {
           name: 'Modern Vibes',
+          slug: 'modern-vibes',
           category: 'modern',
           previewImageUrl: '/modern.png',
           htmlTemplate: '<div>Modern</div>',
@@ -64,10 +66,11 @@ describe('Templates API', () => {
     })
 
     it('filters by category', async () => {
-      seedTiers(testDb).run()
+      seedTiers(testDb)
       testDb.insert(templates).values([
         {
           name: 'Classic Elegance',
+          slug: 'classic-elegance',
           category: 'classic',
           previewImageUrl: '/classic.png',
           htmlTemplate: '<div>Classic</div>',
@@ -79,6 +82,7 @@ describe('Templates API', () => {
         },
         {
           name: 'Modern Vibes',
+          slug: 'modern-vibes',
           category: 'modern',
           previewImageUrl: '/modern.png',
           htmlTemplate: '<div>Modern</div>',

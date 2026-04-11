@@ -26,7 +26,7 @@ describe('Invitations API', () => {
 
   describe('GET /api/invitations/:slug', () => {
     it('returns paid invitation data with template', async () => {
-      seedTiers(testDb).run()
+      seedTiers(testDb)
       const user = await createTestUser(testDb, { email: 'inv@test.com', name: 'Inviter' })
       // Premium tier is id=2 (second seeded tier), has removeBranding: true
       const template = seedTemplate(testDb, 2)

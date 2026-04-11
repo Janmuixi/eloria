@@ -62,7 +62,7 @@ describe('Payments API', () => {
     it('creates a Stripe checkout session', async () => {
       vi.resetModules()
       const handler = (await import('../payments/create-checkout.post')).default
-      seedTiers(testDb).run()
+      seedTiers(testDb)
       const user = await createTestUser(testDb, { email: 'pay@test.com', name: 'Payer' })
       const evt = createTestEvent(testDb, user!.id, { title: 'Pay Wedding' })
 
@@ -88,7 +88,7 @@ describe('Payments API', () => {
     it('rejects nonexistent event (404)', async () => {
       vi.resetModules()
       const handler = (await import('../payments/create-checkout.post')).default
-      seedTiers(testDb).run()
+      seedTiers(testDb)
       const user = await createTestUser(testDb, { email: 'noevt@test.com', name: 'NoEvent' })
 
       const event = authEvent(user!.id, user!.email, {
@@ -104,7 +104,7 @@ describe('Payments API', () => {
     it('rejects invalid tier slug (400)', async () => {
       vi.resetModules()
       const handler = (await import('../payments/create-checkout.post')).default
-      seedTiers(testDb).run()
+      seedTiers(testDb)
       const user = await createTestUser(testDb, { email: 'badtier@test.com', name: 'BadTier' })
       const evt = createTestEvent(testDb, user!.id, { title: 'Bad Tier Wedding' })
 
@@ -123,7 +123,7 @@ describe('Payments API', () => {
     it('marks event as paid when Stripe confirms', async () => {
       vi.resetModules()
       const handler = (await import('../payments/verify.post')).default
-      seedTiers(testDb).run()
+      seedTiers(testDb)
       const user = await createTestUser(testDb, { email: 'verify@test.com', name: 'Verifier' })
       const evt = createTestEvent(testDb, user!.id, {
         title: 'Verify Wedding',
@@ -181,7 +181,7 @@ describe('Payments API', () => {
     it('processes checkout.session.completed event', async () => {
       vi.resetModules()
       const handler = (await import('../payments/webhook.post')).default
-      seedTiers(testDb).run()
+      seedTiers(testDb)
       const user = await createTestUser(testDb, { email: 'hook@test.com', name: 'Hooker' })
       const evt = createTestEvent(testDb, user!.id, {
         title: 'Webhook Wedding',

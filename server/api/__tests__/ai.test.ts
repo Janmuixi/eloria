@@ -142,7 +142,7 @@ describe('AI API', () => {
       delete process.env.OPENAI_API_KEY
       vi.resetModules()
       const handler = (await import('../ai/recommend-templates.post')).default
-      seedTiers(testDb).run()
+      seedTiers(testDb)
       seedTemplate(testDb, 1)
       seedTemplate(testDb, 2)
 

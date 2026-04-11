@@ -141,10 +141,10 @@ describe('Guests API', () => {
       expect(result.name).toBe('Just Fits')
     })
 
-    it('allows unlimited guests when tier has no guest limit (Pro)', async () => {
+    it('allows unlimited guests when tier has no guest limit (Premium)', async () => {
       seedTiers(testDb)
-      // Pro tier (id=3) has guestLimit=null
-      const proEvt = createTestEvent(testDb, user.id, { tierId: 3, paymentStatus: 'paid' })
+      // Premium tier (id=2) has guestLimit=null
+      const proEvt = createTestEvent(testDb, user.id, { tierId: 2, paymentStatus: 'paid' })
 
       for (let i = 0; i < 100; i++) {
         createTestGuest(testDb, proEvt.id, { name: `Guest ${i}` })
