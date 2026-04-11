@@ -34,7 +34,13 @@
     "title": "My Account",
     "name": "Name",
     "email": "Email",
-    "eventsCreated": "Events Created"
+    "eventsCreated": "Events Created",
+    "subscription": "Subscription",
+    "proPlan": "Pro Plan",
+    "renewsOn": "Renews on {date}",
+    "cancelSubscription": "Cancel subscription",
+    "noActiveSubscription": "No active subscription",
+    "viewPlans": "View Plans"
   },
   "footer": {
     "allRightsReserved": "All rights reserved.",

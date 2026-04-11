@@ -34,7 +34,13 @@
     "title": "Mi cuenta",
     "name": "Nombre",
     "email": "Correo electrónico",
-    "eventsCreated": "Eventos creados"
+    "eventsCreated": "Eventos creados",
+    "subscription": "Suscripción",
+    "proPlan": "Plan Pro",
+    "renewsOn": "Renueva el {date}",
+    "cancelSubscription": "Cancelar suscripción",
+    "noActiveSubscription": "Sin suscripción activa",
+    "viewPlans": "Ver planes"
   },
   "footer": {
     "allRightsReserved": "Todos los derechos reservados.",
