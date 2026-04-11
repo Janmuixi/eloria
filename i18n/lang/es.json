@@ -26,7 +26,14 @@
     "dashboard": "Panel",
     "signIn": "Iniciar sesión",
     "signOut": "Cerrar sesión",
-    "getStarted": "Comenzar"
+    "getStarted": "Comenzar",
+    "myAccount": "Mi cuenta"
+  },
+  "account": {
+    "title": "Mi cuenta",
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "eventsCreated": "Eventos creados"
   },
   "footer": {
     "allRightsReserved": "Todos los derechos reservados.",

@@ -26,7 +26,14 @@
     "dashboard": "Dashboard",
     "signIn": "Sign in",
     "signOut": "Sign out",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "myAccount": "My Account"
+  },
+  "account": {
+    "title": "My Account",
+    "name": "Name",
+    "email": "Email",
+    "eventsCreated": "Events Created"
   },
   "footer": {
     "allRightsReserved": "All rights reserved.",
