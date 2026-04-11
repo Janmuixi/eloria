@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { t } = useI18n()
+const { loggedIn } = useUserSession()
 
 useSeoMeta({
   title: t('pricing.seoTitle'),
@@ -19,6 +20,10 @@ function formatGuestLimit(limit: number | null): string {
 
 function isPremium(slug: string): boolean {
   return slug === 'premium'
+}
+
+function isPro(slug: string): boolean {
+  return slug === 'pro'
 }
 
 interface Tier {
@@ -47,16 +52,16 @@ interface Tier {
         </p>
       </div>
 
-      <div v-if="tiers" class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+      <div v-if="tiers" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
         <div
           v-for="tier in (tiers as Tier[])"
           :key="tier.id"
           class="relative rounded-2xl p-8 flex flex-col shadow-sm"
-          :class="isPremium(tier.slug) ? 'bg-ivory-100 border-2 border-champagne-500 shadow-lg' : 'bg-ivory-100 border border-charcoal-200'"
+          :class="isPro(tier.slug) ? 'bg-ivory-100 border-2 border-champagne-500 shadow-lg' : 'bg-ivory-100 border border-charcoal-200'"
         >
           <!-- Popular badge -->
           <div
-            v-if="isPremium(tier.slug)"
+            v-if="isPro(tier.slug)"
             class="absolute -top-3 left-1/2 -translate-x-1/2 bg-champagne-500 text-white rounded-full text-xs font-semibold px-3 py-1"
           >
             {{ $t('pricing.mostPopular') }}
@@ -66,12 +71,18 @@ interface Tier {
             <h2 class="text-xl font-semibold text-charcoal-900">{{ tier.name }}</h2>
             <div class="mt-2">
               <span class="font-display font-bold text-4xl text-charcoal-900">{{ formatPrice(tier.price) }}</span>
-              <span v-if="tier.price > 0" class="text-charcoal-500 text-sm ml-1">{{ $t('common.oneTime') }}</span>
+              <span v-if="tier.price > 0" class="text-charcoal-500 text-sm ml-1">{{ isPro(tier.slug) ? $t('common.perMonth') : $t('common.oneTime') }}</span>
             </div>
           </div>
 
           <!-- Features -->
           <ul class="space-y-3 mb-8 flex-1">
+            <li v-if="isPro(tier.slug)" class="flex items-center gap-2 text-sm">
+              <svg class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <span class="text-charcoal-500">{{ $t('pricing.unlimitedEvents') }}</span>
+            </li>
             <li class="flex items-center gap-2 text-sm">
               <svg class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -125,10 +136,18 @@ interface Tier {
             </li>
           </ul>
 
+          <button
+            v-if="isPro(tier.slug) && loggedIn"
+            @click="navigateTo('/api/subscriptions/create-checkout', { external: true })"
+            class="block text-center font-medium py-2.5 transition-all duration-200 bg-champagne-500 text-white rounded-full hover:bg-champagne-600 hover:shadow-md"
+          >
+            {{ $t('pricing.subscribeNow') }}
+          </button>
           <NuxtLink
+            v-else
             to="/auth/register"
             class="block text-center font-medium py-2.5 transition-all duration-200"
-            :class="isPremium(tier.slug)
+            :class="isPro(tier.slug)
               ? 'bg-champagne-500 text-white rounded-full hover:bg-champagne-600 hover:shadow-md'
               : 'border border-charcoal-900 text-charcoal-900 rounded-full hover:bg-charcoal-100 hover:shadow-md'"
           >

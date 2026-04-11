@@ -18,6 +18,7 @@
     "manage": "Gestionar",
     "premium": "Premium",
     "oneTime": "pago único",
+    "perMonth": "/mes",
     "free": "Gratis"
   },
   "nav": {
@@ -74,11 +75,13 @@
     "mostPopular": "Más Popular",
     "guests": "{count} invitados",
     "unlimitedGuests": "Invitados ilimitados",
+    "unlimitedEvents": "Eventos ilimitados",
     "emailDelivery": "Envío por correo",
     "pdfExport": "Exportar PDF",
     "aiTextGeneration": "Generación de texto con IA",
     "customBranding": "Marca personalizada",
-    "multipleVariants": "Múltiples variantes"
+    "multipleVariants": "Múltiples variantes",
+    "subscribeNow": "Suscribirse Ahora"
   },
   "auth": {
     "loginTitle": "Inicia sesión en Eloria",

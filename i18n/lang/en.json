@@ -18,6 +18,7 @@
     "manage": "Manage",
     "premium": "Premium",
     "oneTime": "one-time",
+    "perMonth": "/month",
     "free": "Free"
   },
   "nav": {
@@ -74,11 +75,13 @@
     "mostPopular": "Most Popular",
     "guests": "{count} guests",
     "unlimitedGuests": "Unlimited guests",
+    "unlimitedEvents": "Unlimited events",
     "emailDelivery": "Email delivery",
     "pdfExport": "PDF export",
     "aiTextGeneration": "AI text generation",
     "customBranding": "Custom branding",
-    "multipleVariants": "Multiple variants"
+    "multipleVariants": "Multiple variants",
+    "subscribeNow": "Subscribe Now"
   },
   "auth": {
     "loginTitle": "Sign in to Eloria",

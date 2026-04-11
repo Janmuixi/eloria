@@ -34,6 +34,18 @@ async function seed() {
       removeBranding: true,
       hasMultipleVariants: true,
     },
+    {
+      name: 'Pro',
+      slug: 'pro',
+      price: 4900,
+      sortOrder: 3,
+      guestLimit: null,
+      hasEmailDelivery: true,
+      hasPdfExport: true,
+      hasAiTextGeneration: true,
+      removeBranding: true,
+      hasMultipleVariants: true,
+    },
   ]).onConflictDoNothing()
 
   console.log('Seeding complete.')
