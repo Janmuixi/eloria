@@ -23,19 +23,34 @@ describe('Tiers API', () => {
 
   describe('GET /api/tiers', () => {
     it('lists tiers in sort order', async () => {
-      seedTiers(testDb).run()
+      seedTiers(testDb)
 
       const event = createMockEvent()
 
       const result = await handler(event)
 
-      expect(result).toHaveLength(3)
+      expect(result).toHaveLength(2)
       expect(result[0].name).toBe('Basic')
       expect(result[0].sortOrder).toBe(1)
       expect(result[1].name).toBe('Premium')
       expect(result[1].sortOrder).toBe(2)
-      expect(result[2].name).toBe('Pro')
-      expect(result[2].sortOrder).toBe(3)
+    })
+
+    it('returns correct Premium tier features', async () => {
+      seedTiers(testDb)
+
+      const event = createMockEvent()
+
+      const result = await handler(event)
+      const premium = result[1]
+
+      expect(premium.price).toBe(3500)
+      expect(premium.guestLimit).toBeNull()
+      expect(premium.hasEmailDelivery).toBe(true)
+      expect(premium.hasPdfExport).toBe(true)
+      expect(premium.hasAiTextGeneration).toBe(true)
+      expect(premium.removeBranding).toBe(true)
+      expect(premium.hasMultipleVariants).toBe(true)
     })
 
     it('returns empty array when no tiers seeded', async () => {
