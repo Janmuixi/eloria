@@ -4,6 +4,10 @@ definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 const route = useRoute()
 const { t } = useI18n()
 
+// ─── Subscription check ────────────────────────────────────────────────────
+const { data: subscriptionStatus } = await useFetch('/api/subscriptions/status')
+const isSubscriber = computed(() => subscriptionStatus.value?.hasActiveSubscription === true)
+
 // ─── Wizard state ──────────────────────────────────────────────────────────
 const currentStep = ref(parseInt(route.query.step as string) || 1)
 const eventId = ref<number | null>(parseInt(route.query.eventId as string) || null)
@@ -157,7 +161,11 @@ async function saveCustomization() {
 
 // ─── Step 4: Preview ───────────────────────────────────────────────────────
 function confirmPreview() {
-  currentStep.value = 5
+  if (isSubscriber.value && eventId.value) {
+    navigateTo(`/dashboard/events/${eventId.value}`)
+  } else {
+    currentStep.value = 5
+  }
 }
 
 // ─── Step 5: Tier Selection & Payment ──────────────────────────────────────
@@ -223,7 +231,13 @@ function getCategoryClass(category: string) {
   return categoryColors[category?.toLowerCase()] || 'bg-charcoal-100 text-charcoal-800'
 }
 
-const stepLabels = computed(() => [t('eventForm.stepDetails'), t('eventForm.stepTemplate'), t('eventForm.stepCustomize'), t('eventForm.stepPreview'), t('eventForm.stepPayment')])
+const stepLabels = computed(() => {
+  const labels = [t('eventForm.stepDetails'), t('eventForm.stepTemplate'), t('eventForm.stepCustomize'), t('eventForm.stepPreview')]
+  if (!isSubscriber.value) {
+    labels.push(t('eventForm.stepPayment'))
+  }
+  return labels
+})
 </script>
 
 <template>
