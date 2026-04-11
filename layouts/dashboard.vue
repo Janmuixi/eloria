@@ -33,6 +33,11 @@
             active-class="bg-champagne-100 rounded-lg border-l-2 border-champagne-500 text-charcoal-900 font-medium">
             {{ t('dashboard.createEvent') }}
           </NuxtLink>
+          <NuxtLink to="/dashboard/account" @click="sidebarOpen = false"
+            class="flex items-center px-3 py-2 rounded-lg text-sm text-charcoal-500 hover:text-charcoal-900 hover:bg-charcoal-100"
+            active-class="bg-champagne-100 rounded-lg border-l-2 border-champagne-500 text-charcoal-900 font-medium">
+            {{ t('nav.myAccount') }}
+          </NuxtLink>
         </nav>
       </aside>
     </div>
@@ -52,6 +57,11 @@
           class="flex items-center px-3 py-2 rounded-lg text-sm text-charcoal-500 hover:text-charcoal-900 hover:bg-charcoal-100"
           active-class="bg-champagne-100 rounded-lg border-l-2 border-champagne-500 text-charcoal-900 font-medium">
           {{ t('dashboard.createEvent') }}
+        </NuxtLink>
+        <NuxtLink to="/dashboard/account"
+          class="flex items-center px-3 py-2 rounded-lg text-sm text-charcoal-500 hover:text-charcoal-900 hover:bg-charcoal-100"
+          active-class="bg-champagne-100 rounded-lg border-l-2 border-champagne-500 text-charcoal-900 font-medium">
+          {{ t('nav.myAccount') }}
         </NuxtLink>
       </nav>
     </aside>
