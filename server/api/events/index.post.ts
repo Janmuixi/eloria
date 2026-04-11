@@ -1,6 +1,8 @@
 import { requireAuth } from '~/server/utils/auth'
 import { db } from '~/server/db'
-import { events } from '~/server/db/schema'
+import { events, tiers } from '~/server/db/schema'
+import { eq } from 'drizzle-orm'
+import { hasActiveSubscription } from '~/server/utils/subscription'
 
 function generateSlug(name1: string, name2: string): string {
   const base = `${name1}-and-${name2}`
@@ -23,7 +25,13 @@ export default defineEventHandler(async (event) => {
 
   const slug = generateSlug(coupleName1, coupleName2)
 
-  const [newEvent] = await db.insert(events).values({
+  const isSubscriber = await hasActiveSubscription(user.id)
+
+  const premiumTier = await db.query.tiers.findFirst({
+    where: eq(tiers.slug, 'premium'),
+  })
+
+  const eventData: Record<string, unknown> = {
     userId: user.id,
     title,
     coupleName1,
@@ -34,7 +42,14 @@ export default defineEventHandler(async (event) => {
     venueMapUrl: venueMapUrl || null,
     description: description || null,
     slug,
-  }).returning()
+  }
+
+  if (isSubscriber && premiumTier) {
+    eventData.paymentStatus = 'paid'
+    eventData.tierId = premiumTier.id
+  }
+
+  const [newEvent] = await db.insert(events).values(eventData).returning()
 
   return newEvent
 })
