@@ -33,11 +33,32 @@ export const users = sqliteTable('users', {
   emailVerified: integer('email_verified', { mode: 'boolean' }).default(false),
   resetToken: text('reset_token'),
   resetTokenExpiresAt: text('reset_token_expires_at'),
+  stripeCustomerId: text('stripe_customer_id'),
   createdAt: text('created_at').default(new Date().toISOString()),
 })
 
 export const usersRelations = relations(users, ({ many }) => ({
   events: many(events),
+}))
+
+export const subscriptions = sqliteTable('subscriptions', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id),
+  stripeSubscriptionId: text('stripe_subscription_id').notNull().unique(),
+  stripeCustomerId: text('stripe_customer_id').notNull(),
+  status: text('status').notNull(),
+  price: integer('price').notNull(),
+  currentPeriodStart: text('current_period_start'),
+  currentPeriodEnd: text('current_period_end'),
+  canceledAt: text('canceled_at'),
+  createdAt: text('created_at').default(new Date().toISOString()),
+})
+
+export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
+  user: one(users, {
+    fields: [subscriptions.userId],
+    references: [users.id],
+  }),
 }))
 
 // ─── Templates ──────────────────────────────────────────────────────────────
