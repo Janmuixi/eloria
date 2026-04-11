@@ -543,7 +543,7 @@ const stepLabels = computed(() => [t('eventForm.stepDetails'), t('eventForm.step
         <p class="text-charcoal-500 mt-3">{{ $t('payment.loadingPlans') }}</p>
       </div>
 
-      <div v-else class="grid md:grid-cols-3 gap-6">
+      <div v-else class="grid md:grid-cols-2 gap-6 max-w-2xl">
         <button v-for="tier in tiersList" :key="tier.id"
           @click="selectedTierSlug = tier.slug"
           :class="[
