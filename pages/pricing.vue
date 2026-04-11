@@ -47,7 +47,7 @@ interface Tier {
         </p>
       </div>
 
-      <div v-if="tiers" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      <div v-if="tiers" class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
         <div
           v-for="tier in (tiers as Tier[])"
           :key="tier.id"
