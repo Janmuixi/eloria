@@ -4,7 +4,7 @@ definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const { t } = useI18n()
 const { user } = useAuth()
-const { data: stats } = await useFetch('/api/auth/me/stats')
+const { data: stats } = await useFetch<{ eventCount: number }>('/api/auth/me/stats')
 </script>
 
 <template>

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import jwt from 'jsonwebtoken'
 import { createTestDb, createTestUser, createTestEvent, type TestDb } from '../../__helpers__/db'
 import { createMockEvent } from '../../__helpers__/event'
