@@ -1,6 +1,20 @@
 <script setup lang="ts">
 const { t } = useI18n()
-const { loggedIn } = useUserSession()
+const { user } = useAuth()
+const loggedIn = computed(() => user.value !== null)
+
+const subscribing = ref(false)
+async function startSubscription() {
+  subscribing.value = true
+  try {
+    const res = await $fetch<{ url: string }>('/api/subscriptions/create-checkout', { method: 'POST' })
+    if (res.url) navigateTo(res.url, { external: true })
+  } catch {
+    navigateTo('/auth/login')
+  } finally {
+    subscribing.value = false
+  }
+}
 
 useSeoMeta({
   title: t('pricing.seoTitle'),
@@ -138,10 +152,11 @@ interface Tier {
 
           <button
             v-if="isPro(tier.slug) && loggedIn"
-            @click="navigateTo('/api/subscriptions/create-checkout', { external: true })"
-            class="block text-center font-medium py-2.5 transition-all duration-200 bg-champagne-500 text-white rounded-full hover:bg-champagne-600 hover:shadow-md"
+            @click="startSubscription"
+            :disabled="subscribing"
+            class="block w-full text-center font-medium py-2.5 transition-all duration-200 bg-champagne-500 text-white rounded-full hover:bg-champagne-600 hover:shadow-md disabled:opacity-60"
           >
-            {{ $t('pricing.subscribeNow') }}
+            {{ subscribing ? $t('common.loading') : $t('pricing.subscribeNow') }}
           </button>
           <NuxtLink
             v-else
