@@ -15,6 +15,7 @@
     "password": "Contraseña",
     "active": "Activo",
     "pendingPayment": "Pago pendiente",
+    "locked": "Bloqueado",
     "manage": "Gestionar",
     "premium": "Premium",
     "oneTime": "pago único",
@@ -168,7 +169,10 @@
     "manageGuests": "Gestionar Invitados",
     "manageGuestsDescription": "Añadir, eliminar y seguir invitados",
     "viewInvitation": "Ver Invitación",
-    "viewInvitationDescription": "Ver tu página de invitación pública"
+    "viewInvitationDescription": "Ver tu página de invitación pública",
+    "eventLocked": "Evento bloqueado",
+    "eventLockedDescription": "Tu suscripción ha expirado. Reactiva tu suscripción Pro para restaurar el acceso a este evento.",
+    "reactivateSubscription": "Reactivar suscripción"
   },
   "guests": {
     "guestList": "Lista de Invitados",

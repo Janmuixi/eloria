@@ -15,6 +15,7 @@
     "password": "Password",
     "active": "Active",
     "pendingPayment": "Pending Payment",
+    "locked": "Locked",
     "manage": "Manage",
     "premium": "Premium",
     "oneTime": "one-time",
@@ -168,7 +169,10 @@
     "manageGuests": "Manage Guests",
     "manageGuestsDescription": "Add, remove, and track guests",
     "viewInvitation": "View Invitation",
-    "viewInvitationDescription": "See your public invitation page"
+    "viewInvitationDescription": "See your public invitation page",
+    "eventLocked": "Event Locked",
+    "eventLockedDescription": "Your subscription has expired. Reactivate your Pro subscription to restore access to this event.",
+    "reactivateSubscription": "Reactivate Subscription"
   },
   "guests": {
     "guestList": "Guest List",

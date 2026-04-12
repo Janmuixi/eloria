@@ -7,6 +7,8 @@ const eventId = route.params.id as string
 
 const { data: evt, status } = await useFetch(`/api/events/${eventId}`)
 
+const isLocked = computed(() => evt.value?.paymentStatus === 'locked')
+
 const tabs = computed(() => [
   { label: t('eventDetail.tabOverview'), to: `/dashboard/events/${eventId}` },
   { label: t('eventDetail.tabGuests'), to: `/dashboard/events/${eventId}/guests` },
@@ -148,6 +150,24 @@ async function downloadPdf() {
     </div>
 
     <div v-else>
+      <!-- Locked Banner -->
+      <div v-if="isLocked" class="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-6 flex items-start gap-4">
+        <svg class="w-6 h-6 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+        <div class="flex-1">
+          <p class="font-semibold text-amber-900">{{ $t('eventDetail.eventLocked') }}</p>
+          <p class="text-sm text-amber-700 mt-1">{{ $t('eventDetail.eventLockedDescription') }}</p>
+        </div>
+        <NuxtLink
+          to="/dashboard/account"
+          class="flex-shrink-0 px-4 py-2 bg-amber-500 text-white rounded-full text-sm font-medium hover:bg-amber-600 transition-colors"
+        >
+          {{ $t('eventDetail.reactivateSubscription') }}
+        </NuxtLink>
+      </div>
+
       <!-- Event Info Card -->
       <div class="bg-white rounded-2xl shadow-sm border border-charcoal-200 p-6 mb-6">
         <div class="flex items-start justify-between">
@@ -159,14 +179,18 @@ async function downloadPdf() {
           </div>
           <span :class="[
             'rounded-full px-3 py-1 text-xs font-medium',
-            evt.paymentStatus === 'paid' ? 'bg-champagne-500 text-white' : 'bg-charcoal-100 text-charcoal-500'
+            evt.paymentStatus === 'paid' ? 'bg-champagne-500 text-white' :
+            evt.paymentStatus === 'locked' ? 'bg-amber-100 text-amber-700' :
+            'bg-charcoal-100 text-charcoal-500'
           ]">
-            {{ evt.paymentStatus === 'paid' ? $t('common.active') : $t('common.pendingPayment') }}
+            {{ evt.paymentStatus === 'paid' ? $t('common.active') :
+               evt.paymentStatus === 'locked' ? $t('common.locked') :
+               $t('common.pendingPayment') }}
           </span>
         </div>
 
         <!-- Invitation Link -->
-        <div v-if="evt.paymentStatus === 'paid'" class="mt-4 pt-4 border-t border-charcoal-200">
+        <div v-if="evt.paymentStatus === 'paid' && !isLocked" class="mt-4 pt-4 border-t border-charcoal-200">
           <label class="block text-sm font-medium text-charcoal-700 mb-1">{{ $t('eventDetail.publicInvitationLink') }}</label>
           <div class="flex gap-2">
             <input
@@ -228,7 +252,7 @@ async function downloadPdf() {
       </div>
 
       <!-- Email & PDF Actions -->
-      <div v-if="evt.paymentStatus === 'paid'" class="bg-white rounded-2xl shadow-sm border border-charcoal-200 p-6 mb-6">
+      <div v-if="evt.paymentStatus === 'paid' && !isLocked" class="bg-white rounded-2xl shadow-sm border border-charcoal-200 p-6 mb-6">
         <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-4">{{ $t('eventDetail.actions') }}</h2>
         <div class="flex flex-wrap gap-3">
           <!-- Send Invitations -->
@@ -309,7 +333,7 @@ async function downloadPdf() {
           <p class="font-medium text-charcoal-900">{{ $t('eventDetail.manageGuests') }}</p>
           <p class="text-sm text-charcoal-500 mt-1">{{ $t('eventDetail.manageGuestsDescription') }}</p>
         </NuxtLink>
-        <a v-if="evt.paymentStatus === 'paid'"
+        <a v-if="evt.paymentStatus === 'paid' && !isLocked"
           :href="invitationUrl" target="_blank" rel="noopener noreferrer"
           class="flex-1 bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-6 text-center hover:border-champagne-400 hover:shadow-md transition-all duration-200">
           <p class="font-medium text-charcoal-900">{{ $t('eventDetail.viewInvitation') }}</p>
