@@ -16,6 +16,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Event not found' })
   }
 
+  if (existing.paymentStatus === 'locked') {
+    throw createError({ statusCode: 403, statusMessage: 'Event is locked. Reactivate your subscription to make changes.' })
+  }
+
   const [updated] = await db.update(events)
     .set({
       templateId: body.templateId ?? existing.templateId,
