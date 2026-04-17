@@ -168,6 +168,23 @@ function confirmPreview() {
   }
 }
 
+// ─── Subscription upsell ───────────────────────────────────────────────────
+const subscribing = ref(false)
+async function startSubscription() {
+  subscribing.value = true
+  try {
+    const res = await $fetch<{ url: string }>('/api/subscriptions/create-checkout', {
+      method: 'POST',
+      body: eventId.value ? { eventId: eventId.value } : {},
+    })
+    if (res.url) navigateTo(res.url, { external: true })
+  } catch {
+    navigateTo('/auth/login')
+  } finally {
+    subscribing.value = false
+  }
+}
+
 // ─── Step 5: Tier Selection & Payment ──────────────────────────────────────
 const tiersList = ref<any[]>([])
 const selectedTierSlug = ref<string | null>(null)
@@ -550,6 +567,28 @@ const stepLabels = computed(() => {
     <div v-else-if="currentStep === 5">
       <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">{{ $t('payment.title') }}</h1>
       <p class="text-charcoal-500 mb-6">{{ $t('payment.subtitle') }}</p>
+
+      <!-- Pro subscription upsell banner -->
+      <div class="max-w-2xl mb-8 rounded-2xl bg-champagne-50 border border-champagne-300 p-6 flex items-start gap-4">
+        <div class="shrink-0 w-10 h-10 bg-champagne-500 rounded-full flex items-center justify-center text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z" />
+          </svg>
+        </div>
+        <div class="flex-1">
+          <h3 class="font-display font-semibold text-charcoal-900 mb-1">{{ $t('payment.proUpsellTitle') }}</h3>
+          <p class="text-sm text-charcoal-500 mb-3">{{ $t('payment.proUpsellDescription') }}</p>
+          <button
+            @click="startSubscription"
+            :disabled="subscribing"
+            class="bg-champagne-500 text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-60"
+          >
+            {{ subscribing ? $t('common.loading') : $t('payment.proUpsellCta') }}
+          </button>
+        </div>
+      </div>
+
+      <p class="text-sm text-charcoal-500 mb-4 max-w-2xl font-medium">{{ $t('payment.orChooseSingleEvent') }}</p>
 
       <!-- Loading state -->
       <div v-if="loadingTiers" class="text-center py-12">

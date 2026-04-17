@@ -1,6 +1,6 @@
 import Stripe from 'stripe'
 import { db } from '~/server/db'
-import { subscriptions, events } from '~/server/db/schema'
+import { subscriptions, events, tiers } from '~/server/db/schema'
 import { eq } from 'drizzle-orm'
 import { resolveEnvVar } from '~/server/utils/resolve-env-var'
 
@@ -50,6 +50,17 @@ export default defineEventHandler(async (event) => {
           currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000).toISOString(),
         },
       })
+
+      // If subscription was started from event creation wizard, mark that event as paid
+      const eventId = session.metadata?.eventId ? parseInt(session.metadata.eventId) : null
+      if (eventId) {
+        const premiumTier = await db.query.tiers.findFirst({ where: eq(tiers.slug, 'premium') })
+        if (premiumTier) {
+          await db.update(events)
+            .set({ paymentStatus: 'paid', tierId: premiumTier.id })
+            .where(eq(events.id, eventId))
+        }
+      }
     }
   }
 

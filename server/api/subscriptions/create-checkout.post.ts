@@ -27,7 +27,14 @@ export default defineEventHandler(async (event) => {
       .where(eq(users.id, user.id))
   }
 
+  const body = await readBody(event).catch(() => ({}))
+  const eventId = body?.eventId ? parseInt(body.eventId) : null
+
   const baseUrl = resolveEnvVar('BASE_URL', 'http://localhost:3000')
+  const successUrl = eventId
+    ? `${baseUrl}/dashboard/events/${eventId}?subscription=success`
+    : `${baseUrl}/dashboard?subscription=success`
+
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
     payment_method_types: ['card'],
@@ -44,9 +51,9 @@ export default defineEventHandler(async (event) => {
       quantity: 1,
     }],
     mode: 'subscription',
-    success_url: `${baseUrl}/dashboard?subscription=success`,
+    success_url: successUrl,
     cancel_url: `${baseUrl}/pricing`,
-    metadata: { userId: user.id.toString() },
+    metadata: { userId: user.id.toString(), ...(eventId ? { eventId: eventId.toString() } : {}) },
   })
 
   return { url: session.url }

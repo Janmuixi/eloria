@@ -300,7 +300,11 @@
     "removeBranding": "Remove branding",
     "multipleVariants": "Multiple variants",
     "redirecting": "Redirecting to payment...",
-    "payAndPublish": "Pay & Publish"
+    "payAndPublish": "Pay & Publish",
+    "proUpsellTitle": "Get Unlimited Events with Pro",
+    "proUpsellDescription": "Instead of paying per event, subscribe to Pro for unlimited events, all features, and more.",
+    "proUpsellCta": "Subscribe to Pro",
+    "orChooseSingleEvent": "Or pay for this event only"
   },
   "rsvp": {
     "togetherWithFamilies": "Together with their families",

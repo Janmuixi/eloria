@@ -300,7 +300,11 @@
     "removeBranding": "Eliminar marca",
     "multipleVariants": "Múltiples variantes",
     "redirecting": "Redirigiendo al pago...",
-    "payAndPublish": "Pagar y Publicar"
+    "payAndPublish": "Pagar y Publicar",
+    "proUpsellTitle": "Obtén Eventos Ilimitados con Pro",
+    "proUpsellDescription": "En lugar de pagar por evento, suscríbete a Pro para tener eventos ilimitados, todas las funciones y más.",
+    "proUpsellCta": "Suscribirse a Pro",
+    "orChooseSingleEvent": "O paga solo por este evento"
   },
   "rsvp": {
     "togetherWithFamilies": "Junto con sus familias",
