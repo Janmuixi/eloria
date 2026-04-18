@@ -73,4 +73,22 @@ describe('runMigrations', () => {
     expect(count.c).toBe(1)
     sqlite.close()
   })
+
+  it('on a fresh database, applies migrations from scratch and creates tracking', () => {
+    const sqlite = new Database(':memory:')
+    const result = runMigrations(sqlite, 'server/db/migrations')
+    expect(result.bootstrapped).toBe(false)
+    expect(result.bootstrapEntries).toBe(0)
+    // users table should exist now (created by 0000)
+    const usersTable = sqlite
+      .prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name='users'`)
+      .get()
+    expect(usersTable).toBeDefined()
+    // tracking table should exist with at least one row
+    const tracking = sqlite
+      .prepare(`SELECT COUNT(*) as count FROM __drizzle_migrations`)
+      .get() as { count: number }
+    expect(tracking.count).toBeGreaterThanOrEqual(1)
+    sqlite.close()
+  })
 })
