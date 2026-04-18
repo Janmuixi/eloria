@@ -12,6 +12,7 @@
     "db:seed-templates": "npx tsx server/db/seed-templates.ts",
     "db:push": "mkdir -p db && npx drizzle-kit push",
     "db:generate": "npx drizzle-kit generate",
+    "db:migrate": "tsx server/db/migrate.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
