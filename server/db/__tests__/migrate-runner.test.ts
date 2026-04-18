@@ -69,6 +69,8 @@ describe('runMigrations', () => {
     expect(rows[0].hash).toBe(
       createHash('sha256').update(migrationSql).digest('hex'),
     )
+    const count = sqlite.prepare(`SELECT COUNT(*) as c FROM __drizzle_migrations`).get() as { c: number }
+    expect(count.c).toBe(1)
     sqlite.close()
   })
 })
