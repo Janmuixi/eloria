@@ -32,22 +32,25 @@ export default defineEventHandler(async (event) => {
     const userId = parseInt(session.metadata?.userId || '0')
 
     if (userId && session.subscription && session.customer) {
-      const stripeSubscription = await stripe.subscriptions.retrieve(session.subscription as string) as unknown as Stripe.Subscription & { current_period_start: number; current_period_end: number }
+      const stripeSubscription = await stripe.subscriptions.retrieve(session.subscription as string)
+      const item = stripeSubscription.items.data[0] as unknown as Stripe.SubscriptionItem & { current_period_start: number; current_period_end: number }
+      const periodStart = new Date(item.current_period_start * 1000).toISOString()
+      const periodEnd = new Date(item.current_period_end * 1000).toISOString()
 
       await db.insert(subscriptions).values({
         userId,
         stripeSubscriptionId: session.subscription as string,
         stripeCustomerId: session.customer as string,
         status: stripeSubscription.status,
-        price: stripeSubscription.items.data[0]?.price.unit_amount || 4900,
-        currentPeriodStart: new Date(stripeSubscription.current_period_start * 1000).toISOString(),
-        currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000).toISOString(),
+        price: item.price.unit_amount || 4900,
+        currentPeriodStart: periodStart,
+        currentPeriodEnd: periodEnd,
       }).onConflictDoUpdate({
         target: subscriptions.stripeSubscriptionId,
         set: {
           status: stripeSubscription.status,
-          currentPeriodStart: new Date(stripeSubscription.current_period_start * 1000).toISOString(),
-          currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000).toISOString(),
+          currentPeriodStart: periodStart,
+          currentPeriodEnd: periodEnd,
         },
       })
 
@@ -65,15 +68,13 @@ export default defineEventHandler(async (event) => {
   }
 
   if (stripeEvent.type === 'customer.subscription.updated') {
-    const sub = stripeEvent.data.object as Stripe.Subscription & {
-      current_period_start: number
-      current_period_end: number
-    }
+    const sub = stripeEvent.data.object as Stripe.Subscription
+    const item = sub.items.data[0] as unknown as Stripe.SubscriptionItem & { current_period_start: number; current_period_end: number }
     await db.update(subscriptions)
       .set({
         status: sub.status,
-        currentPeriodStart: new Date(sub.current_period_start * 1000).toISOString(),
-        currentPeriodEnd: new Date(sub.current_period_end * 1000).toISOString(),
+        currentPeriodStart: new Date(item.current_period_start * 1000).toISOString(),
+        currentPeriodEnd: new Date(item.current_period_end * 1000).toISOString(),
       })
       .where(eq(subscriptions.stripeSubscriptionId, sub.id))
   }
