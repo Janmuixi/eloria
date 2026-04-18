@@ -29,7 +29,7 @@ describe('runMigrations', () => {
         created_at numeric
       );
     `)
-    const migrationSql = readFileSync('server/db/migrations/0000_many_krista_starr.sql', 'utf-8')
+    const migrationSql = readFileSync('server/db/migrations/0000_acoustic_caretaker.sql', 'utf-8')
     for (const stmt of migrationSql.split('--> statement-breakpoint')) {
       sqlite.exec(stmt)
     }
@@ -44,7 +44,7 @@ describe('runMigrations', () => {
 
   it('bootstraps a database that has users table but no __drizzle_migrations', () => {
     const sqlite = new Database(':memory:')
-    const migrationSql = readFileSync('server/db/migrations/0000_many_krista_starr.sql', 'utf-8')
+    const migrationSql = readFileSync('server/db/migrations/0000_acoustic_caretaker.sql', 'utf-8')
     for (const stmt of migrationSql.split('--> statement-breakpoint')) {
       sqlite.exec(stmt)
     }
@@ -55,7 +55,7 @@ describe('runMigrations', () => {
 
   it('after bootstrap, __drizzle_migrations contains one row per journal entry with matching hash', () => {
     const sqlite = new Database(':memory:')
-    const migrationSql = readFileSync('server/db/migrations/0000_many_krista_starr.sql', 'utf-8')
+    const migrationSql = readFileSync('server/db/migrations/0000_acoustic_caretaker.sql', 'utf-8')
     for (const stmt of migrationSql.split('--> statement-breakpoint')) {
       sqlite.exec(stmt)
     }

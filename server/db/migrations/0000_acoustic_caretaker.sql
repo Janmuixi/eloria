@@ -16,7 +16,7 @@ CREATE TABLE `events` (
 	`stripe_payment_id` text,
 	`language` text DEFAULT 'en' NOT NULL,
 	`slug` text NOT NULL,
-	`created_at` text DEFAULT '2026-04-05T18:50:39.267Z',
+	`created_at` text DEFAULT '2026-04-18T08:36:52.244Z',
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`template_id`) REFERENCES `templates`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`tier_id`) REFERENCES `tiers`(`id`) ON UPDATE no action ON DELETE no action
@@ -35,11 +35,26 @@ CREATE TABLE `guests` (
 	`token` text NOT NULL,
 	`email_sent_at` text,
 	`email_opened_at` text,
-	`created_at` text DEFAULT '2026-04-05T18:50:39.267Z',
+	`created_at` text DEFAULT '2026-04-18T08:36:52.244Z',
 	FOREIGN KEY (`event_id`) REFERENCES `events`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `guests_token_unique` ON `guests` (`token`);--> statement-breakpoint
+CREATE TABLE `subscriptions` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`user_id` integer NOT NULL,
+	`stripe_subscription_id` text NOT NULL,
+	`stripe_customer_id` text NOT NULL,
+	`status` text NOT NULL,
+	`price` integer NOT NULL,
+	`current_period_start` text,
+	`current_period_end` text,
+	`canceled_at` text,
+	`created_at` text DEFAULT '2026-04-18T08:36:52.244Z',
+	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `subscriptions_stripe_subscription_id_unique` ON `subscriptions` (`stripe_subscription_id`);--> statement-breakpoint
 CREATE TABLE `templates` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
@@ -52,7 +67,7 @@ CREATE TABLE `templates` (
 	`font_pairings` text NOT NULL,
 	`tags` text NOT NULL,
 	`minimum_tier_id` integer NOT NULL,
-	`created_at` text DEFAULT '2026-04-05T18:50:39.267Z',
+	`created_at` text DEFAULT '2026-04-18T08:36:52.244Z',
 	FOREIGN KEY (`minimum_tier_id`) REFERENCES `tiers`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
@@ -69,7 +84,7 @@ CREATE TABLE `tiers` (
 	`has_ai_text_generation` integer DEFAULT false,
 	`remove_branding` integer DEFAULT false,
 	`has_multiple_variants` integer DEFAULT false,
-	`created_at` text DEFAULT '2026-04-05T18:50:39.266Z'
+	`created_at` text DEFAULT '2026-04-18T08:36:52.242Z'
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `tiers_slug_unique` ON `tiers` (`slug`);--> statement-breakpoint
@@ -81,7 +96,8 @@ CREATE TABLE `users` (
 	`email_verified` integer DEFAULT false,
 	`reset_token` text,
 	`reset_token_expires_at` text,
-	`created_at` text DEFAULT '2026-04-05T18:50:39.266Z'
+	`stripe_customer_id` text,
+	`created_at` text DEFAULT '2026-04-18T08:36:52.243Z'
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `users_email_unique` ON `users` (`email`);
