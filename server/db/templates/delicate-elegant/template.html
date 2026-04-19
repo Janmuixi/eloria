@@ -50,6 +50,7 @@
     line-height: 1.55;
     color: #5a2a14;
     margin-top: 2%;
+    text-transform: uppercase;
   }
 
   .couple-names {
@@ -112,14 +113,11 @@
 <body>
   <div class="invitation">
     <div class="content">
-      <div class="together">
-        TOGETHER<br>
-        WITH THEIR FAMILIES
-      </div>
+      <div class="together">{{t:templates.together}}</div>
 
       <div class="couple-names">
         <span class="couple-name">{{coupleName1}}</span>
-        <span class="and">and</span>
+        <span class="and">{{t:templates.and}}</span>
         <span class="couple-name">{{coupleName2}}</span>
       </div>
 
