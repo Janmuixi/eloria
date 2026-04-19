@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { substituteTemplate } from '~/server/utils/template-substitute'
+
 const { t } = useI18n()
 const props = defineProps<{
   htmlTemplate: string
@@ -12,16 +14,14 @@ const props = defineProps<{
 
 const iframeRef = ref<HTMLIFrameElement | null>(null)
 
-const renderedHtml = computed(() => {
-  let html = props.htmlTemplate
-  html = html.replace(/\{\{coupleName1\}\}/g, props.coupleName1 || t('templatePreview.partner1'))
-  html = html.replace(/\{\{coupleName2\}\}/g, props.coupleName2 || t('templatePreview.partner2'))
-  html = html.replace(/\{\{date\}\}/g, props.date || t('templatePreview.weddingDate'))
-  html = html.replace(/\{\{venue\}\}/g, props.venue || t('templatePreview.venue'))
-  html = html.replace(/\{\{venueAddress\}\}/g, props.venueAddress || t('templatePreview.address'))
-  html = html.replace(/\{\{wording\}\}/g, props.wording || t('templatePreview.wordingPlaceholder'))
-  return html
-})
+const renderedHtml = computed(() => substituteTemplate(props.htmlTemplate, {
+  coupleName1: props.coupleName1 || t('templatePreview.partner1'),
+  coupleName2: props.coupleName2 || t('templatePreview.partner2'),
+  date: props.date || t('templatePreview.weddingDate'),
+  venue: props.venue || t('templatePreview.venue'),
+  venueAddress: props.venueAddress || t('templatePreview.address'),
+  wording: props.wording || t('templatePreview.wordingPlaceholder'),
+}))
 
 function resizeIframe() {
   if (!iframeRef.value) return
