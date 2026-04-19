@@ -91,6 +91,17 @@ npm run db:migrate
 
 > **Note:** `server/db/schema.ts` currently uses `text('created_at').default(new Date().toISOString())` which evaluates at module load time. Every `db:generate` produces a fresh literal default, causing drizzle to emit drop+recreate-via-temp-table noise for every existing table. Until that pattern is fixed (use `sql\`CURRENT_TIMESTAMP\`` or `$defaultFn`), review generated migrations carefully — you may need to hand-trim them.
 
+## Adding a new template
+
+1. Create a folder `server/db/templates/<slug>/` with:
+   - `template.html` — self-contained HTML with `<style>` and `{{placeholder}}` tokens (`coupleName1`, `coupleName2`, `date`, `venue`, `venueAddress`, `wording`).
+   - `meta.json` — `name`, `category`, `colorScheme`, `fontPairings`, `tags`, `minimumTier`.
+2. Iterate on the HTML by visiting `http://localhost:3000/dev/templates/<slug>` in your browser (dev server only). Edits are picked up on refresh.
+3. Once happy, run `npm run db:seed-templates` to upsert into your local DB.
+4. Generate the preview image: `npm run templates:screenshots`.
+5. Commit the new template folder and the generated `public/images/templates/<slug>.jpg`.
+6. Deploy normally — `db:seed-templates` runs on every prod deploy and the template will appear for customers.
+
 ## Production deployment
 
 The production server hosts the app at `/var/www/eloria`, with git tracking `origin/master` and the process managed by pm2 under the name `eloria`.
@@ -102,6 +113,7 @@ cd /var/www/eloria
 git pull
 npm install
 npm run build
+npm run db:seed-templates
 pm2 restart eloria
 ```
 
@@ -115,6 +127,7 @@ git pull
 cp db/eloria.db db/eloria.db.bak.$(date +%Y-%m-%d)
 npm install
 npm run db:migrate
+npm run db:seed-templates
 npm run build
 pm2 restart eloria
 ```
@@ -173,3 +186,4 @@ If subscriptions aren't appearing in the DB after a successful checkout, check S
 | `npm run db:push`             | Push schema directly to DB (dev only — bypasses migrations) |
 | `npm run db:seed`             | Seed pricing tiers                                    |
 | `npm run db:seed-templates`   | Seed wedding templates                                |
+| `npm run templates:screenshots` | Generate missing preview images for templates (idempotent) |
