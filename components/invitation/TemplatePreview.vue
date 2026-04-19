@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { substituteTemplate } from '~/server/utils/template-substitute'
 
-const { t } = useI18n()
+const { t, locale, messages } = useI18n()
 const props = defineProps<{
   htmlTemplate: string
   coupleName1: string
@@ -14,14 +14,18 @@ const props = defineProps<{
 
 const iframeRef = ref<HTMLIFrameElement | null>(null)
 
-const renderedHtml = computed(() => substituteTemplate(props.htmlTemplate, {
-  coupleName1: props.coupleName1 || t('templatePreview.partner1'),
-  coupleName2: props.coupleName2 || t('templatePreview.partner2'),
-  date: props.date || t('templatePreview.weddingDate'),
-  venue: props.venue || t('templatePreview.venue'),
-  venueAddress: props.venueAddress || t('templatePreview.address'),
-  wording: props.wording || t('templatePreview.wordingPlaceholder'),
-}))
+const renderedHtml = computed(() => substituteTemplate(
+  props.htmlTemplate,
+  {
+    coupleName1: props.coupleName1 || t('templatePreview.partner1'),
+    coupleName2: props.coupleName2 || t('templatePreview.partner2'),
+    date: props.date || t('templatePreview.weddingDate'),
+    venue: props.venue || t('templatePreview.venue'),
+    venueAddress: props.venueAddress || t('templatePreview.address'),
+    wording: props.wording || t('templatePreview.wordingPlaceholder'),
+  },
+  (messages.value[locale.value] as Record<string, unknown>) ?? {},
+))
 
 function resizeIframe() {
   if (!iframeRef.value) return
