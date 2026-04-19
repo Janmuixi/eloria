@@ -5,6 +5,7 @@ import { substituteTemplate } from '../utils/template-substitute'
 
 const TEMPLATES_DIR = 'server/db/templates'
 const IMAGES_DIR = 'public/images/templates'
+const EN_LOCALE_PATH = 'i18n/lang/en.json'
 const SAMPLE_DATA = {
   coupleName1: 'Maria',
   coupleName2: 'James',
@@ -35,11 +36,12 @@ async function main() {
   }
 
   console.log(`[screenshots] generating ${pending.length} image(s)...`)
+  const translations = JSON.parse(readFileSync(EN_LOCALE_PATH, 'utf-8'))
   const browser = await puppeteer.launch({ args: ['--no-sandbox'] })
   try {
     for (const slug of pending) {
       const html = readFileSync(join(TEMPLATES_DIR, slug, 'template.html'), 'utf-8')
-      const rendered = substituteTemplate(html, SAMPLE_DATA)
+      const rendered = substituteTemplate(html, SAMPLE_DATA, translations)
       const page = await browser.newPage()
       await page.setViewport(VIEWPORT)
       await page.setContent(rendered, { waitUntil: 'networkidle0' })
