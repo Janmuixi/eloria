@@ -1,0 +1,17 @@
+{
+  "name": "Delicate Elegant",
+  "category": "classic",
+  "colorScheme": {
+    "primary": "#4a1f0d",
+    "secondary": "#5a2a14",
+    "background": "#f7f3ee",
+    "text": "#4a1f0d",
+    "accent": "#5a2a14"
+  },
+  "fontPairings": {
+    "heading": "Great Vibes",
+    "body": "Cormorant Garamond"
+  },
+  "tags": ["classic", "elegant", "delicate", "formal", "romantic", "script"],
+  "minimumTier": "basic"
+}
