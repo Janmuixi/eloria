@@ -4,11 +4,11 @@ import { substituteTemplate } from '~/server/utils/template-substitute'
 
 const TEMPLATES_DIR = 'server/db/templates'
 const SAMPLE_DATA = {
-  coupleName1: 'Alex',
-  coupleName2: 'Jordan',
+  coupleName1: 'Maria',
+  coupleName2: 'James',
   date: 'Saturday, June 14th, 2026',
-  venue: 'The Old Mill',
-  venueAddress: '123 River Lane, Somewhere, USA',
+  venue: 'The Grand Ballroom',
+  venueAddress: '123 Wedding Lane, City',
   wording: 'Together with their families, they invite you to celebrate\ntheir marriage.',
 }
 

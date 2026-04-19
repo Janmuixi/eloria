@@ -1,0 +1,17 @@
+{
+  "name": "Minimalist",
+  "category": "modern",
+  "colorScheme": {
+    "primary": "#1a1a1a",
+    "secondary": "#1a1a1a",
+    "background": "#ece7dd",
+    "text": "#1a1a1a",
+    "accent": "#1a1a1a"
+  },
+  "fontPairings": {
+    "heading": "Homemade Apple",
+    "body": "Cormorant Garamond"
+  },
+  "tags": ["minimalist", "modern", "clean", "elegant", "script"],
+  "minimumTier": "basic"
+}
