@@ -3,6 +3,7 @@ import { join } from 'path'
 import { substituteTemplate } from '~/server/utils/template-substitute'
 
 const TEMPLATES_DIR = 'server/db/templates'
+const EN_LOCALE_PATH = 'i18n/lang/en.json'
 const SAMPLE_DATA = {
   coupleName1: 'Maria',
   coupleName2: 'James',
@@ -32,7 +33,8 @@ export default defineEventHandler((event) => {
   }
 
   const html = readFileSync(htmlPath, 'utf-8')
-  const rendered = substituteTemplate(html, SAMPLE_DATA)
+  const translations = JSON.parse(readFileSync(EN_LOCALE_PATH, 'utf-8'))
+  const rendered = substituteTemplate(html, SAMPLE_DATA, translations)
   const absolutePath = join(process.cwd(), htmlPath)
 
   setHeader(event, 'content-type', 'text/html; charset=utf-8')
