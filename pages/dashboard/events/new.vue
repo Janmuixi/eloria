@@ -2,7 +2,7 @@
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const route = useRoute()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 // ─── Subscription check ────────────────────────────────────────────────────
 const { data: subscriptionStatus } = await useFetch('/api/subscriptions/status')
@@ -123,6 +123,7 @@ async function generateWording() {
         date: form.date,
         venue: form.venue,
         tone: wordingTone.value,
+        locale: locale.value,
       },
     })
     wordingVariations.value = data.variations
