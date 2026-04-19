@@ -8,13 +8,14 @@ export type TemplateData = {
 }
 
 export type TemplateTranslations = Record<string, unknown>
+export type TemplateTranslator = (path: string) => string | undefined
 
 const TRANSLATION_TOKEN_REGEX = /\{\{t:([a-zA-Z0-9_.]+)\}\}/g
 
 export function substituteTemplate(
   html: string,
   data: TemplateData,
-  translations?: TemplateTranslations,
+  translations?: TemplateTranslations | TemplateTranslator,
 ): string {
   let out = html
     .replace(/\{\{coupleName1\}\}/g, data.coupleName1)
@@ -25,8 +26,15 @@ export function substituteTemplate(
     .replace(/\{\{wording\}\}/g, data.wording)
 
   if (translations) {
+    const resolve = typeof translations === 'function'
+      ? translations
+      : (path: string) => {
+          const v = resolveTranslation(translations, path)
+          return typeof v === 'string' ? v : undefined
+        }
+
     out = out.replace(TRANSLATION_TOKEN_REGEX, (match, path: string) => {
-      const resolved = resolveTranslation(translations, path)
+      const resolved = resolve(path)
       return typeof resolved === 'string' ? resolved : match
     })
   }

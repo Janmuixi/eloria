@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { substituteTemplate } from '~/server/utils/template-substitute'
 
-const { t, locale, messages } = useI18n()
+const { t, te } = useI18n()
 const props = defineProps<{
   htmlTemplate: string
   coupleName1: string
@@ -24,7 +24,7 @@ const renderedHtml = computed(() => substituteTemplate(
     venueAddress: props.venueAddress || t('templatePreview.address'),
     wording: props.wording || t('templatePreview.wordingPlaceholder'),
   },
-  (messages.value[locale.value] as Record<string, unknown>) ?? {},
+  (path: string) => (te(path) ? t(path) : undefined),
 ))
 
 function resizeIframe() {
