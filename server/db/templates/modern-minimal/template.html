@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=DM+Serif+Display&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #ffffff;
+    color: #1a1a1a;
+    min-height: 100vh;
+  }
+
+  .invitation {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 80px 40px;
+    text-align: center;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 48px;
+  }
+
+  .couple-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 52px;
+    font-weight: 400;
+    color: #111;
+    line-height: 1.15;
+  }
+
+  .ampersand {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: #43608f;
+    margin: 12px 0;
+  }
+
+  .divider {
+    width: 48px;
+    height: 2px;
+    background: #43608f;
+    margin: 40px auto;
+  }
+
+  .event-date {
+    font-size: 18px;
+    font-weight: 300;
+    color: #333;
+    letter-spacing: 0.05em;
+  }
+
+  .wording {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.9;
+    color: #555;
+    max-width: 440px;
+    margin: 0 auto;
+    white-space: pre-line;
+  }
+
+  .venue-section {
+    margin-top: 0;
+  }
+
+  .venue-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 12px;
+  }
+
+  .venue-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: #222;
+    margin-bottom: 6px;
+  }
+
+  .venue-address {
+    font-size: 14px;
+    font-weight: 300;
+    color: #777;
+  }
+
+  .footer {
+    margin-top: 60px;
+    padding-top: 32px;
+    border-top: 1px solid #eee;
+  }
+
+  .footer p {
+    font-size: 12px;
+    font-weight: 400;
+    color: #bbb;
+    letter-spacing: 0.1em;
+  }
+</style>
+</head>
+<body>
+  <div class="invitation">
+    <span class="tag">Wedding Invitation</span>
+
+    <h1 class="couple-name">{{coupleName1}}</h1>
+    <p class="ampersand">&amp;</p>
+    <h1 class="couple-name">{{coupleName2}}</h1>
+
+    <div class="divider"></div>
+
+    <p class="event-date">{{date}}</p>
+
+    <div class="divider"></div>
+
+    <div class="wording">{{wording}}</div>
+
+    <div class="divider"></div>
+
+    <div class="venue-section">
+      <p class="venue-label">Venue</p>
+      <p class="venue-name">{{venue}}</p>
+      <p class="venue-address">{{venueAddress}}</p>
+    </div>
+
+    <div class="footer">
+      <p>We look forward to celebrating with you</p>
+    </div>
+  </div>
+</body>
+</html>

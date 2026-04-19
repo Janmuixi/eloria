@@ -1,0 +1,17 @@
+{
+  "name": "Rustic Autumn",
+  "category": "rustic",
+  "colorScheme": {
+    "primary": "#b8834a",
+    "secondary": "#c4956a",
+    "background": "#fdf6ee",
+    "text": "#4a3728",
+    "accent": "#5c3d20"
+  },
+  "fontPairings": {
+    "heading": "Playfair Display",
+    "body": "Lora"
+  },
+  "tags": ["rustic", "autumn", "warm", "outdoor", "barn", "country"],
+  "minimumTier": "basic"
+}

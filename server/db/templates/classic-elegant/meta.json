@@ -1,0 +1,17 @@
+{
+  "name": "Classic Elegant",
+  "category": "classic",
+  "colorScheme": {
+    "primary": "#c9a84c",
+    "secondary": "#a89a80",
+    "background": "#0d0b12",
+    "text": "#e8e0d0",
+    "accent": "#d4c5a9"
+  },
+  "fontPairings": {
+    "heading": "Cinzel",
+    "body": "Cormorant Garamond"
+  },
+  "tags": ["classic", "elegant", "formal", "traditional", "luxury", "gold"],
+  "minimumTier": "basic"
+}

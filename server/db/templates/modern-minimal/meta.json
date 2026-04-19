@@ -1,0 +1,17 @@
+{
+  "name": "Modern Minimal",
+  "category": "modern",
+  "colorScheme": {
+    "primary": "#314571",
+    "secondary": "#8ea3c3",
+    "background": "#FEFDF9",
+    "text": "#101722",
+    "accent": "#43608f"
+  },
+  "fontPairings": {
+    "heading": "DM Serif Display",
+    "body": "Inter"
+  },
+  "tags": ["modern", "minimal", "clean", "contemporary", "simple"],
+  "minimumTier": "basic"
+}
