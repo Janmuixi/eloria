@@ -427,5 +427,14 @@
   },
   "aria": {
     "toggleMenu": "Toggle menu"
+  },
+  "templates": {
+    "together": "Together with their families",
+    "venue": "Venue",
+    "weddingInvitation": "Wedding Invitation",
+    "weLookForward": "We look forward to celebrating with you",
+    "honourOfYourPresence": "The honour of your presence is requested",
+    "joyfullyRequest": "We joyfully request the honour of your presence",
+    "and": "and"
   }
 }

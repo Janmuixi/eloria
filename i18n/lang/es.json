@@ -427,5 +427,14 @@
   },
   "aria": {
     "toggleMenu": "Alternar menú"
+  },
+  "templates": {
+    "together": "Junto con sus familias",
+    "venue": "Lugar",
+    "weddingInvitation": "Invitación de boda",
+    "weLookForward": "Esperamos celebrar contigo",
+    "honourOfYourPresence": "Se solicita el honor de tu presencia",
+    "joyfullyRequest": "Con alegría solicitamos el honor de tu presencia",
+    "and": "y"
   }
 }
