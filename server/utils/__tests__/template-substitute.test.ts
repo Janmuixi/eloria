@@ -138,4 +138,72 @@ describe('substituteTemplate', () => {
     )
     expect(result).toBe('<p>{{t:templates}}</p>')
   })
+
+  it('keeps {{#if var}}...{{/if}} blocks when the variable is non-empty', () => {
+    const html = 'A{{#if venueMapUrl}} <a href="{{venueMapUrl}}">Map</a>{{/if}} Z'
+    const result = substituteTemplate(html, {
+      coupleName1: '', coupleName2: '', date: '',
+      venue: '', venueAddress: '', wording: '',
+      venueMapUrl: 'https://maps.example.com/x',
+    })
+    expect(result).toBe('A <a href="https://maps.example.com/x">Map</a> Z')
+  })
+
+  it('strips {{#if var}}...{{/if}} blocks when the variable is empty', () => {
+    const html = 'A{{#if venueMapUrl}} <a href="{{venueMapUrl}}">Map</a>{{/if}} Z'
+    const result = substituteTemplate(html, {
+      coupleName1: '', coupleName2: '', date: '',
+      venue: '', venueAddress: '', wording: '',
+      venueMapUrl: '',
+    })
+    expect(result).toBe('A Z')
+  })
+
+  it('strips {{#if var}}...{{/if}} blocks when the variable is undefined', () => {
+    const html = 'A{{#if description}}<p>{{description}}</p>{{/if}}Z'
+    const result = substituteTemplate(html, {
+      coupleName1: '', coupleName2: '', date: '',
+      venue: '', venueAddress: '', wording: '',
+    })
+    expect(result).toBe('AZ')
+  })
+
+  it('handles multiple independent conditional blocks', () => {
+    const html = '{{#if venueMapUrl}}MAP{{/if}}|{{#if description}}DESC{{/if}}'
+    const result = substituteTemplate(html, {
+      coupleName1: '', coupleName2: '', date: '',
+      venue: '', venueAddress: '', wording: '',
+      venueMapUrl: 'x',
+      description: '',
+    })
+    expect(result).toBe('MAP|')
+  })
+
+  it('does not substitute variables inside a stripped block', () => {
+    // {{venueMapUrl}} inside the block must not leak even though it's empty.
+    // Stripping happens before variable substitution.
+    const html = 'before{{#if venueMapUrl}}[{{venueMapUrl}}]{{/if}}after'
+    const result = substituteTemplate(html, {
+      coupleName1: '', coupleName2: '', date: '',
+      venue: '', venueAddress: '', wording: '',
+      venueMapUrl: '',
+    })
+    expect(result).toBe('beforeafter')
+  })
+
+  it('does not treat {{#if t:foo}} as a conditional (only data vars supported)', () => {
+    // The conditional regex only matches [a-zA-Z0-9_]+ as a variable name, so
+    // a colon-containing token like {{#if t:foo}} is NOT recognised as a
+    // conditional. The tokens stay in the output verbatim.
+    const html = '{{#if t:foo}}X{{/if}}'
+    const result = substituteTemplate(
+      html,
+      {
+        coupleName1: '', coupleName2: '', date: '',
+        venue: '', venueAddress: '', wording: '',
+      },
+      { t: { foo: 'yes' } },
+    )
+    expect(result).toBe('{{#if t:foo}}X{{/if}}')
+  })
 })
