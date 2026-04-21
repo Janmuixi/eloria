@@ -110,16 +110,19 @@ Append to `server/utils/__tests__/template-substitute.test.ts` (inside the exist
   })
 
   it('does not treat {{#if t:foo}} as a conditional (only data vars supported)', () => {
-    // Translation tokens are not valid conditional subjects; block stays raw and
-    // substituteTemplate leaves the opening/closing tokens in place.
-    // (We only support data variables as conditional subjects — YAGNI.)
-    const html = '{{#if venueMapUrl}}X{{/if}}'
-    const result = substituteTemplate(html, {
-      coupleName1: '', coupleName2: '', date: '',
-      venue: '', venueAddress: '', wording: '',
-      venueMapUrl: 'yes',
-    })
-    expect(result).toBe('X')
+    // The conditional regex only matches [a-zA-Z0-9_]+ as a variable name, so
+    // a colon-containing token like {{#if t:foo}} is NOT recognised as a
+    // conditional. The tokens stay in the output verbatim.
+    const html = '{{#if t:foo}}X{{/if}}'
+    const result = substituteTemplate(
+      html,
+      {
+        coupleName1: '', coupleName2: '', date: '',
+        venue: '', venueAddress: '', wording: '',
+      },
+      { t: { foo: 'yes' } },
+    )
+    expect(result).toBe('{{#if t:foo}}X{{/if}}')
   })
 ```
 
