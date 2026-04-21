@@ -92,6 +92,32 @@
     font-weight: 300;
     letter-spacing: 0.02em;
   }
+
+  .venue-map {
+    margin-top: clamp(0.5rem, 1.5vw, 1rem);
+  }
+  .venue-map a {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+    color: #1a1a1a;
+    letter-spacing: 0.15em;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(26, 26, 26, 0.4);
+    padding-bottom: 1px;
+  }
+
+  .description {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+    font-weight: 300;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+    color: #1a1a1a;
+    margin-top: clamp(1rem, 2.5vw, 1.5rem);
+    white-space: pre-line;
+  }
 </style>
 </head>
 <body>
@@ -103,6 +129,12 @@
       <p class="event-date">{{date}}</p>
       <p class="venue-name">{{venue}}</p>
       <p class="venue-address">{{venueAddress}}</p>
+      {{#if venueMapUrl}}
+      <p class="venue-map"><a href="{{venueMapUrl}}" target="_blank" rel="noopener noreferrer">{{t:templates.viewOnMap}}</a></p>
+      {{/if}}
+      {{#if description}}
+      <p class="description">{{description}}</p>
+      {{/if}}
     </div>
 
   </div>

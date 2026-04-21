@@ -123,6 +123,31 @@
     color: #8a7d6a;
   }
 
+  .venue-map {
+    margin-top: 10px;
+  }
+  .venue-map a {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    color: #c9a84c;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.4);
+    padding-bottom: 2px;
+  }
+
+  .description {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    line-height: 1.8;
+    color: #a89a80;
+    max-width: 420px;
+    margin: 0 auto;
+    white-space: pre-line;
+  }
+
   .footer-note {
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
@@ -158,9 +183,17 @@
         <h3>{{t:templates.venue}}</h3>
         <p class="venue-name">{{venue}}</p>
         <p class="venue-address">{{venueAddress}}</p>
+        {{#if venueMapUrl}}
+        <p class="venue-map"><a href="{{venueMapUrl}}" target="_blank" rel="noopener noreferrer">{{t:templates.viewOnMap}}</a></p>
+        {{/if}}
       </div>
 
       <p class="footer-note">{{t:templates.honourOfYourPresence}}</p>
+
+      {{#if description}}
+      <div class="gold-line"></div>
+      <div class="description">{{description}}</div>
+      {{/if}}
 
       <div class="ornament">&#10022; &#10022; &#10022;</div>
     </div>

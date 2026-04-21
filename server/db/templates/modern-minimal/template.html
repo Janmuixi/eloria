@@ -97,6 +97,30 @@
     color: #777;
   }
 
+  .venue-map {
+    margin-top: 10px;
+  }
+  .venue-map a {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #43608f;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(67, 96, 143, 0.4);
+    padding-bottom: 2px;
+  }
+
+  .description {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.9;
+    color: #555;
+    max-width: 440px;
+    margin: 0 auto;
+    white-space: pre-line;
+  }
+
   .footer {
     margin-top: 60px;
     padding-top: 32px;
@@ -133,7 +157,15 @@
       <p class="venue-label">{{t:templates.venue}}</p>
       <p class="venue-name">{{venue}}</p>
       <p class="venue-address">{{venueAddress}}</p>
+      {{#if venueMapUrl}}
+      <p class="venue-map"><a href="{{venueMapUrl}}" target="_blank" rel="noopener noreferrer">{{t:templates.viewOnMap}}</a></p>
+      {{/if}}
     </div>
+
+    {{#if description}}
+    <div class="divider"></div>
+    <div class="description">{{description}}</div>
+    {{/if}}
 
     <div class="footer">
       <p>{{t:templates.weLookForward}}</p>

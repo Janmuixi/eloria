@@ -103,6 +103,30 @@
     margin-top: 6%;
   }
 
+  .venue-map {
+    margin-top: 4%;
+  }
+  .venue-map a {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(10px, 2vw, 13px);
+    color: #5a2a14;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(90, 42, 20, 0.4);
+    padding-bottom: 2px;
+  }
+
+  .description {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(11px, 2.2vw, 15px);
+    line-height: 1.7;
+    color: #5a2a14;
+    margin-top: 4%;
+    white-space: pre-line;
+  }
+
   @media print {
     html, body { background: #fff; }
     .invitation { box-shadow: none; width: 100%; aspect-ratio: 3875 / 5462; }
@@ -128,6 +152,12 @@
       <div class="venue-name">{{venue}}</div>
 
       <div class="venue-address">{{venueAddress}}</div>
+      {{#if venueMapUrl}}
+      <div class="venue-map"><a href="{{venueMapUrl}}" target="_blank" rel="noopener noreferrer">{{t:templates.viewOnMap}}</a></div>
+      {{/if}}
+      {{#if description}}
+      <div class="description">{{description}}</div>
+      {{/if}}
     </div>
   </div>
 </body>
