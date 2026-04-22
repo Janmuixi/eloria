@@ -34,6 +34,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 403, statusMessage: 'Email delivery is not available on your plan' })
   }
 
+  if (userEvent.templateId == null) {
+    throw createError({ statusCode: 400, statusMessage: 'Select a template before sending invitations' })
+  }
+
   // Fetch guests with email addresses who haven't been sent an invitation yet
   const pendingGuests = await db.query.guests.findMany({
     where: and(
