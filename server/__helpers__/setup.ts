@@ -10,6 +10,7 @@ import {
   getQuery,
   getHeader,
   getRequestHeaders,
+  setHeader,
   setResponseHeaders,
   setResponseStatus,
 } from 'h3'
@@ -30,6 +31,7 @@ const globals: Record<string, unknown> = {
   getQuery,
   getHeader,
   getRequestHeaders,
+  setHeader,
   setResponseHeaders,
   setResponseStatus,
   useRuntimeConfig,
