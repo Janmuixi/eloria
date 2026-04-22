@@ -337,6 +337,14 @@
     "all": "All",
     "comingSoonTitle": "Templates coming soon!",
     "comingSoonDescription": "We're designing beautiful invitations for you. Check back soon.",
+    "together": "Together with their families",
+    "venue": "Venue",
+    "viewOnMap": "View on map",
+    "weddingInvitation": "Wedding Invitation",
+    "weLookForward": "We look forward to celebrating with you",
+    "honourOfYourPresence": "The honour of your presence is requested",
+    "joyfullyRequest": "We joyfully request the honour of your presence",
+    "and": "and",
     "rustic-autumn": {
       "togetherLine": "Together with their families",
       "venueLabel": "Venue",
@@ -427,15 +435,5 @@
   },
   "aria": {
     "toggleMenu": "Toggle menu"
-  },
-  "templates": {
-    "together": "Together with their families",
-    "venue": "Venue",
-    "viewOnMap": "View on map",
-    "weddingInvitation": "Wedding Invitation",
-    "weLookForward": "We look forward to celebrating with you",
-    "honourOfYourPresence": "The honour of your presence is requested",
-    "joyfullyRequest": "We joyfully request the honour of your presence",
-    "and": "and"
   }
 }

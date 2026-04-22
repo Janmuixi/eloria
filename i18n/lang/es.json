@@ -337,6 +337,14 @@
     "all": "Todas",
     "comingSoonTitle": "¡Plantillas próximamente!",
     "comingSoonDescription": "Estamos diseñando hermosas invitaciones para ti. Vuelve pronto.",
+    "together": "Junto con sus familias",
+    "venue": "Lugar",
+    "viewOnMap": "Ver en el mapa",
+    "weddingInvitation": "Invitación de boda",
+    "weLookForward": "Esperamos celebrar contigo",
+    "honourOfYourPresence": "Se solicita el honor de tu presencia",
+    "joyfullyRequest": "Con alegría solicitamos el honor de tu presencia",
+    "and": "y",
     "rustic-autumn": {
       "togetherLine": "Junto con sus familias",
       "venueLabel": "Lugar",
@@ -427,15 +435,5 @@
   },
   "aria": {
     "toggleMenu": "Alternar menú"
-  },
-  "templates": {
-    "together": "Junto con sus familias",
-    "venue": "Lugar",
-    "viewOnMap": "Ver en el mapa",
-    "weddingInvitation": "Invitación de boda",
-    "weLookForward": "Esperamos celebrar contigo",
-    "honourOfYourPresence": "Se solicita el honor de tu presencia",
-    "joyfullyRequest": "Con alegría solicitamos el honor de tu presencia",
-    "and": "y"
   }
 }
