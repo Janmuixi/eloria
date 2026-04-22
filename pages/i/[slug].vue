@@ -1,11 +1,21 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'blank' })
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
 const route = useRoute()
 const slug = route.params.slug as string
 const guestToken = computed(() => route.query.g as string | undefined)
 const isPrint = computed(() => route.query.print === 'true')
+
+const renderedUrl = `/api/invitations/${slug}/rendered.html`
+
+useHead({
+  meta: [{ name: 'robots', content: 'noindex, nofollow' }],
+})
+
+if (isPrint.value) {
+  await navigateTo(renderedUrl, { external: true })
+}
 
 const { data: invitation, error } = await useFetch(`/api/invitations/${slug}`)
 
@@ -13,7 +23,6 @@ if (error.value) {
   throw createError({ statusCode: 404, statusMessage: t('errors.invitationNotFound') })
 }
 
-// RSVP form state
 const { data: guestData, refresh: refreshGuest } = await useFetch(
   () => guestToken.value ? `/api/rsvp/${guestToken.value}` : '',
   { immediate: !!guestToken.value },
@@ -58,99 +67,44 @@ async function submitRsvp() {
   }
 }
 
-function formatDate(dateStr: string) {
-  const date = new Date(dateStr + 'T12:00:00')
-  return date.toLocaleDateString(locale.value, {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
+const iframeRef = ref<HTMLIFrameElement | null>(null)
+const iframeHeight = ref(1200)
+
+function handleMessage(ev: MessageEvent) {
+  if (ev.source !== iframeRef.value?.contentWindow) return
+  if (ev.data?.type !== 'invitation-height') return
+  const h = Number(ev.data.height)
+  if (Number.isFinite(h) && h > 0) iframeHeight.value = h
 }
 
-useSeoMeta({
-  title: () => invitation.value
-    ? t('seo.weddingInvitation', { name: `${invitation.value.coupleName1} & ${invitation.value.coupleName2}` })
-    : t('rsvp.weddingInvitation'),
-  description: () => invitation.value
-    ? t('rsvp.youreInvited', { couple1: invitation.value.coupleName1, couple2: invitation.value.coupleName2, date: formatDate(invitation.value.date) })
-    : '',
-  ogTitle: () => invitation.value
-    ? t('seo.weddingInvitation', { name: `${invitation.value.coupleName1} & ${invitation.value.coupleName2}` })
-    : t('rsvp.weddingInvitation'),
-  ogDescription: () => invitation.value
-    ? t('rsvp.joinUs', { date: formatDate(invitation.value.date), venue: invitation.value.venue })
-    : '',
-  ogType: 'website',
+if (import.meta.client) {
+  window.addEventListener('message', handleMessage)
+}
+
+onBeforeUnmount(() => {
+  window.removeEventListener('message', handleMessage)
 })
 </script>
 
 <template>
   <div v-if="invitation" class="min-h-screen bg-[#faf8f5]">
-    <div class="max-w-2xl mx-auto px-6 py-16">
+    <iframe
+      ref="iframeRef"
+      :src="renderedUrl"
+      :style="{ height: iframeHeight + 'px' }"
+      class="w-full border-0 block bg-white"
+      title="Wedding invitation"
+    />
 
-      <!-- Hero -->
-      <section class="text-center mb-16">
-        <p class="text-sm uppercase tracking-[0.3em] text-champagne-500 mb-6">{{ $t('rsvp.togetherWithFamilies') }}</p>
-        <h1 class="font-serif text-5xl md:text-6xl text-charcoal-900 leading-tight mb-4">
-          {{ invitation.coupleName1 }}
-        </h1>
-        <p class="font-serif text-2xl text-champagne-500 my-2">&amp;</p>
-        <h1 class="font-serif text-5xl md:text-6xl text-charcoal-900 leading-tight mb-8">
-          {{ invitation.coupleName2 }}
-        </h1>
-        <div class="w-24 h-px bg-champagne-400 mx-auto mb-6" />
-        <p class="font-serif text-xl text-charcoal-300">
-          {{ formatDate(invitation.date) }}
-        </p>
-      </section>
-
-      <!-- Wording / Customization -->
-      <section v-if="invitation.customization?.wording" class="text-center mb-16">
-        <p class="font-serif text-lg text-charcoal-500 leading-relaxed whitespace-pre-line">
-          {{ invitation.customization.wording }}
-        </p>
-      </section>
-
-      <!-- Description -->
-      <section v-if="invitation.description" class="text-center mb-16">
-        <div class="w-16 h-px bg-champagne-400 mx-auto mb-6" />
-        <p class="text-charcoal-300 leading-relaxed whitespace-pre-line">{{ invitation.description }}</p>
-      </section>
-
-      <!-- Venue -->
-      <section class="text-center mb-16">
-        <h2 class="font-serif text-2xl text-charcoal-900 mb-4">{{ $t('rsvp.venue') }}</h2>
-        <p class="text-lg font-medium text-charcoal-700 mb-1">{{ invitation.venue }}</p>
-        <p class="text-charcoal-300 mb-4">{{ invitation.venueAddress }}</p>
-        <a
-          v-if="invitation.venueMapUrl"
-          :href="invitation.venueMapUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 text-champagne-600 hover:text-champagne-600 text-sm font-medium"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          {{ $t('rsvp.viewOnMap') }}
-        </a>
-      </section>
-
-      <!-- RSVP Section -->
-      <section v-if="!isPrint" class="mb-16">
+    <div v-if="!isPrint" class="max-w-2xl mx-auto px-6 py-10">
+      <section class="mb-10">
         <div class="bg-white rounded-2xl shadow-sm border border-charcoal-100 p-8 text-center">
           <h2 class="font-serif text-2xl text-charcoal-900 mb-6">{{ $t('rsvp.title') }}</h2>
 
-          <!-- No token -->
           <div v-if="!guestToken">
             <p class="text-charcoal-300">{{ $t('rsvp.usePersonalLink') }}</p>
           </div>
 
-          <!-- Already RSVP'd -->
           <div v-else-if="guestData?.rsvpStatus && guestData.rsvpStatus !== 'pending'">
             <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span class="text-green-600 text-xl">&#10003;</span>
@@ -163,7 +117,6 @@ useSeoMeta({
             </p>
           </div>
 
-          <!-- RSVP Form -->
           <div v-else-if="guestData">
             <p class="text-charcoal-500 mb-6">
               {{ $t('rsvp.dearGuest', { name: guestData.name }) }}
@@ -189,7 +142,6 @@ useSeoMeta({
               </label>
             </div>
 
-            <!-- Plus one -->
             <div v-if="rsvpForm.rsvpStatus === 'confirmed'" class="mb-6 text-left">
               <label class="flex items-center gap-3 mb-3 cursor-pointer">
                 <input type="checkbox" v-model="rsvpForm.plusOne" class="rounded text-champagne-600" />
@@ -213,15 +165,13 @@ useSeoMeta({
             </button>
           </div>
 
-          <!-- Loading -->
           <div v-else>
             <p class="text-charcoal-200">{{ $t('common.loading') }}</p>
           </div>
         </div>
       </section>
 
-      <!-- Footer -->
-      <footer v-if="!isPrint && !invitation.removeBranding" class="text-center pt-8 border-t border-charcoal-100">
+      <footer v-if="!invitation.removeBranding" class="text-center pt-8 border-t border-charcoal-100">
         <p class="text-xs text-charcoal-200">{{ $t('rsvp.poweredBy') }}</p>
       </footer>
     </div>
