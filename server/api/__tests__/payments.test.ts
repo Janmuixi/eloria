@@ -4,6 +4,7 @@ import {
   createTestUser,
   createTestEvent,
   seedTiers,
+  seedTemplate,
   type TestDb,
 } from '../../__helpers__/db'
 import { createMockEvent } from '../../__helpers__/event'
@@ -63,8 +64,9 @@ describe('Payments API', () => {
       vi.resetModules()
       const handler = (await import('../payments/create-checkout.post')).default
       seedTiers(testDb)
+      const template = seedTemplate(testDb, 1)
       const user = await createTestUser(testDb, { email: 'pay@test.com', name: 'Payer' })
-      const evt = createTestEvent(testDb, user!.id, { title: 'Pay Wedding' })
+      const evt = createTestEvent(testDb, user!.id, { title: 'Pay Wedding', templateId: template!.id })
 
       const event = authEvent(user!.id, user!.email, {
         method: 'POST',
@@ -105,8 +107,9 @@ describe('Payments API', () => {
       vi.resetModules()
       const handler = (await import('../payments/create-checkout.post')).default
       seedTiers(testDb)
+      const template = seedTemplate(testDb, 1)
       const user = await createTestUser(testDb, { email: 'badtier@test.com', name: 'BadTier' })
-      const evt = createTestEvent(testDb, user!.id, { title: 'Bad Tier Wedding' })
+      const evt = createTestEvent(testDb, user!.id, { title: 'Bad Tier Wedding', templateId: template!.id })
 
       const event = authEvent(user!.id, user!.email, {
         method: 'POST',
@@ -116,6 +119,25 @@ describe('Payments API', () => {
       await expect(handler(event)).rejects.toMatchObject({
         statusCode: 400,
       })
+    })
+
+    it('rejects when event has no template (400)', async () => {
+      vi.resetModules()
+      const handler = (await import('../payments/create-checkout.post')).default
+      seedTiers(testDb)
+      const user = await createTestUser(testDb, { email: 'notpl@test.com', name: 'NoTpl' })
+      const evt = createTestEvent(testDb, user!.id, { title: 'No Template Wedding', templateId: null })
+
+      const event = authEvent(user!.id, user!.email, {
+        method: 'POST',
+        body: { eventId: evt!.id, tierSlug: 'premium' },
+      })
+
+      await expect(handler(event)).rejects.toMatchObject({
+        statusCode: 400,
+        statusMessage: expect.stringMatching(/template/i),
+      })
+      expect(mockCheckoutCreate).not.toHaveBeenCalled()
     })
   })
 

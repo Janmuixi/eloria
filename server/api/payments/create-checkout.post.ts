@@ -32,6 +32,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Invalid tier' })
   }
 
+  if (userEvent.templateId == null) {
+    throw createError({ statusCode: 400, statusMessage: 'Select a template before paying' })
+  }
+
   // Update event with selected tier
   await db.update(events).set({ tierId: tier.id }).where(eq(events.id, eventId))
 
