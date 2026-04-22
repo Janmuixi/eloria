@@ -81,8 +81,28 @@ if (import.meta.client) {
   window.addEventListener('message', handleMessage)
 }
 
+const rsvpSectionRef = ref<HTMLElement | null>(null)
+const rsvpInView = ref(false)
+let rsvpObserver: IntersectionObserver | null = null
+
+onMounted(() => {
+  if (!rsvpSectionRef.value) return
+  rsvpObserver = new IntersectionObserver(
+    (entries) => {
+      rsvpInView.value = entries[0]?.isIntersecting ?? false
+    },
+    { threshold: 0.1 },
+  )
+  rsvpObserver.observe(rsvpSectionRef.value)
+})
+
+function scrollToRsvp() {
+  rsvpSectionRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
 onBeforeUnmount(() => {
   window.removeEventListener('message', handleMessage)
+  rsvpObserver?.disconnect()
 })
 </script>
 
@@ -97,7 +117,7 @@ onBeforeUnmount(() => {
     />
 
     <div v-if="!isPrint" class="max-w-2xl mx-auto px-6 py-10">
-      <section class="mb-10">
+      <section ref="rsvpSectionRef" class="mb-10">
         <div class="bg-white rounded-2xl shadow-sm border border-charcoal-100 p-8 text-center">
           <h2 class="font-serif text-2xl text-charcoal-900 mb-6">{{ $t('rsvp.title') }}</h2>
 
@@ -175,5 +195,23 @@ onBeforeUnmount(() => {
         <p class="text-xs text-charcoal-200">{{ $t('rsvp.poweredBy') }}</p>
       </footer>
     </div>
+
+    <Transition
+      enter-active-class="transition-opacity duration-200"
+      leave-active-class="transition-opacity duration-200"
+      enter-from-class="opacity-0"
+      leave-to-class="opacity-0"
+    >
+      <button
+        v-if="!isPrint && !rsvpInView"
+        @click="scrollToRsvp"
+        :aria-label="$t('aria.scrollToRsvp')"
+        class="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-champagne-600 text-white shadow-lg flex items-center justify-center hover:bg-champagne-700 hover:shadow-xl transition-colors animate-bounce"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+      </button>
+    </Transition>
   </div>
 </template>

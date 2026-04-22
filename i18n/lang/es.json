@@ -437,6 +437,7 @@
     "iframeTitle": "Vista previa de invitación"
   },
   "aria": {
-    "toggleMenu": "Alternar menú"
+    "toggleMenu": "Alternar menú",
+    "scrollToRsvp": "Desplazarse al RSVP"
   }
 }

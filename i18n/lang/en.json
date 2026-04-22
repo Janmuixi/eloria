@@ -437,6 +437,7 @@
     "iframeTitle": "Invitation preview"
   },
   "aria": {
-    "toggleMenu": "Toggle menu"
+    "toggleMenu": "Toggle menu",
+    "scrollToRsvp": "Scroll to RSVP"
   }
 }
