@@ -1,7 +1,7 @@
 # Template Rendering on Public Invitation Page — Design
 
 **Date:** 2026-04-21
-**Status:** Approved, awaiting implementation plan
+**Status:** Implemented
 
 ## Problem
 
