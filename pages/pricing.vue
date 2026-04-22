@@ -83,6 +83,9 @@ interface Tier {
 
           <div class="mb-6">
             <h2 class="text-xl font-semibold text-charcoal-900">{{ tier.name }}</h2>
+            <p class="text-sm text-charcoal-500 mt-1">
+              {{ isPro(tier.slug) ? $t('pricing.audiencePlanners') : $t('pricing.audienceCouples') }}
+            </p>
             <div class="mt-2">
               <span class="font-display font-bold text-4xl text-charcoal-900">{{ formatPrice(tier.price) }}</span>
               <span v-if="tier.price > 0" class="text-charcoal-500 text-sm ml-1">{{ isPro(tier.slug) ? $t('common.perMonth') : $t('common.oneTime') }}</span>
@@ -91,11 +94,11 @@ interface Tier {
 
           <!-- Features -->
           <ul class="space-y-3 mb-8 flex-1">
-            <li v-if="isPro(tier.slug)" class="flex items-center gap-2 text-sm">
+            <li class="flex items-center gap-2 text-sm">
               <svg class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
-              <span class="text-charcoal-500">{{ $t('pricing.unlimitedEvents') }}</span>
+              <span class="text-charcoal-500">{{ isPro(tier.slug) ? $t('pricing.unlimitedEvents') : $t('pricing.oneEvent') }}</span>
             </li>
             <li class="flex items-center gap-2 text-sm">
               <svg class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
