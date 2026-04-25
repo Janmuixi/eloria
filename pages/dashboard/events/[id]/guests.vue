@@ -105,6 +105,28 @@ const statusBadgeClass = (status: string) => {
     default: return 'bg-charcoal-100 text-charcoal-500'
   }
 }
+
+const copiedGuestId = ref<number | null>(null)
+
+function personalLink(token: string): string {
+  if (!evt.value?.slug) return ''
+  const origin = import.meta.client ? window.location.origin : ''
+  return `${origin}/i/${evt.value.slug}?g=${token}`
+}
+
+async function copyPersonalLink(guest: { id: number; token: string }) {
+  const url = personalLink(guest.token)
+  if (!url) return
+  try {
+    await navigator.clipboard.writeText(url)
+    copiedGuestId.value = guest.id
+    setTimeout(() => {
+      if (copiedGuestId.value === guest.id) copiedGuestId.value = null
+    }, 2000)
+  } catch {
+    /* clipboard rejected; ignore */
+  }
+}
 </script>
 
 <template>
@@ -238,7 +260,11 @@ const statusBadgeClass = (status: string) => {
                 {{ guest.rsvpStatus }}
               </span>
             </td>
-            <td class="px-6 py-4 text-right">
+            <td class="px-6 py-4 text-right space-x-3 whitespace-nowrap">
+              <button @click="copyPersonalLink(guest)"
+                class="text-sm text-charcoal-700 hover:text-charcoal-900 font-medium">
+                {{ copiedGuestId === guest.id ? t('common.copied') : t('guests.copyLink') }}
+              </button>
               <button @click="deleteGuest(guest.id)"
                 class="text-sm text-red-600 hover:text-red-800 font-medium">
                 {{ t('common.remove') }}

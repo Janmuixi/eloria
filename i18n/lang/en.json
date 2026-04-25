@@ -207,7 +207,8 @@
     "guestCountUnlimited": "{current} guests",
     "guestLimitReached": "Guest limit reached for your plan ({limit}). Upgrade to add more.",
     "importLimitExceeded": "Import would exceed your guest limit ({limit}). You can add {remaining} more.",
-    "upgradePlan": "Upgrade Plan"
+    "upgradePlan": "Upgrade Plan",
+    "copyLink": "Copy link"
   },
   "settings": {
     "title": "Event Settings",
