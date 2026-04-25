@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
     payment_method_types: ['card'],
     line_items: [{
       price_data: {
-        currency: 'usd',
+        currency: 'eur',
         product_data: {
           name: `Eloria ${tier.name} - ${userEvent.title}`,
           description: `Wedding invitation for ${userEvent.coupleName1} & ${userEvent.coupleName2}`,
@@ -54,6 +54,7 @@ export default defineEventHandler(async (event) => {
       quantity: 1,
     }],
     mode: 'payment',
+    allow_promotion_codes: true,
     success_url: `${baseUrl}/dashboard/events/${eventId}/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${baseUrl}/dashboard/events/new?step=5&eventId=${eventId}`,
     metadata: { eventId: eventId.toString(), tierId: tier.id.toString() },

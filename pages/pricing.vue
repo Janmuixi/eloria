@@ -25,7 +25,7 @@ const { data: tiers } = await useFetch('/api/tiers')
 
 function formatPrice(cents: number): string {
   if (cents === 0) return t('common.free')
-  return `$${(cents / 100).toFixed(cents % 100 === 0 ? 0 : 2)}`
+  return `${(cents / 100).toFixed(cents % 100 === 0 ? 0 : 2)} €`
 }
 
 function formatGuestLimit(limit: number | null): string {

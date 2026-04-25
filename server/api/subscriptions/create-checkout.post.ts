@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
     payment_method_types: ['card'],
     line_items: [{
       price_data: {
-        currency: 'usd',
+        currency: 'eur',
         product_data: {
           name: 'Eloria Pro - Wedding Planner Subscription',
           description: 'Unlimited event creation with all Premium features',
@@ -51,6 +51,7 @@ export default defineEventHandler(async (event) => {
       quantity: 1,
     }],
     mode: 'subscription',
+    allow_promotion_codes: true,
     success_url: successUrl,
     cancel_url: `${baseUrl}/pricing`,
     metadata: { userId: user.id.toString(), ...(eventId ? { eventId: eventId.toString() } : {}) },
