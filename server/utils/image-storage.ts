@@ -1,5 +1,5 @@
 import { mkdir, unlink, writeFile } from 'node:fs/promises'
-import { dirname, join, resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import sharp from 'sharp'
 
@@ -23,6 +23,8 @@ export async function saveImage(eventId: number, buffer: Buffer): Promise<{
   width: number
   height: number
 }> {
+  // Note: omitting withMetadata() is intentional — Sharp's default drops all
+  // metadata (EXIF, XMP, ICC). Calling .withMetadata() would copy it through.
   const processed = await sharp(buffer, { failOn: 'error' })
     .rotate()
     .jpeg({ quality: 85, mozjpeg: true })
