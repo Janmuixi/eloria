@@ -24,6 +24,8 @@ export default defineEventHandler(async (event) => {
     description: evt.description,
     customization: evt.customization ? JSON.parse(evt.customization) : null,
     template: evt.template,
+    invitationType: evt.invitationType,
+    hasCustomImage: evt.invitationType === 'upload' && !!evt.customImagePath,
     removeBranding: evt.tier?.removeBranding || false,
   }
 })

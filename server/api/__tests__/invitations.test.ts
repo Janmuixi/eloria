@@ -78,5 +78,31 @@ describe('Invitations API', () => {
         statusCode: 404,
       })
     })
+
+    it('returns invitationType=upload and hasCustomImage=true for upload events', async () => {
+      const user = await createTestUser(testDb, { email: 'u@test.com', name: 'U' })
+      createTestEvent(testDb, user!.id, {
+        slug: 'up-evt', paymentStatus: 'paid', invitationType: 'upload',
+        customImagePath: 'evt/x.jpg',
+      })
+      const ev = createMockEvent({ method: 'GET', params: { slug: 'up-evt' } })
+      const result = await handler(ev)
+      expect(result.invitationType).toBe('upload')
+      expect(result.hasCustomImage).toBe(true)
+      expect(result.template).toBeNull()
+    })
+
+    it('returns invitationType=template and hasCustomImage=false otherwise', async () => {
+      seedTiers(testDb)
+      const user = await createTestUser(testDb, { email: 't@test.com', name: 'T' })
+      const tmpl = seedTemplate(testDb, 1)
+      createTestEvent(testDb, user!.id, {
+        slug: 't-evt', paymentStatus: 'paid', invitationType: 'template', templateId: tmpl!.id,
+      })
+      const ev = createMockEvent({ method: 'GET', params: { slug: 't-evt' } })
+      const result = await handler(ev)
+      expect(result.invitationType).toBe('template')
+      expect(result.hasCustomImage).toBe(false)
+    })
   })
 })
