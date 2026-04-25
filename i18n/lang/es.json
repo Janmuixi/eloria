@@ -252,6 +252,23 @@
     "stepPreview": "Vista Previa",
     "stepPayment": "Pago"
   },
+  "eventWizard": {
+    "customImage": {
+      "cardTitle": "Sube tu propia invitación",
+      "cardSubtitle": "¿Ya tienes un diseño? Úsalo.",
+      "uploadHeading": "Sube tu invitación",
+      "uploadHint": "Recomendado: orientación vertical, ~1080×1500. JPG, PNG o WebP, máx. 10 MB.",
+      "dropzoneLabel": "Arrastra tu imagen aquí o haz clic para buscarla",
+      "replace": "Reemplazar",
+      "continue": "Continuar",
+      "backToTemplates": "← Volver a plantillas",
+      "errorTooLarge": "La imagen debe pesar 10 MB o menos.",
+      "errorWrongType": "Solo se permiten imágenes JPEG, PNG o WebP.",
+      "errorHeic": "HEIC no es compatible. Por favor, guárdala como JPEG.",
+      "errorGeneric": "No se pudo subir la imagen. Inténtalo de nuevo.",
+      "uploading": "Subiendo…"
+    }
+  },
   "templateSelection": {
     "title": "Elige una Plantilla",
     "subtitle": "Selecciona un diseño para tu invitación de boda",

@@ -252,6 +252,23 @@
     "stepPreview": "Preview",
     "stepPayment": "Payment"
   },
+  "eventWizard": {
+    "customImage": {
+      "cardTitle": "Upload your own invitation",
+      "cardSubtitle": "Already have a design? Use it.",
+      "uploadHeading": "Upload your invitation",
+      "uploadHint": "Recommended: portrait, ~1080×1500. JPG, PNG, or WebP, max 10 MB.",
+      "dropzoneLabel": "Drag your image here or click to browse",
+      "replace": "Replace",
+      "continue": "Continue",
+      "backToTemplates": "← Back to templates",
+      "errorTooLarge": "Image must be 10 MB or smaller.",
+      "errorWrongType": "Only JPEG, PNG, and WebP images are allowed.",
+      "errorHeic": "HEIC is not supported. Please save as JPEG.",
+      "errorGeneric": "Could not upload image. Please try again.",
+      "uploading": "Uploading…"
+    }
+  },
   "templateSelection": {
     "title": "Choose a Template",
     "subtitle": "Select a design for your wedding invitation",
