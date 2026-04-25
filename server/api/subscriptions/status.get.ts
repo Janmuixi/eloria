@@ -11,6 +11,7 @@ export default defineEventHandler(async (event) => {
       id: subscription.id,
       status: subscription.status,
       currentPeriodEnd: subscription.currentPeriodEnd,
+      canceledAt: subscription.canceledAt,
     } : null,
   }
 })

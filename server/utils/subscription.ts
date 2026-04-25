@@ -14,6 +14,7 @@ export async function getActiveSubscription(userId: number): Promise<{
   id: number
   status: string
   currentPeriodEnd: string | null
+  canceledAt: string | null
 } | null> {
   const subscription = await db.query.subscriptions.findFirst({
     where: eq(subscriptions.userId, userId),
@@ -26,5 +27,6 @@ export async function getActiveSubscription(userId: number): Promise<{
     id: subscription.id,
     status: subscription.status,
     currentPeriodEnd: subscription.currentPeriodEnd,
+    canceledAt: subscription.canceledAt,
   }
 }

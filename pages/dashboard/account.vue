@@ -65,19 +65,44 @@ function formatDate(dateStr: string | null): string {
       
       <div v-if="subscriptionStatus?.hasActiveSubscription" class="space-y-4">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          <div
+            class="w-10 h-10 rounded-full flex items-center justify-center"
+            :class="subscriptionStatus.subscription?.canceledAt ? 'bg-amber-100' : 'bg-green-100'"
+          >
+            <svg
+              class="w-5 h-5"
+              :class="subscriptionStatus.subscription?.canceledAt ? 'text-amber-600' : 'text-green-600'"
+              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                :d="subscriptionStatus.subscription?.canceledAt ? 'M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' : 'M5 13l4 4L19 7'"
+              />
             </svg>
           </div>
           <div>
             <p class="font-semibold text-charcoal-900">{{ t('account.proPlan') }}</p>
-            <p class="text-sm text-charcoal-500">{{ t('account.renewsOn', { date: formatDate(subscriptionStatus.subscription?.currentPeriodEnd || null) }) }}</p>
+            <p class="text-sm text-charcoal-500">
+              {{
+                subscriptionStatus.subscription?.canceledAt
+                  ? t('account.cancelsOn', { date: formatDate(subscriptionStatus.subscription?.currentPeriodEnd || null) })
+                  : t('account.renewsOn', { date: formatDate(subscriptionStatus.subscription?.currentPeriodEnd || null) })
+              }}
+            </p>
           </div>
         </div>
 
         <div class="pt-4 border-t border-charcoal-100">
           <button
+            v-if="subscriptionStatus.subscription?.canceledAt"
+            @click="reactivateSubscription"
+            :disabled="canceling"
+            class="text-sm text-champagne-600 hover:text-champagne-700 underline disabled:opacity-50"
+          >
+            {{ canceling ? t('common.loading') : t('account.reactivateSubscription') }}
+          </button>
+          <button
+            v-else
             @click="cancelSubscription"
             :disabled="canceling"
             class="text-sm text-red-600 hover:text-red-700 underline disabled:opacity-50"

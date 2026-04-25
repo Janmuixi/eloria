@@ -39,7 +39,9 @@
     "subscription": "Suscripción",
     "proPlan": "Plan Pro",
     "renewsOn": "Renueva el {date}",
+    "cancelsOn": "Se cancela el {date}",
     "cancelSubscription": "Cancelar suscripción",
+    "reactivateSubscription": "Reactivar suscripción",
     "noActiveSubscription": "Sin suscripción activa",
     "viewPlans": "Ver planes"
   },
