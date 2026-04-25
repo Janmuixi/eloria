@@ -44,6 +44,19 @@ async function submitDetails() {
   }
 }
 
+// ─── Upload path state ─────────────────────────────────────────────────────
+const customImagePath = ref<string | null>(null)
+const showUploadUI = ref(false)
+
+const invitationType = computed(() => customImagePath.value ? 'upload' : 'template')
+
+const visibleStep = computed(() => {
+  if (invitationType.value === 'template') return currentStep.value
+  // Upload path: currentStep 1=details, 2=design, 4=preview, 5=payment.
+  // Visible: 1,2,3,4 — collapse over the missing 3.
+  return currentStep.value > 2 ? currentStep.value - 1 : currentStep.value
+})
+
 // ─── Step 2: Template Selection ────────────────────────────────────────────
 const styleDescription = ref('')
 const selectedTemplateId = ref<number | null>(null)
@@ -77,6 +90,7 @@ async function loadTemplates() {
 
 function selectTemplate(id: number) {
   selectedTemplateId.value = id
+  customImagePath.value = null
 }
 
 const selectedTemplate = computed(() => {
@@ -97,6 +111,14 @@ async function confirmTemplate() {
   } finally {
     submitting.value = false
   }
+}
+
+function onUploadCompleted(path: string) {
+  if (path) customImagePath.value = path
+  selectedTemplateId.value = null
+  showUploadUI.value = false
+  // Advance the wizard, skipping wording for upload events
+  currentStep.value = 4 // Preview
 }
 
 // Auto-load templates when entering step 2
@@ -254,7 +276,11 @@ function getCategoryClass(category: string) {
 }
 
 const stepLabels = computed(() => {
-  const labels = [t('eventForm.stepDetails'), t('eventForm.stepTemplate'), t('eventForm.stepCustomize'), t('eventForm.stepPreview')]
+  const labels = [t('eventForm.stepDetails'), t('eventForm.stepTemplate')]
+  if (invitationType.value === 'template') {
+    labels.push(t('eventForm.stepCustomize'))
+  }
+  labels.push(t('eventForm.stepPreview'))
   if (!isSubscriber.value) {
     labels.push(t('eventForm.stepPayment'))
   }
@@ -270,13 +296,13 @@ const stepLabels = computed(() => {
         <div class="flex items-center gap-2">
           <div :class="[
             'w-8 h-8 rounded-full flex items-center justify-center text-sm transition-colors',
-            idx + 1 <= currentStep ? 'bg-champagne-500 text-white font-display font-semibold' : 'bg-charcoal-200 text-charcoal-500 font-display'
+            idx + 1 <= visibleStep ? 'bg-champagne-500 text-white font-display font-semibold' : 'bg-charcoal-200 text-charcoal-500 font-display'
           ]">
             {{ idx + 1 }}
           </div>
-          <span :class="['text-xs hidden sm:inline', idx + 1 <= currentStep ? 'text-charcoal-900' : 'text-charcoal-500']">{{ label }}</span>
+          <span :class="['text-xs hidden sm:inline', idx + 1 <= visibleStep ? 'text-charcoal-900' : 'text-charcoal-500']">{{ label }}</span>
         </div>
-        <div v-if="idx < stepLabels.length - 1" :class="['w-8 h-px', idx + 1 < currentStep ? 'bg-champagne-400' : 'bg-charcoal-200']" />
+        <div v-if="idx < stepLabels.length - 1" :class="['w-8 h-px', idx + 1 < visibleStep ? 'bg-champagne-400' : 'bg-charcoal-200']" />
       </template>
     </div>
 
@@ -355,94 +381,126 @@ const stepLabels = computed(() => {
       <h1 class="font-display font-bold text-2xl text-charcoal-900 mb-2">{{ $t('templateSelection.title') }}</h1>
       <p class="text-charcoal-500 mb-6">{{ $t('templateSelection.subtitle') }}</p>
 
-      <!-- Style description + AI button -->
-      <div class="flex gap-3 mb-6">
-        <input v-model="styleDescription" type="text"
-          :placeholder="$t('templateSelection.stylePlaceholder')"
-          class="flex-1 border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
-        <button @click="loadTemplates" :disabled="loadingTemplates"
-          class="bg-champagne-500 text-white px-4 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50 whitespace-nowrap">
-          {{ loadingTemplates ? $t('common.loading') : $t('templateSelection.refreshRecommendations') }}
-        </button>
-      </div>
-
-      <!-- Loading state -->
-      <div v-if="loadingTemplates" class="text-center py-12">
-        <div class="inline-block w-8 h-8 border-4 border-champagne-200 border-t-champagne-500 rounded-full animate-spin" />
-        <p class="text-charcoal-500 mt-3">{{ $t('templateSelection.loadingTemplates') }}</p>
-      </div>
-
-      <template v-else-if="templatesLoaded">
-        <!-- Recommended templates -->
-        <div v-if="recommendedTemplates.length > 0" class="mb-8">
-          <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-3">{{ $t('templateSelection.recommendedForYou') }}</h2>
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <button v-for="tpl in recommendedTemplates" :key="'rec-' + tpl.id"
-              @click="selectTemplate(tpl.id)"
-              :class="[
-                'rounded-2xl overflow-hidden text-left transition-all duration-200',
-                selectedTemplateId === tpl.id ? 'border-2 border-champagne-500 ring-2 ring-champagne-500/20' : 'border border-charcoal-200 hover:border-champagne-400'
-              ]">
-              <div class="aspect-[3/4] bg-charcoal-100 overflow-hidden">
-                <img
-                  v-if="tpl.previewImageUrl"
-                  :src="tpl.previewImageUrl"
-                  :alt="tpl.name"
-                  class="w-full h-full object-cover object-top"
-                />
-              </div>
-              <div class="p-3">
-                <p class="font-display font-semibold text-sm text-charcoal-900 truncate">{{ tpl.name }}</p>
-                <span :class="['text-xs px-2 py-0.5 rounded-full text-charcoal-500', getCategoryClass(tpl.category)]">
-                  {{ tpl.category }}
-                </span>
-              </div>
-            </button>
+      <!-- Upload-your-own card (sits above the template grid) -->
+      <button
+        v-if="!showUploadUI"
+        class="block w-full mb-6 p-6 rounded-2xl border-2 border-champagne-500 bg-champagne-50 hover:bg-champagne-100 transition-colors text-left"
+        :class="customImagePath ? 'ring-2 ring-champagne-500' : ''"
+        @click="showUploadUI = true"
+      >
+        <div class="flex items-center gap-4">
+          <div class="shrink-0 w-12 h-12 rounded-full bg-champagne-500 text-white flex items-center justify-center">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.9A5 5 0 1115.9 6.5h.6a4.5 4.5 0 01.5 8.97" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12v9m0-9l-3 3m3-3l3 3" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-display font-semibold text-charcoal-900">{{ $t('eventWizard.customImage.cardTitle') }}</h3>
+            <p class="text-sm text-charcoal-500">{{ $t('eventWizard.customImage.cardSubtitle') }}</p>
           </div>
         </div>
+      </button>
 
-        <!-- All templates -->
-        <div>
-          <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-3">{{ $t('templateSelection.allTemplates') }}</h2>
-          <div v-if="allTemplates.length === 0" class="text-center py-8 text-charcoal-500">
-            {{ $t('templateSelection.noTemplates') }}
+      <!-- Upload UI replaces template grid when active -->
+      <CustomImageUpload
+        v-if="showUploadUI"
+        :event-id="eventId!"
+        :existing-path="customImagePath"
+        @uploaded="onUploadCompleted"
+        @cancel="showUploadUI = false"
+      />
+
+      <template v-else>
+        <!-- Style description + AI button -->
+        <div class="flex gap-3 mb-6">
+          <input v-model="styleDescription" type="text"
+            :placeholder="$t('templateSelection.stylePlaceholder')"
+            class="flex-1 border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
+          <button @click="loadTemplates" :disabled="loadingTemplates"
+            class="bg-champagne-500 text-white px-4 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50 whitespace-nowrap">
+            {{ loadingTemplates ? $t('common.loading') : $t('templateSelection.refreshRecommendations') }}
+          </button>
+        </div>
+
+        <!-- Loading state -->
+        <div v-if="loadingTemplates" class="text-center py-12">
+          <div class="inline-block w-8 h-8 border-4 border-champagne-200 border-t-champagne-500 rounded-full animate-spin" />
+          <p class="text-charcoal-500 mt-3">{{ $t('templateSelection.loadingTemplates') }}</p>
+        </div>
+
+        <template v-else-if="templatesLoaded">
+          <!-- Recommended templates -->
+          <div v-if="recommendedTemplates.length > 0" class="mb-8">
+            <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-3">{{ $t('templateSelection.recommendedForYou') }}</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <button v-for="tpl in recommendedTemplates" :key="'rec-' + tpl.id"
+                @click="selectTemplate(tpl.id)"
+                :class="[
+                  'rounded-2xl overflow-hidden text-left transition-all duration-200',
+                  selectedTemplateId === tpl.id ? 'border-2 border-champagne-500 ring-2 ring-champagne-500/20' : 'border border-charcoal-200 hover:border-champagne-400'
+                ]">
+                <div class="aspect-[3/4] bg-charcoal-100 overflow-hidden">
+                  <img
+                    v-if="tpl.previewImageUrl"
+                    :src="tpl.previewImageUrl"
+                    :alt="tpl.name"
+                    class="w-full h-full object-cover object-top"
+                  />
+                </div>
+                <div class="p-3">
+                  <p class="font-display font-semibold text-sm text-charcoal-900 truncate">{{ tpl.name }}</p>
+                  <span :class="['text-xs px-2 py-0.5 rounded-full text-charcoal-500', getCategoryClass(tpl.category)]">
+                    {{ tpl.category }}
+                  </span>
+                </div>
+              </button>
+            </div>
           </div>
-          <div v-else class="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <button v-for="tpl in allTemplates" :key="'all-' + tpl.id"
-              @click="selectTemplate(tpl.id)"
-              :class="[
-                'rounded-2xl overflow-hidden text-left transition-all duration-200',
-                selectedTemplateId === tpl.id ? 'border-2 border-champagne-500 ring-2 ring-champagne-500/20' : 'border border-charcoal-200 hover:border-champagne-400'
-              ]">
-              <div class="aspect-[3/4] bg-charcoal-100 overflow-hidden">
-                <img
-                  v-if="tpl.previewImageUrl"
-                  :src="tpl.previewImageUrl"
-                  :alt="tpl.name"
-                  class="w-full h-full object-cover object-top"
-                />
-              </div>
-              <div class="p-3">
-                <p class="font-display font-semibold text-sm text-charcoal-900 truncate">{{ tpl.name }}</p>
-                <span :class="['text-xs px-2 py-0.5 rounded-full text-charcoal-500', getCategoryClass(tpl.category)]">
-                  {{ tpl.category }}
-                </span>
-              </div>
-            </button>
+
+          <!-- All templates -->
+          <div>
+            <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-3">{{ $t('templateSelection.allTemplates') }}</h2>
+            <div v-if="allTemplates.length === 0" class="text-center py-8 text-charcoal-500">
+              {{ $t('templateSelection.noTemplates') }}
+            </div>
+            <div v-else class="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <button v-for="tpl in allTemplates" :key="'all-' + tpl.id"
+                @click="selectTemplate(tpl.id)"
+                :class="[
+                  'rounded-2xl overflow-hidden text-left transition-all duration-200',
+                  selectedTemplateId === tpl.id ? 'border-2 border-champagne-500 ring-2 ring-champagne-500/20' : 'border border-charcoal-200 hover:border-champagne-400'
+                ]">
+                <div class="aspect-[3/4] bg-charcoal-100 overflow-hidden">
+                  <img
+                    v-if="tpl.previewImageUrl"
+                    :src="tpl.previewImageUrl"
+                    :alt="tpl.name"
+                    class="w-full h-full object-cover object-top"
+                  />
+                </div>
+                <div class="p-3">
+                  <p class="font-display font-semibold text-sm text-charcoal-900 truncate">{{ tpl.name }}</p>
+                  <span :class="['text-xs px-2 py-0.5 rounded-full text-charcoal-500', getCategoryClass(tpl.category)]">
+                    {{ tpl.category }}
+                  </span>
+                </div>
+              </button>
+            </div>
           </div>
+        </template>
+
+        <!-- Navigation -->
+        <div class="flex justify-between mt-8">
+          <button @click="currentStep = 1" class="text-charcoal-700 hover:text-charcoal-900 font-medium">
+            &larr; {{ $t('common.back') }}
+          </button>
+          <button @click="confirmTemplate" :disabled="!selectedTemplateId || submitting"
+            class="bg-champagne-500 text-white px-6 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
+            {{ submitting ? $t('templateSelection.saving') : $t('templateSelection.continueToCustomization') }}
+          </button>
         </div>
       </template>
-
-      <!-- Navigation -->
-      <div class="flex justify-between mt-8">
-        <button @click="currentStep = 1" class="text-charcoal-700 hover:text-charcoal-900 font-medium">
-          &larr; {{ $t('common.back') }}
-        </button>
-        <button @click="confirmTemplate" :disabled="!selectedTemplateId || submitting"
-          class="bg-champagne-500 text-white px-6 py-2.5 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200 disabled:opacity-50">
-          {{ submitting ? $t('templateSelection.saving') : $t('templateSelection.continueToCustomization') }}
-        </button>
-      </div>
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════════════ -->
@@ -556,7 +614,7 @@ const stepLabels = computed(() => {
 
       <!-- Navigation -->
       <div class="flex justify-between mt-8">
-        <button @click="currentStep = 3" class="text-charcoal-700 hover:text-charcoal-900 font-medium">
+        <button @click="currentStep = invitationType === 'upload' ? 2 : 3" class="text-charcoal-700 hover:text-charcoal-900 font-medium">
           &larr; {{ $t('preview.backToCustomize') }}
         </button>
         <button @click="confirmPreview"
