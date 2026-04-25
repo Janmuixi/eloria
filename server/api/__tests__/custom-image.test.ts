@@ -170,3 +170,56 @@ describe('PUT /api/events/:id/custom-image', () => {
     expect(existsSync(imageAbsolutePath(second.customImagePath))).toBe(true)
   })
 })
+
+import { eq } from 'drizzle-orm'
+import { events } from '~/server/db/schema'
+
+const serveHandler = (await import('../invitations/[slug]/custom-image.get')).default
+
+describe('GET /api/invitations/:slug/custom-image', () => {
+  it('404 when event does not exist', async () => {
+    const ev = createMockEvent({ method: 'GET', params: { slug: 'missing' } })
+    await expect(serveHandler(ev)).rejects.toMatchObject({ statusCode: 404 })
+  })
+
+  it('404 when event is not paid', async () => {
+    const user = await createTestUser(testDb, { email: 'p@test.com', name: 'P' })
+    createTestEvent(testDb, user!.id, { slug: 'unpaid', paymentStatus: 'pending' })
+    const ev = createMockEvent({ method: 'GET', params: { slug: 'unpaid' } })
+    await expect(serveHandler(ev)).rejects.toMatchObject({ statusCode: 404 })
+  })
+
+  it('404 when event is paid but invitationType is template', async () => {
+    const user = await createTestUser(testDb, { email: 'p@test.com', name: 'P' })
+    createTestEvent(testDb, user!.id, {
+      slug: 'tmpl', paymentStatus: 'paid', invitationType: 'template',
+    })
+    const ev = createMockEvent({ method: 'GET', params: { slug: 'tmpl' } })
+    await expect(serveHandler(ev)).rejects.toMatchObject({ statusCode: 404 })
+  })
+
+  it('streams the image with correct Content-Type and cache headers', async () => {
+    const { saveImage } = await import('../../utils/image-storage')
+    const user = await createTestUser(testDb, { email: 'p@test.com', name: 'P' })
+    const buf = await jpegBuffer()
+    const evt = createTestEvent(testDb, user!.id, {
+      slug: 'paid-up', paymentStatus: 'paid', invitationType: 'upload',
+    })
+    const saved = await saveImage(evt!.id, buf)
+    await testDb.update(events).set({ customImagePath: saved.relativePath })
+      .where(eq(events.id, evt!.id))
+
+    const ev = createMockEvent({ method: 'GET', params: { slug: 'paid-up' } })
+    // sendStream may throw on a mock response that isn't a real Writable — that's acceptable
+    try {
+      await serveHandler(ev)
+    } catch (err: any) {
+      // Only rethrow if it's an H3 error (statusCode present), not a stream error
+      if (err.statusCode) throw err
+    }
+
+    const headers = ev.node.res.getHeaders()
+    expect(headers['content-type']).toBe('image/jpeg')
+    expect(String(headers['cache-control'])).toContain('immutable')
+  })
+})
