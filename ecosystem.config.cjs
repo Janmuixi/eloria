@@ -3,5 +3,8 @@ module.exports = {
     name: 'eloria',
     script: '.output/server/index.mjs',
     env_file: '.env',
+    env: {
+      PORT: 3002,
+    },
   }],
 }
