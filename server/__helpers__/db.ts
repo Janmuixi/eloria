@@ -65,6 +65,8 @@ export function createTestDb() {
       venue_map_url TEXT,
       description TEXT,
       template_id INTEGER REFERENCES templates(id),
+      invitation_type TEXT NOT NULL DEFAULT 'template',
+      custom_image_path TEXT,
       customization TEXT,
       tier_id INTEGER REFERENCES tiers(id),
       payment_status TEXT NOT NULL DEFAULT 'pending',
@@ -169,6 +171,7 @@ export function createTestEvent(db: TestDb, userId: number, overrides?: Partial<
   title: string; coupleName1: string; coupleName2: string; date: string;
   venue: string; venueAddress: string; slug: string; tierId: number | null;
   templateId: number | null; paymentStatus: string; customization: string | null;
+  invitationType: string; customImagePath: string | null;
 }>) {
   const rows = db.insert(events).values({
     userId,
@@ -183,6 +186,8 @@ export function createTestEvent(db: TestDb, userId: number, overrides?: Partial<
     templateId: overrides?.templateId ?? null,
     paymentStatus: overrides?.paymentStatus || 'pending',
     customization: overrides?.customization ?? null,
+    invitationType: overrides?.invitationType || 'template',
+    customImagePath: overrides?.customImagePath ?? null,
   }).returning().all()
   return rows[0]
 }

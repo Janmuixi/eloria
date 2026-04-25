@@ -55,22 +55,26 @@ describe('runMigrations', () => {
 
   it('after bootstrap, __drizzle_migrations contains one row per journal entry with matching hash', () => {
     const sqlite = new Database(':memory:')
-    const migrationSql = readFileSync('server/db/migrations/0000_acoustic_caretaker.sql', 'utf-8')
-    for (const stmt of migrationSql.split('--> statement-breakpoint')) {
+    const migration0Sql = readFileSync('server/db/migrations/0000_acoustic_caretaker.sql', 'utf-8')
+    const migration1Sql = readFileSync('server/db/migrations/0001_outgoing_greymalkin.sql', 'utf-8')
+    for (const stmt of migration0Sql.split('--> statement-breakpoint')) {
       sqlite.exec(stmt)
     }
     const result = runMigrations(sqlite, 'server/db/migrations')
     expect(result.bootstrapped).toBe(true)
-    expect(result.bootstrapEntries).toBe(1)
+    expect(result.bootstrapEntries).toBe(2)
     const rows = sqlite
       .prepare(`SELECT hash, created_at FROM __drizzle_migrations`)
       .all() as { hash: string; created_at: number }[]
-    expect(rows).toHaveLength(1)
+    expect(rows).toHaveLength(2)
     expect(rows[0].hash).toBe(
-      createHash('sha256').update(migrationSql).digest('hex'),
+      createHash('sha256').update(migration0Sql).digest('hex'),
+    )
+    expect(rows[1].hash).toBe(
+      createHash('sha256').update(migration1Sql).digest('hex'),
     )
     const count = sqlite.prepare(`SELECT COUNT(*) as c FROM __drizzle_migrations`).get() as { c: number }
-    expect(count.c).toBe(1)
+    expect(count.c).toBe(2)
     sqlite.close()
   })
 

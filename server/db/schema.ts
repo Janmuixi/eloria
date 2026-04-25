@@ -100,6 +100,8 @@ export const events = sqliteTable('events', {
   venueMapUrl: text('venue_map_url'),
   description: text('description'),
   templateId: integer('template_id').references(() => templates.id),
+  invitationType: text('invitation_type').notNull().default('template'),
+  customImagePath: text('custom_image_path'),
   customization: text('customization'),
   tierId: integer('tier_id').references(() => tiers.id),
   paymentStatus: text('payment_status').notNull().default('pending'),
