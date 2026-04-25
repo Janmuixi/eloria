@@ -215,6 +215,10 @@ function formatPrice(cents: number) {
 
 async function payAndPublish() {
   if (!eventId.value || !selectedTierSlug.value) return
+  if (selectedTierSlug.value === 'pro') {
+    await startSubscription()
+    return
+  }
   processingPayment.value = true
   error.value = ''
   try {
