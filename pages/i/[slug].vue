@@ -13,14 +13,16 @@ useHead({
   meta: [{ name: 'robots', content: 'noindex, nofollow' }],
 })
 
-if (isPrint.value) {
-  await navigateTo(renderedUrl, { external: true })
-}
-
 const { data: invitation, error } = await useFetch(`/api/invitations/${slug}`)
 
 if (error.value) {
   throw createError({ statusCode: 404, statusMessage: t('errors.invitationNotFound') })
+}
+
+const isUpload = computed(() => invitation.value?.invitationType === 'upload')
+
+if (isPrint.value && !isUpload.value) {
+  await navigateTo(renderedUrl, { external: true })
 }
 
 const { data: guestData, refresh: refreshGuest } = await useFetch(
@@ -108,7 +110,9 @@ onBeforeUnmount(() => {
 
 <template>
   <div v-if="invitation" class="min-h-screen bg-[#faf8f5]">
+    <CustomImageView v-if="isUpload" :slug="slug" />
     <iframe
+      v-else
       ref="iframeRef"
       :src="renderedUrl"
       :style="{ height: iframeHeight + 'px' }"
