@@ -212,10 +212,11 @@ async function downloadPdf() {
       </div>
 
       <!-- Invitation Preview -->
-      <div v-if="evt.template?.htmlTemplate" class="bg-white rounded-2xl shadow-sm border border-charcoal-200 p-6 mb-6">
+      <div v-if="evt.template?.htmlTemplate || (evt.invitationType === 'upload' && evt.paymentStatus === 'paid' && evt.customImagePath)" class="bg-white rounded-2xl shadow-sm border border-charcoal-200 p-6 mb-6">
         <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-4">{{ $t('eventDetail.invitationPreview') }}</h2>
         <div class="border border-champagne-400 rounded-2xl overflow-hidden max-w-xl mx-auto">
           <InvitationTemplatePreview
+            v-if="evt.template?.htmlTemplate"
             :html-template="evt.template.htmlTemplate"
             :couple-name1="evt.coupleName1"
             :couple-name2="evt.coupleName2"
@@ -223,6 +224,12 @@ async function downloadPdf() {
             :venue="evt.venue"
             :venue-address="evt.venueAddress"
             :wording="evt.customization ? JSON.parse(evt.customization).wording : ''"
+          />
+          <img
+            v-else
+            :src="`/api/invitations/${evt.slug}/custom-image`"
+            alt=""
+            class="block w-full h-auto"
           />
         </div>
       </div>
@@ -252,7 +259,7 @@ async function downloadPdf() {
       </div>
 
       <!-- Email & PDF Actions -->
-      <div v-if="evt.paymentStatus === 'paid' && !isLocked" class="bg-white rounded-2xl shadow-sm border border-charcoal-200 p-6 mb-6">
+      <div v-if="evt.paymentStatus === 'paid' && !isLocked && (evt.tier?.hasEmailDelivery || evt.tier?.hasPdfExport)" class="bg-white rounded-2xl shadow-sm border border-charcoal-200 p-6 mb-6">
         <h2 class="font-display font-semibold text-lg text-charcoal-900 mb-4">{{ $t('eventDetail.actions') }}</h2>
         <div class="flex flex-wrap gap-3">
           <!-- Send Invitations -->
