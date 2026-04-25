@@ -52,8 +52,8 @@ const rsvpStats = computed(() => {
     total: guests.length,
     confirmed: guests.filter((g: any) => g.rsvpStatus === 'confirmed').length,
     declined: guests.filter((g: any) => g.rsvpStatus === 'declined').length,
-    maybe: guests.filter((g: any) => g.rsvpStatus === 'maybe').length,
     pending: guests.filter((g: any) => g.rsvpStatus === 'pending').length,
+    plusOnes: guests.filter((g: any) => g.plusOne).length,
   }
 })
 
@@ -249,12 +249,12 @@ async function downloadPdf() {
           <p class="text-charcoal-500 text-sm">{{ $t('eventDetail.declined') }}</p>
         </div>
         <div class="bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-4 text-center">
-          <p class="font-display font-bold text-2xl text-yellow-600">{{ rsvpStats.maybe }}</p>
-          <p class="text-charcoal-500 text-sm">{{ $t('eventDetail.maybe') }}</p>
-        </div>
-        <div class="bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-4 text-center">
           <p class="font-display font-bold text-2xl text-charcoal-400">{{ rsvpStats.pending }}</p>
           <p class="text-charcoal-500 text-sm">{{ $t('eventDetail.pending') }}</p>
+        </div>
+        <div class="bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-4 text-center">
+          <p class="font-display font-bold text-2xl text-champagne-600">{{ rsvpStats.plusOnes }}</p>
+          <p class="text-charcoal-500 text-sm">{{ $t('eventDetail.plusOnes') }}</p>
         </div>
       </div>
 

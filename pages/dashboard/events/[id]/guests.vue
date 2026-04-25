@@ -101,7 +101,6 @@ const statusBadgeClass = (status: string) => {
   switch (status) {
     case 'confirmed': return 'bg-green-100 text-green-700'
     case 'declined': return 'bg-red-100 text-red-700'
-    case 'maybe': return 'bg-yellow-100 text-yellow-700'
     default: return 'bg-charcoal-100 text-charcoal-500'
   }
 }
@@ -253,7 +252,12 @@ async function copyPersonalLink(guest: { id: number; token: string }) {
         </thead>
         <tbody>
           <tr v-for="guest in guests" :key="guest.id" class="border-b border-charcoal-200 hover:bg-ivory-100/50 transition-colors">
-            <td class="px-6 py-4 text-sm font-medium text-charcoal-900">{{ guest.name }}</td>
+            <td class="px-6 py-4 text-sm font-medium text-charcoal-900">
+              <div>{{ guest.name }}</div>
+              <div v-if="guest.plusOne" class="text-xs text-charcoal-500 font-normal mt-0.5">
+                {{ guest.plusOneName ? t('guests.plusOneWithName', { name: guest.plusOneName }) : t('guests.plusOne') }}
+              </div>
+            </td>
             <td class="px-6 py-4 text-sm text-charcoal-500">{{ guest.email || t('guests.noEmail') }}</td>
             <td class="px-6 py-4">
               <span :class="['px-2 py-1 rounded-full text-xs font-medium', statusBadgeClass(guest.rsvpStatus)]">

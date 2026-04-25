@@ -155,8 +155,8 @@
     "totalGuests": "Total Guests",
     "confirmed": "Confirmed",
     "declined": "Declined",
-    "maybe": "Maybe",
     "pending": "Pending",
+    "plusOnes": "Plus Ones",
     "actions": "Actions",
     "sendInvitations": "Send Invitations",
     "sending": "Sending...",
@@ -208,7 +208,9 @@
     "guestLimitReached": "Guest limit reached for your plan ({limit}). Upgrade to add more.",
     "importLimitExceeded": "Import would exceed your guest limit ({limit}). You can add {remaining} more.",
     "upgradePlan": "Upgrade Plan",
-    "copyLink": "Copy link"
+    "copyLink": "Copy link",
+    "plusOne": "+1",
+    "plusOneWithName": "+1: {name}"
   },
   "settings": {
     "title": "Event Settings",
@@ -342,7 +344,6 @@
     "dearGuest": "Dear {name}, please let us know if you'll be joining us.",
     "accept": "Joyfully Accept",
     "decline": "Respectfully Decline",
-    "maybe": "Maybe",
     "plusOne": "I'll be bringing a plus one",
     "plusOneName": "Plus one's name",
     "submit": "Submit RSVP",

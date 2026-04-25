@@ -159,11 +159,6 @@ onBeforeUnmount(() => {
                 <input type="radio" v-model="rsvpForm.rsvpStatus" value="declined" class="text-red-600" />
                 <span class="text-sm font-medium">{{ $t('rsvp.decline') }}</span>
               </label>
-              <label class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors"
-                :class="rsvpForm.rsvpStatus === 'maybe' ? 'border-yellow-300 bg-yellow-50' : 'border-charcoal-100 hover:bg-ivory-50'">
-                <input type="radio" v-model="rsvpForm.rsvpStatus" value="maybe" class="text-yellow-600" />
-                <span class="text-sm font-medium">{{ $t('rsvp.maybe') }}</span>
-              </label>
             </div>
 
             <div v-if="rsvpForm.rsvpStatus === 'confirmed'" class="mb-6 text-left">

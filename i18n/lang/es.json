@@ -155,8 +155,8 @@
     "totalGuests": "Total Invitados",
     "confirmed": "Confirmados",
     "declined": "Rechazados",
-    "maybe": "Quizás",
     "pending": "Pendientes",
+    "plusOnes": "Acompañantes",
     "actions": "Acciones",
     "sendInvitations": "Enviar Invitaciones",
     "sending": "Enviando...",
@@ -208,7 +208,9 @@
     "guestLimitReached": "Límite de invitados alcanzado para tu plan ({limit}). Mejora tu plan para añadir más.",
     "importLimitExceeded": "La importación excedería tu límite de invitados ({limit}). Puedes añadir {remaining} más.",
     "upgradePlan": "Mejorar Plan",
-    "copyLink": "Copiar enlace"
+    "copyLink": "Copiar enlace",
+    "plusOne": "+1",
+    "plusOneWithName": "+1: {name}"
   },
   "settings": {
     "title": "Configuración del Evento",
@@ -342,7 +344,6 @@
     "dearGuest": "Querido/a {name}, por favor déjanos saber si nos acompañarás.",
     "accept": "Acepto con Alegría",
     "decline": "Declino Respetuosamente",
-    "maybe": "Quizás",
     "plusOne": "Llevaré un acompañante",
     "plusOneName": "Nombre del acompañante",
     "submit": "Enviar Confirmación",

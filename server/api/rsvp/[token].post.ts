@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const { rsvpStatus, plusOne, plusOneName } = body
 
-  if (!['confirmed', 'declined', 'maybe'].includes(rsvpStatus)) {
+  if (!['confirmed', 'declined'].includes(rsvpStatus)) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid RSVP status' })
   }
 
