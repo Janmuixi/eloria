@@ -151,6 +151,10 @@ New strings for both `en.json` and `es.json` covering:
 - Production deploy: create `/var/lib/eloria/uploads/`, owned by the PM2 user, writable.
 - nginx: `client_max_body_size 12M` in the server block to permit 10 MB uploads with overhead.
 
+## Known limitations
+
+- **Concurrent uploads to the same event are not supported.** The upload endpoint reads the existing `customImagePath`, writes the new file, then deletes the old one. Two simultaneous uploads on the same event can leave an orphaned file on disk (the file written by the losing request — its DB row reference is overwritten by the winner). The wizard prevents simultaneous uploads client-side (file picker disabled while a request is in flight), so this is acceptable for launch. If concurrent-upload semantics matter later, wrap the read-save-delete-update sequence in a transaction.
+
 ## Out of scope
 
 - Multiple images per event.

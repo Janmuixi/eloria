@@ -103,7 +103,7 @@ describe('PUT /api/events/:id/custom-image', () => {
     ])
     await expect(uploadHandler(ev)).rejects.toMatchObject({
       statusCode: 415,
-      statusMessage: expect.stringContaining('JPEG'),
+      statusMessage: expect.stringContaining('HEIC'),
     })
   })
 
@@ -134,6 +134,18 @@ describe('PUT /api/events/:id/custom-image', () => {
     expect(reloaded?.invitationType).toBe('upload')
     expect(reloaded?.customImagePath).toBe(result.customImagePath)
     expect(reloaded?.templateId).toBeNull()
+  })
+
+  it('rejects bytes that are not a valid image with 400', async () => {
+    const user = await createTestUser(testDb, { email: 'a@test.com', name: 'A' })
+    const evt = createTestEvent(testDb, user!.id, {})
+    const ev = authedMultipart(user!.id, user!.email, String(evt!.id), [
+      { name: 'file', data: Buffer.from('not-a-real-jpeg'), filename: 'fake.jpg', type: 'image/jpeg' },
+    ])
+    await expect(uploadHandler(ev)).rejects.toMatchObject({
+      statusCode: 400,
+      statusMessage: expect.stringContaining('valid image'),
+    })
   })
 
   it('replaces an existing upload (deletes old file)', async () => {

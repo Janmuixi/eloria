@@ -1,4 +1,6 @@
 import { eq, and } from 'drizzle-orm'
+// Imported explicitly (rather than via Nitro auto-import) so vi.mock('h3', ...)
+// in custom-image.test.ts can stub multipart parsing without spinning up a server.
 import { readMultipartFormData } from 'h3'
 import { requireAuth } from '~/server/utils/auth'
 import { db } from '~/server/db'
