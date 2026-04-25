@@ -46,6 +46,7 @@ async function submitDetails() {
 
 // ─── Upload path state ─────────────────────────────────────────────────────
 const customImagePath = ref<string | null>(null)
+const localImagePreview = ref<string | null>(null)
 const showUploadUI = ref(false)
 
 const invitationType = computed(() => customImagePath.value ? 'upload' : 'template')
@@ -113,8 +114,9 @@ async function confirmTemplate() {
   }
 }
 
-function onUploadCompleted(path: string) {
-  if (path) customImagePath.value = path
+function onUploadCompleted(payload: { path: string; previewUrl: string }) {
+  if (payload.path) customImagePath.value = payload.path
+  if (payload.previewUrl) localImagePreview.value = payload.previewUrl
   selectedTemplateId.value = null
   showUploadUI.value = false
   // Advance the wizard, skipping wording for upload events
@@ -406,7 +408,6 @@ const stepLabels = computed(() => {
       <CustomImageUpload
         v-if="showUploadUI"
         :event-id="eventId!"
-        :existing-path="customImagePath"
         @uploaded="onUploadCompleted"
         @cancel="showUploadUI = false"
       />
@@ -592,7 +593,10 @@ const stepLabels = computed(() => {
       <p class="text-charcoal-500 mb-6">{{ $t('preview.subtitle') }}</p>
 
       <div class="max-w-2xl mx-auto">
-        <div v-if="selectedTemplate?.htmlTemplate" class="border border-champagne-400 rounded-2xl overflow-hidden shadow-lg">
+        <div v-if="invitationType === 'upload' && localImagePreview" class="border border-champagne-400 rounded-2xl overflow-hidden shadow-lg bg-white">
+          <img :src="localImagePreview" alt="" class="block w-full h-auto" />
+        </div>
+        <div v-else-if="selectedTemplate?.htmlTemplate" class="border border-champagne-400 rounded-2xl overflow-hidden shadow-lg">
           <InvitationTemplatePreview
             :html-template="selectedTemplate.htmlTemplate"
             :couple-name1="form.coupleName1"

@@ -1,15 +1,15 @@
 <script setup lang="ts">
 const { t } = useI18n()
-const props = defineProps<{ eventId: number; existingPath: string | null }>()
+const props = defineProps<{ eventId: number }>()
 const emit = defineEmits<{
-  (e: 'uploaded', path: string): void
+  (e: 'uploaded', payload: { path: string; previewUrl: string }): void
   (e: 'cancel'): void
 }>()
 
 const dragActive = ref(false)
 const uploading = ref(false)
 const error = ref('')
-const previewUrl = ref<string | null>(props.existingPath ? `/api/events/${props.eventId}/custom-image?cb=${Date.now()}` : null)
+const previewUrl = ref<string | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 
 async function handleFile(file: File) {
@@ -30,8 +30,9 @@ async function handleFile(file: File) {
     const res = await $fetch<{ customImagePath: string }>(`/api/events/${props.eventId}/custom-image`, {
       method: 'PUT', body: form,
     })
-    previewUrl.value = URL.createObjectURL(file)
-    emit('uploaded', res.customImagePath)
+    const blobUrl = URL.createObjectURL(file)
+    previewUrl.value = blobUrl
+    emit('uploaded', { path: res.customImagePath, previewUrl: blobUrl })
   } catch (e: any) {
     error.value = e.data?.statusMessage || t('eventWizard.customImage.errorGeneric')
   } finally {
@@ -92,7 +93,7 @@ function clearAndReupload() {
         <button class="px-4 py-2 rounded-full border border-charcoal-300 hover:bg-charcoal-50" @click="clearAndReupload">
           {{ t('eventWizard.customImage.replace') }}
         </button>
-        <button class="px-5 py-2 rounded-full bg-champagne-500 text-white hover:bg-champagne-600" @click="emit('uploaded', '')">
+        <button class="px-5 py-2 rounded-full bg-champagne-500 text-white hover:bg-champagne-600" @click="emit('uploaded', { path: '', previewUrl: previewUrl ?? '' })">
           {{ t('eventWizard.customImage.continue') }}
         </button>
       </div>
