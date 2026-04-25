@@ -32,8 +32,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Invalid tier' })
   }
 
-  if (userEvent.templateId == null) {
-    throw createError({ statusCode: 400, statusMessage: 'Select a template before paying' })
+  const hasDesign = userEvent.templateId != null
+    || (userEvent.invitationType === 'upload' && userEvent.customImagePath)
+  if (!hasDesign) {
+    throw createError({ statusCode: 400, statusMessage: 'Select a template or upload an image before paying' })
   }
 
   // Update event with selected tier
