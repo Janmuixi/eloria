@@ -405,7 +405,7 @@ const stepLabels = computed(() => {
       </button>
 
       <!-- Upload UI replaces template grid when active -->
-      <CustomImageUpload
+      <EventWizardCustomImageUpload
         v-if="showUploadUI"
         :event-id="eventId!"
         @uploaded="onUploadCompleted"

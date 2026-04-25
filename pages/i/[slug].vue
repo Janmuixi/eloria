@@ -110,7 +110,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div v-if="invitation" class="min-h-screen bg-[#faf8f5]">
-    <CustomImageView v-if="isUpload" :slug="slug" />
+    <InvitationCustomImageView v-if="isUpload" :slug="slug" />
     <iframe
       v-else
       ref="iframeRef"
