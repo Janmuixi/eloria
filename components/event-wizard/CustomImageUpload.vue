@@ -73,16 +73,17 @@ function clearAndReupload() {
     <p class="text-sm text-charcoal-500 mb-6">{{ t('eventWizard.customImage.uploadHint') }}</p>
 
     <div v-if="!previewUrl">
-      <label
+      <div
         class="block border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-colors"
         :class="dragActive ? 'border-champagne-500 bg-champagne-50' : 'border-charcoal-300 bg-white'"
+        @click="fileInput?.click()"
         @dragover.prevent="dragActive = true"
         @dragleave.prevent="dragActive = false"
         @drop="onDrop"
       >
         <p class="text-charcoal-500">{{ t('eventWizard.customImage.dropzoneLabel') }}</p>
         <p v-if="uploading" class="text-charcoal-400 mt-2 text-sm">{{ t('eventWizard.customImage.uploading') }}</p>
-      </label>
+      </div>
     </div>
 
     <div v-else class="space-y-4">
