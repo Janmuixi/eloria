@@ -38,5 +38,6 @@ export default defineNuxtConfig({
     JWT_SECRET: process.env.JWT_SECRET,
     BASE_URL: process.env.BASE_URL,
     DATABASE_URL: process.env.DATABASE_URL,
+    UPLOAD_ROOT: process.env.UPLOAD_ROOT,
   },
 })
