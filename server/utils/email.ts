@@ -24,7 +24,7 @@ export async function sendVerificationEmail(params: SendVerificationParams) {
   const client = getResend()
 
   return client.emails.send({
-    from: 'Eloria <noreply@muixisoftware.tech>',
+    from: 'Eloria <noreply@muidev.com>',
     to: params.to,
     subject: 'Verify your email - Eloria',
     html: `
@@ -56,7 +56,7 @@ export async function sendInvitationEmail(params: SendInvitationParams) {
   const client = getResend()
 
   return client.emails.send({
-    from: 'Eloria <invitations@muixisoftware.tech>',
+    from: 'Eloria <invitations@muidev.com>',
     to: params.to,
     subject: `You're invited to ${params.coupleName1} & ${params.coupleName2}'s wedding`,
     html: `
@@ -85,7 +85,7 @@ export async function sendPasswordResetEmail(params: SendPasswordResetParams) {
   const client = getResend()
 
   return client.emails.send({
-    from: 'Eloria <noreply@muixisoftware.tech>',
+    from: 'Eloria <noreply@muidev.com>',
     to: params.to,
     subject: 'Reset your password - Eloria',
     html: `
