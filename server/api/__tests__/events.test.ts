@@ -4,6 +4,7 @@ import {
   createTestUser,
   createTestEvent,
   createTestGuest,
+  seedTiers,
   type TestDb,
 } from '../../__helpers__/db'
 import { createMockEvent } from '../../__helpers__/event'
@@ -166,6 +167,44 @@ describe('Events API', () => {
       await expect(updateHandler(event)).rejects.toMatchObject({
         statusCode: 404,
       })
+    })
+
+    it('clears customImagePath and deletes file when templateId is set', async () => {
+      const { saveImage, imageAbsolutePath } = await import('../../utils/image-storage')
+      const { existsSync, mkdtempSync, rmSync } = await import('node:fs')
+      const { tmpdir } = await import('node:os')
+      const { join } = await import('node:path')
+      const sharp = (await import('sharp')).default
+      const { tiers, events: eventsTable } = await import('../../db/schema')
+      const { seedTemplate } = await import('../../__helpers__/db')
+      const { eq } = await import('drizzle-orm')
+
+      const root = mkdtempSync(join(tmpdir(), 'el-'))
+      process.env.UPLOAD_ROOT = root
+      try {
+        const user = await createTestUser(testDb, { email: 'sw@test.com', name: 'SW' })
+        const evt = createTestEvent(testDb, user!.id, { invitationType: 'upload' })
+        const buf = await sharp({ create: { width: 50, height: 50, channels: 3, background: { r: 1, g: 2, b: 3 } } }).jpeg().toBuffer()
+        const saved = await saveImage(evt!.id, buf)
+        await testDb.update(eventsTable).set({ customImagePath: saved.relativePath }).where(eq(eventsTable.id, evt!.id))
+        expect(existsSync(imageAbsolutePath(saved.relativePath))).toBe(true)
+
+        seedTiers(testDb)
+        const tier = (testDb.select().from(tiers).all() as any[])[0]
+        const tmpl = seedTemplate(testDb, tier.id)
+
+        const httpEv = authEvent(user!.id, user!.email, {
+          method: 'PUT', params: { id: String(evt!.id) }, body: { templateId: tmpl.id },
+        })
+        const result = await updateHandler(httpEv)
+        expect(result.templateId).toBe(tmpl.id)
+        expect(result.customImagePath).toBeNull()
+        expect(result.invitationType).toBe('template')
+        expect(existsSync(imageAbsolutePath(saved.relativePath))).toBe(false)
+      } finally {
+        rmSync(root, { recursive: true, force: true })
+        delete process.env.UPLOAD_ROOT
+      }
     })
   })
 
