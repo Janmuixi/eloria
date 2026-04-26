@@ -16,7 +16,9 @@ const mobileOpen = ref(false)
     <nav class="max-w-7xl mx-auto px-6 py-4 flex items-center">
       <!-- Logo -->
       <div class="flex-1">
-        <NuxtLink to="/" class="font-display font-semibold text-xl text-charcoal-900">Eloria</NuxtLink>
+        <NuxtLink to="/" class="inline-flex items-center">
+          <img src="/eloria-wordmark-charcoal.svg" alt="Eloria" class="h-8 w-auto" />
+        </NuxtLink>
       </div>
 
       <!-- Desktop nav links (centered) -->
