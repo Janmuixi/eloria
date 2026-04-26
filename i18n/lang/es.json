@@ -459,6 +459,8 @@
   },
   "aria": {
     "toggleMenu": "Alternar menú",
-    "scrollToRsvp": "Desplazarse al RSVP"
+    "scrollToRsvp": "Desplazarse al RSVP",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña"
   }
 }

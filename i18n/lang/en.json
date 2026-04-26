@@ -459,6 +459,8 @@
   },
   "aria": {
     "toggleMenu": "Toggle menu",
-    "scrollToRsvp": "Scroll to RSVP"
+    "scrollToRsvp": "Scroll to RSVP",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   }
 }
