@@ -16,9 +16,12 @@ export interface CleanupResult {
   dryRun: boolean
 }
 
+const DEFAULT_GRACE_MINUTES = 60
+
 export async function cleanupOrphanImages(opts: CleanupOptions): Promise<CleanupResult> {
-  const { db, dryRun = false } = opts
+  const { db, dryRun = false, graceMinutes = DEFAULT_GRACE_MINUTES } = opts
   const root = getUploadRoot()
+  const cutoffMs = Date.now() - graceMinutes * 60 * 1000
 
   let entries: string[]
   try {
@@ -30,9 +33,11 @@ export async function cleanupOrphanImages(opts: CleanupOptions): Promise<Cleanup
     throw err
   }
 
-  const existingEventIds = new Set<number>(
-    (await db.select({ id: events.id }).from(events)).map((r: { id: number }) => r.id),
-  )
+  const rows = await db.select({ id: events.id, customImagePath: events.customImagePath }).from(events)
+  const eventActivePath = new Map<number, string | null>()
+  for (const row of rows as Array<{ id: number; customImagePath: string | null }>) {
+    eventActivePath.set(row.id, row.customImagePath)
+  }
 
   let dirsDeleted = 0
   let filesDeleted = 0
@@ -46,26 +51,43 @@ export async function cleanupOrphanImages(opts: CleanupOptions): Promise<Cleanup
     const dirStat = await stat(dirPath).catch(() => null)
     if (!dirStat || !dirStat.isDirectory()) continue
 
-    if (existingEventIds.has(eventId)) {
-      // Stale-file pruning lands in Task 3.
+    const exists = eventActivePath.has(eventId)
+
+    if (!exists) {
+      // Orphan dir: delete every file, then rmdir.
+      const files = await readdir(dirPath)
+      for (const file of files) {
+        const full = imageAbsolutePath(`${entry}/${file}`)
+        const fileStat = await stat(full).catch(() => null)
+        if (!fileStat || !fileStat.isFile()) continue
+        bytesFreed += fileStat.size
+        filesDeleted += 1
+        if (!dryRun) {
+          await unlink(full).catch(() => {})
+        }
+      }
+      dirsDeleted += 1
+      if (!dryRun) {
+        await rmdir(dirPath).catch(() => {})
+      }
       continue
     }
 
-    // Orphan dir: delete every file, then rmdir.
+    // Existing event: prune stale files (skip the active one and anything inside grace window).
+    const activePath = eventActivePath.get(eventId)
     const files = await readdir(dirPath)
     for (const file of files) {
-      const full = imageAbsolutePath(`${entry}/${file}`)
+      const relPath = `${entry}/${file}`
+      if (relPath === activePath) continue
+      const full = imageAbsolutePath(relPath)
       const fileStat = await stat(full).catch(() => null)
       if (!fileStat || !fileStat.isFile()) continue
+      if (fileStat.mtimeMs > cutoffMs) continue  // inside grace window
       bytesFreed += fileStat.size
       filesDeleted += 1
       if (!dryRun) {
         await unlink(full).catch(() => {})
       }
-    }
-    dirsDeleted += 1
-    if (!dryRun) {
-      await rmdir(dirPath).catch(() => {})
     }
   }
 

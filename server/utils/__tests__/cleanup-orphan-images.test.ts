@@ -91,4 +91,79 @@ describe('cleanupOrphanImages', () => {
     expect(result.bytesFreed).toBeGreaterThan(0)
     expect(result.dryRun).toBe(true)
   })
+
+  it('deletes a stale file in an existing event dir when older than the grace window', async () => {
+    const { utimesSync } = await import('node:fs')
+    const user = await createTestUser(testDb, { email: 's1@test.com', name: 'S1' })
+    const evt = createTestEvent(testDb, user!.id, {})
+    const { events: eventsTable } = await import('../../db/schema')
+    const { eq } = await import('drizzle-orm')
+    // Active path = "<evt.id>/active.jpg"
+    await testDb.update(eventsTable).set({ customImagePath: `${evt!.id}/active.jpg` }).where(eq(eventsTable.id, evt!.id))
+
+    const stalePath = writeFakeUpload(evt!.id, 'stale.jpg')
+    const activePath = writeFakeUpload(evt!.id, 'active.jpg')
+
+    // Backdate stale.jpg to 2 hours ago
+    const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000)
+    utimesSync(stalePath, twoHoursAgo, twoHoursAgo)
+
+    const result = await cleanupOrphanImages({ db: testDb, graceMinutes: 60 })
+
+    expect(existsSync(stalePath)).toBe(false)
+    expect(existsSync(activePath)).toBe(true)
+    expect(result.filesDeleted).toBe(1)
+    expect(result.dirsDeleted).toBe(0)
+    expect(result.bytesFreed).toBeGreaterThan(0)
+  })
+
+  it('skips a stale-named file whose mtime is inside the grace window', async () => {
+    const user = await createTestUser(testDb, { email: 's2@test.com', name: 'S2' })
+    const evt = createTestEvent(testDb, user!.id, {})
+    const { events: eventsTable } = await import('../../db/schema')
+    const { eq } = await import('drizzle-orm')
+    await testDb.update(eventsTable).set({ customImagePath: `${evt!.id}/active.jpg` }).where(eq(eventsTable.id, evt!.id))
+
+    const inFlightPath = writeFakeUpload(evt!.id, 'in-flight.jpg')
+    // mtime is "now", inside default 60-min grace window
+
+    const result = await cleanupOrphanImages({ db: testDb, graceMinutes: 60 })
+
+    expect(existsSync(inFlightPath)).toBe(true)
+    expect(result.filesDeleted).toBe(0)
+  })
+
+  it('never deletes the file at the row\'s customImagePath, even when stale', async () => {
+    const { utimesSync } = await import('node:fs')
+    const user = await createTestUser(testDb, { email: 's3@test.com', name: 'S3' })
+    const evt = createTestEvent(testDb, user!.id, {})
+    const { events: eventsTable } = await import('../../db/schema')
+    const { eq } = await import('drizzle-orm')
+    await testDb.update(eventsTable).set({ customImagePath: `${evt!.id}/active.jpg` }).where(eq(eventsTable.id, evt!.id))
+
+    const activePath = writeFakeUpload(evt!.id, 'active.jpg')
+    const longAgo = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
+    utimesSync(activePath, longAgo, longAgo)
+
+    const result = await cleanupOrphanImages({ db: testDb, graceMinutes: 60 })
+
+    expect(existsSync(activePath)).toBe(true)
+    expect(result.filesDeleted).toBe(0)
+  })
+
+  it('dryRun does not delete stale files', async () => {
+    const { utimesSync } = await import('node:fs')
+    const user = await createTestUser(testDb, { email: 's4@test.com', name: 'S4' })
+    const evt = createTestEvent(testDb, user!.id, {})
+
+    const stalePath = writeFakeUpload(evt!.id, 'stale.jpg')
+    const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000)
+    utimesSync(stalePath, twoHoursAgo, twoHoursAgo)
+
+    const result = await cleanupOrphanImages({ db: testDb, graceMinutes: 60, dryRun: true })
+
+    expect(existsSync(stalePath)).toBe(true)
+    expect(result.filesDeleted).toBe(1)
+    expect(result.dryRun).toBe(true)
+  })
 })
