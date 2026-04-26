@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <defs>
-    
-  </defs>
-  <rect width="512" height="512" fill="#F5F0E6"></rect>
-  <rect x="1" y="1" width="510" height="510" fill="none" stroke="#2A2724" stroke-opacity="0.18" stroke-width="1"></rect>
-  <text class="mark" x="256" y="332" text-anchor="middle" font-size="360" fill="#2A2724">e.</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <rect width="16" height="16" rx="3" ry="3" fill="#1F1B17"></rect>
+  <text x="8" y="12" text-anchor="middle" font-family="Cormorant Garamond, serif" font-style="italic" font-weight="400" font-size="14" fill="#E4D2B4">E</text>
 </svg>
