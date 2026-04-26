@@ -369,6 +369,14 @@
     "honourOfYourPresence": "Se solicita el honor de tu presencia",
     "joyfullyRequest": "Con alegría solicitamos el honor de tu presencia",
     "and": "y",
+    "sampleData": {
+      "coupleName1": "María",
+      "coupleName2": "Jaime",
+      "date": "sábado, 14 de junio de 2026",
+      "venue": "El Gran Salón",
+      "venueAddress": "Calle de la Boda 123, Ciudad",
+      "wording": "Junto a sus familias, les invitan a celebrar\nsu matrimonio."
+    },
     "rustic-autumn": {
       "togetherLine": "Junto con sus familias",
       "venueLabel": "Lugar",

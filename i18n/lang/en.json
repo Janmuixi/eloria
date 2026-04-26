@@ -369,6 +369,14 @@
     "honourOfYourPresence": "The honour of your presence is requested",
     "joyfullyRequest": "We joyfully request the honour of your presence",
     "and": "and",
+    "sampleData": {
+      "coupleName1": "Maria",
+      "coupleName2": "James",
+      "date": "Saturday, June 14th, 2026",
+      "venue": "The Grand Ballroom",
+      "venueAddress": "123 Wedding Lane, City",
+      "wording": "Together with their families, they invite you to celebrate\ntheir marriage."
+    },
     "rustic-autumn": {
       "togetherLine": "Together with their families",
       "venueLabel": "Venue",
