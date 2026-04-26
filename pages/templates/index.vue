@@ -91,12 +91,12 @@ function onImageError(templateId: number) {
           class="bg-ivory-100 border border-charcoal-200 rounded-2xl overflow-hidden hover:border-champagne-400 hover:shadow-md transition-all duration-200"
         >
           <!-- Preview -->
-          <div class="aspect-[4/3] relative overflow-hidden">
+          <div class="aspect-[3/4] relative overflow-hidden bg-ivory-200">
             <img
               v-if="template.previewImageUrl && !brokenImages.has(template.id)"
               :src="template.previewImageUrl"
               :alt="template.name"
-              class="w-full h-full object-cover"
+              class="w-full h-full object-contain"
               @error="onImageError(template.id)"
             />
             <div

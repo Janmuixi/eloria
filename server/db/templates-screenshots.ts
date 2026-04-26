@@ -46,8 +46,11 @@ async function main() {
       await page.setViewport(VIEWPORT)
       await page.setContent(rendered, { waitUntil: 'networkidle0' })
       await page.evaluate(() => document.fonts.ready)
+      const card = await page.$('.invitation, .card')
       const outPath = join(IMAGES_DIR, `${slug}.jpg`)
-      const buffer = await page.screenshot({ type: 'jpeg', quality: 85, fullPage: false })
+      const buffer = card
+        ? await card.screenshot({ type: 'jpeg', quality: 85 })
+        : await page.screenshot({ type: 'jpeg', quality: 85, fullPage: false })
       writeFileSync(outPath, buffer)
       await page.close()
       console.log(`[screenshots] wrote ${outPath}`)
