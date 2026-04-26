@@ -15,9 +15,9 @@ const mobileOpen = ref(false)
   <header class="bg-white border-b border-charcoal-200">
     <nav class="max-w-7xl mx-auto px-6 py-4 flex items-center">
       <!-- Logo -->
-      <div class="flex-1">
-        <NuxtLink to="/" class="inline-flex items-center">
-          <img src="/eloria-wordmark-charcoal.svg" alt="Eloria" class="h-8 w-auto" />
+      <div class="flex-1 flex items-center">
+        <NuxtLink to="/" class="flex items-center">
+          <img src="/eloria-wordmark-charcoal.svg" alt="Eloria" class="h-8 w-auto block" />
         </NuxtLink>
       </div>
 
