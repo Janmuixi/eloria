@@ -2,7 +2,7 @@
   <footer class="bg-ivory-100 border-t border-charcoal-200 py-8">
     <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
       <div class="text-charcoal-500 text-sm flex items-center gap-2">
-        <img src="/eloria-wordmark-charcoal.svg" alt="Eloria" class="h-6 w-auto" />
+        <img src="/eloria-wordmark-charcoal.svg" alt="Eloria" class="h-9 w-auto" />
         <span>&copy; {{ new Date().getFullYear() }} {{ $t('footer.allRightsReserved') }}</span>
       </div>
       <div class="flex items-center gap-6">

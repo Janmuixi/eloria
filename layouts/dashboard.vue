@@ -3,7 +3,7 @@
     <!-- Mobile header -->
     <div class="lg:hidden bg-white border-b border-charcoal-200 px-4 py-3 flex items-center justify-between">
       <NuxtLink to="/" class="inline-flex items-center">
-        <img src="/eloria-wordmark-charcoal.svg" alt="Eloria" class="h-9 w-auto" />
+        <img src="/eloria-wordmark-charcoal.svg" alt="Eloria" class="h-12 w-auto" />
       </NuxtLink>
       <button @click="sidebarOpen = true" class="p-2 text-charcoal-700 hover:text-charcoal-900">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -18,7 +18,7 @@
       <aside class="fixed inset-y-0 left-0 w-64 bg-ivory-100 z-50">
         <div class="p-6 flex items-center justify-between">
           <NuxtLink to="/" class="inline-flex items-center">
-            <img src="/eloria-wordmark-charcoal.svg" alt="Eloria" class="h-9 w-auto" />
+            <img src="/eloria-wordmark-charcoal.svg" alt="Eloria" class="h-12 w-auto" />
           </NuxtLink>
           <button @click="sidebarOpen = false" class="p-1 text-charcoal-500 hover:text-charcoal-700">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,7 +50,7 @@
     <aside class="fixed inset-y-0 left-0 w-64 bg-ivory-100 border-r border-charcoal-200 hidden lg:block">
       <div class="p-6">
         <NuxtLink to="/" class="inline-flex items-center">
-          <img src="/eloria-wordmark-charcoal.svg" alt="Eloria" class="h-9 w-auto" />
+          <img src="/eloria-wordmark-charcoal.svg" alt="Eloria" class="h-12 w-auto" />
         </NuxtLink>
       </div>
       <nav class="px-4 space-y-1">
