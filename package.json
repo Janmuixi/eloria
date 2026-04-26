@@ -15,6 +15,7 @@
     "db:generate": "npx drizzle-kit generate",
     "db:migrate": "tsx server/db/migrate.ts",
     "templates:screenshots": "tsx server/db/templates-screenshots.ts",
+    "cleanup:images": "tsx scripts/cleanup-orphan-images.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
