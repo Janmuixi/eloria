@@ -1,7 +1,10 @@
+import { rmdir } from 'node:fs/promises'
+import { dirname } from 'node:path'
 import { requireAuth } from '~/server/utils/auth'
 import { db } from '~/server/db'
 import { events, guests } from '~/server/db/schema'
 import { eq, and } from 'drizzle-orm'
+import { deleteImage, imageAbsolutePath } from '~/server/utils/image-storage'
 
 export default defineEventHandler(async (event) => {
   const user = await requireAuth(event)
@@ -20,6 +23,12 @@ export default defineEventHandler(async (event) => {
 
   // Delete the event
   await db.delete(events).where(and(eq(events.id, id), eq(events.userId, user.id)))
+
+  if (existing.customImagePath) {
+    await deleteImage(existing.customImagePath).catch(() => {})
+    const dirPath = dirname(imageAbsolutePath(existing.customImagePath))
+    await rmdir(dirPath).catch(() => {})
+  }
 
   return { success: true }
 })

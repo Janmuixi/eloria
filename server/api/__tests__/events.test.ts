@@ -247,5 +247,68 @@ describe('Events API', () => {
         statusCode: 404,
       })
     })
+
+    it('deletes the customImagePath file from disk and rmdirs the event dir', async () => {
+      const { saveImage, imageAbsolutePath } = await import('../../utils/image-storage')
+      const { existsSync, mkdtempSync, rmSync } = await import('node:fs')
+      const { tmpdir } = await import('node:os')
+      const { join } = await import('node:path')
+      const sharp = (await import('sharp')).default
+      const { events: eventsTable } = await import('../../db/schema')
+      const { eq } = await import('drizzle-orm')
+
+      const root = mkdtempSync(join(tmpdir(), 'el-del-'))
+      process.env.UPLOAD_ROOT = root
+      try {
+        const user = await createTestUser(testDb, { email: 'fdel@test.com', name: 'FDel' })
+        const evt = createTestEvent(testDb, user!.id, { invitationType: 'upload' })
+        const buf = await sharp({ create: { width: 50, height: 50, channels: 3, background: { r: 1, g: 2, b: 3 } } }).jpeg().toBuffer()
+        const saved = await saveImage(evt!.id, buf)
+        await testDb.update(eventsTable).set({ customImagePath: saved.relativePath }).where(eq(eventsTable.id, evt!.id))
+
+        const fullPath = imageAbsolutePath(saved.relativePath)
+        expect(existsSync(fullPath)).toBe(true)
+
+        const httpEv = authEvent(user!.id, user!.email, {
+          method: 'DELETE',
+          params: { id: String(evt!.id) },
+        })
+        const result = await deleteHandler(httpEv)
+        expect(result).toEqual({ success: true })
+
+        expect(existsSync(fullPath)).toBe(false)
+        expect(existsSync(join(root, String(evt!.id)))).toBe(false)
+      } finally {
+        rmSync(root, { recursive: true, force: true })
+        delete process.env.UPLOAD_ROOT
+      }
+    })
+
+    it('succeeds when customImagePath file is already missing on disk', async () => {
+      const { mkdtempSync, rmSync } = await import('node:fs')
+      const { tmpdir } = await import('node:os')
+      const { join } = await import('node:path')
+      const { events: eventsTable } = await import('../../db/schema')
+      const { eq } = await import('drizzle-orm')
+
+      const root = mkdtempSync(join(tmpdir(), 'el-del-'))
+      process.env.UPLOAD_ROOT = root
+      try {
+        const user = await createTestUser(testDb, { email: 'fmissdel@test.com', name: 'FMissDel' })
+        const evt = createTestEvent(testDb, user!.id, { invitationType: 'upload' })
+        // Set a path that points to a file we never wrote
+        await testDb.update(eventsTable).set({ customImagePath: `${evt!.id}/never-existed.jpg` }).where(eq(eventsTable.id, evt!.id))
+
+        const httpEv = authEvent(user!.id, user!.email, {
+          method: 'DELETE',
+          params: { id: String(evt!.id) },
+        })
+        const result = await deleteHandler(httpEv)
+        expect(result).toEqual({ success: true })
+      } finally {
+        rmSync(root, { recursive: true, force: true })
+        delete process.env.UPLOAD_ROOT
+      }
+    })
   })
 })
