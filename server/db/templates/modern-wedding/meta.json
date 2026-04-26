@@ -1,0 +1,25 @@
+{
+  "name": "Modern Wedding",
+  "category": "modern",
+  "colorScheme": {
+    "primary": "#1a1714",
+    "secondary": "#2a2622",
+    "background": "#f3efe6",
+    "text": "#2a2622",
+    "accent": "#1a1714"
+  },
+  "fontPairings": {
+    "heading": "Cormorant Garamond",
+    "body": "Cinzel",
+    "script": "Pinyon Script"
+  },
+  "tags": [
+    "modern",
+    "minimal",
+    "elegant",
+    "tuscan",
+    "villa",
+    "illustrated"
+  ],
+  "minimumTier": "basic"
+}
