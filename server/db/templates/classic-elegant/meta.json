@@ -1,17 +1,17 @@
 {
-  "name": "Classic Elegant",
+  "name": "Floral Navy",
   "category": "classic",
   "colorScheme": {
-    "primary": "#c9a84c",
-    "secondary": "#a89a80",
-    "background": "#0d0b12",
-    "text": "#e8e0d0",
-    "accent": "#d4c5a9"
+    "primary": "#1f2c6b",
+    "secondary": "#1f2c6b",
+    "background": "#e9e7df",
+    "text": "#1f2c6b",
+    "accent": "#1f2c6b"
   },
   "fontPairings": {
-    "heading": "Cinzel",
-    "body": "Cormorant Garamond"
+    "heading": "Pinyon Script",
+    "body": "Playfair Display"
   },
-  "tags": ["classic", "elegant", "formal", "traditional", "luxury", "gold"],
+  "tags": ["classic", "elegant", "floral", "navy", "formal", "romantic", "botanical"],
   "minimumTier": "basic"
 }
