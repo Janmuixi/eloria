@@ -50,9 +50,9 @@
     "contact": "Contact"
   },
   "landing": {
-    "seoTitle": "Eloria - Beautiful Wedding Invitations",
-    "seoDescription": "Create stunning wedding invitations with AI-powered design. Send via link, email, or print. Track RSVPs in real-time.",
-    "heroTitle": "Your Wedding, Beautifully Invited",
+    "seoTitle": "Eloria - Invite with intention",
+    "seoDescription": "Create stunning wedding invitations with AI-powered design. Send via link, email, or print. Real-time RSVP tracking.",
+    "heroTitle": "Made for you. Designed for them.",
     "heroSubtitle": "Design stunning, personalized invitations in minutes. Share them anywhere, track RSVPs in real time.",
     "heroCta": "Create Your Invitation",
     "featuresTitle": "Everything you need",
@@ -66,14 +66,14 @@
     "step1Title": "Describe your style",
     "step1Description": "Tell us about your wedding theme and preferences.",
     "step2Title": "Customize your invitation",
-    "step2Description": "Personalize every detail — colors, fonts, wording, and layout.",
+    "step2Description": "Personalize every detail — colors, wording and layout.",
     "step3Title": "Share with guests",
     "step3Description": "Send your invitation by link, email, or download a PDF.",
     "pricingTitle": "Simple, transparent pricing",
     "pricingSubtitle": "Start free with our Basic plan. Upgrade anytime for more features, higher guest limits, and premium templates.",
     "viewPricing": "View Pricing",
     "ctaTitle": "Ready to create your perfect invitation?",
-    "ctaSubtitle": "Join thousands of couples who chose Eloria for their special day.",
+    "ctaSubtitle": "Become one of the couples who chose Eloria for their special day.",
     "ctaButton": "Get Started Free"
   },
   "pricing": {
@@ -275,7 +275,7 @@
   "templateSelection": {
     "title": "Choose a Template",
     "subtitle": "Select a design for your wedding invitation",
-    "stylePlaceholder": "Describe your wedding style (e.g., rustic barn wedding, autumn colors)",
+    "stylePlaceholder": "Describe your wedding style (e.g., rustic wedding, autumn colors)",
     "refreshRecommendations": "Refresh Recommendations",
     "loadingTemplates": "Finding the perfect templates...",
     "recommendedForYou": "Recommended for You",
@@ -417,7 +417,7 @@
     "invitationLive": "Your invitation is now live. Share it with your guests!",
     "paymentProcessing": "Payment Processing",
     "paymentStillProcessing": "Payment is still processing. Please check back shortly.",
-    "paymentVerificationFailed": "Could not verify payment. Please check your event dashboard.",
+    "paymentVerificationFailed": "Could not verify payment. Please check your Event Dashboard.",
     "goToDashboard": "Go to Event Dashboard"
   },
   "errors": {
