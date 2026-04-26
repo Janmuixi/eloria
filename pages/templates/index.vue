@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { t } = useI18n()
+const previewUrl = useTemplatePreviewUrl()
 
 useSeoMeta({
   title: t('templates.seoTitle'),
@@ -21,6 +22,7 @@ function selectCategory(cat: string) {
 
 interface Template {
   id: number
+  slug: string
   name: string
   category: string
   previewImageUrl: string
@@ -93,8 +95,8 @@ function onImageError(templateId: number) {
           <!-- Preview -->
           <div class="aspect-[3/4] relative overflow-hidden bg-ivory-200">
             <img
-              v-if="template.previewImageUrl && !brokenImages.has(template.id)"
-              :src="template.previewImageUrl"
+              v-if="!brokenImages.has(template.id)"
+              :src="previewUrl(template)"
               :alt="template.name"
               class="w-full h-full object-contain"
               @error="onImageError(template.id)"
