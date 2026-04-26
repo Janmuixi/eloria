@@ -63,6 +63,7 @@ const styleDescription = ref('')
 const selectedTemplateId = ref<number | null>(null)
 const recommendedTemplates = ref<any[]>([])
 const allTemplates = ref<any[]>([])
+const previewUrl = useTemplatePreviewUrl()
 const loadingTemplates = ref(false)
 const templatesLoaded = ref(false)
 
@@ -443,8 +444,8 @@ const stepLabels = computed(() => {
                 ]">
                 <div class="aspect-[3/4] bg-charcoal-100 overflow-hidden">
                   <img
-                    v-if="tpl.previewImageUrl"
-                    :src="tpl.previewImageUrl"
+                    v-if="tpl.slug"
+                    :src="previewUrl(tpl)"
                     :alt="tpl.name"
                     class="w-full h-full object-cover object-top"
                   />
@@ -474,8 +475,8 @@ const stepLabels = computed(() => {
                 ]">
                 <div class="aspect-[3/4] bg-charcoal-100 overflow-hidden">
                   <img
-                    v-if="tpl.previewImageUrl"
-                    :src="tpl.previewImageUrl"
+                    v-if="tpl.slug"
+                    :src="previewUrl(tpl)"
                     :alt="tpl.name"
                     class="w-full h-full object-cover object-top"
                   />
