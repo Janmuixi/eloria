@@ -5,9 +5,14 @@ import { substituteTemplate, type TemplateData } from '../utils/template-substit
 
 const TEMPLATES_DIR = 'server/db/templates'
 const IMAGES_DIR = 'public/images/templates'
-const LOCALES = ['en', 'es'] as const
-const LOCALE_FILE = (locale: string) => `i18n/lang/${locale}.json`
+const LANG_DIR = 'i18n/lang'
 const VIEWPORT = { width: 800, height: 1200 }
+
+const LOCALES = readdirSync(LANG_DIR)
+  .filter(f => f.endsWith('.json'))
+  .map(f => f.slice(0, -'.json'.length))
+  .sort()
+const LOCALE_FILE = (locale: string) => join(LANG_DIR, `${locale}.json`)
 
 const REQUIRED_SAMPLE_FIELDS: (keyof TemplateData)[] = [
   'coupleName1', 'coupleName2', 'date', 'venue', 'venueAddress', 'wording',
