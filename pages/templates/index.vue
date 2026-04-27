@@ -25,7 +25,6 @@ interface Template {
   slug: string
   name: string
   category: string
-  previewImageUrl: string
   minimumTierId: number
   tier: { slug: string; name: string } | null
 }

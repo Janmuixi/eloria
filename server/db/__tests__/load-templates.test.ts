@@ -38,7 +38,6 @@ describe('loadTemplatesFromDisk', () => {
       category: 'modern',
       htmlTemplate: '<p>{{coupleName1}}</p>',
       cssTemplate: '',
-      previewImageUrl: '/images/templates/sample.jpg',
       minimumTierId: 10,
     })
     expect(JSON.parse(rows[0].colorScheme)).toEqual({ primary: '#000', secondary: '#111', background: '#fff', text: '#222', accent: '#333' })

@@ -29,7 +29,6 @@ async function seedTemplates() {
       set: {
         name: row.name,
         category: row.category,
-        previewImageUrl: row.previewImageUrl,
         htmlTemplate: row.htmlTemplate,
         cssTemplate: row.cssTemplate,
         colorScheme: row.colorScheme,

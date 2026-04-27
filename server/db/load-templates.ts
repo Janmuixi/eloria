@@ -14,7 +14,6 @@ export type TemplateInsertRow = {
   slug: string
   name: string
   category: string
-  previewImageUrl: string
   htmlTemplate: string
   cssTemplate: string
   colorScheme: string
@@ -77,7 +76,6 @@ function loadOne(templatesDir: string, slug: string, tierSlugToId: Map<string, n
     slug,
     name: meta.name,
     category: meta.category,
-    previewImageUrl: `/images/templates/${slug}.jpg`,
     htmlTemplate: html,
     cssTemplate: '',
     colorScheme: JSON.stringify(meta.colorScheme),

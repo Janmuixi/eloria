@@ -69,7 +69,6 @@ export const templates = sqliteTable('templates', {
   name: text('name').notNull(),
   slug: text('slug').notNull().unique(),
   category: text('category').notNull(),
-  previewImageUrl: text('preview_image_url').notNull(),
   htmlTemplate: text('html_template').notNull(),
   cssTemplate: text('css_template').notNull(),
   colorScheme: text('color_scheme').notNull(),
