@@ -78,7 +78,7 @@
   },
   "pricing": {
     "seoTitle": "Pricing - Eloria",
-    "seoDescription": "Simple per-event pricing for your wedding invitations. Choose from Basic or Premium plans.",
+    "seoDescription": "Simple pricing for your wedding invitations — Basic, Premium, or the Pro plan for wedding planners. Use our templates or upload your own design.",
     "title": "Simple, transparent pricing",
     "subtitle": "Use one of our templates or upload your own design. Choose the plan that fits your wedding — start free and upgrade anytime.",
     "mostPopular": "Most Popular",
@@ -284,6 +284,14 @@
     "saving": "Saving...",
     "continueToCustomization": "Continue to Customization"
   },
+  "templateChange": {
+    "title": "Change Template",
+    "subtitle": "Pick a different design for your invitation",
+    "currentlySelected": "Current",
+    "save": "Save Template",
+    "backToSettings": "← Back to settings",
+    "replacingUploadWarning": "Picking a template will replace your uploaded image."
+  },
   "customization": {
     "title": "Customize Your Invitation",
     "subtitle": "Personalize the wording and style",
@@ -453,7 +461,10 @@
     "failedToSendResetLink": "Failed to send reset link",
     "verificationFailed": "Verification failed. The link may have expired.",
     "registrationFailed": "Registration failed",
-    "loginFailed": "Login failed"
+    "loginFailed": "Login failed",
+    "pageNotFoundTitle": "Page not found",
+    "pageNotFoundDescription": "The page you're looking for doesn't exist or has been moved.",
+    "goHome": "Back to home"
   },
   "seo": {
     "signIn": "Sign In - Eloria",

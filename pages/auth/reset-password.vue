@@ -5,6 +5,7 @@ const { t } = useI18n()
 
 useSeoMeta({
   title: t('seo.setNewPassword'),
+  robots: 'noindex, nofollow',
 })
 
 const route = useRoute()

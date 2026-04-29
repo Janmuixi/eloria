@@ -1,5 +1,7 @@
 <script setup lang="ts">
 const { t } = useI18n()
+const requestURL = useRequestURL()
+const origin = requestURL.origin
 
 useSeoMeta({
   title: t('landing.seoTitle'),
@@ -7,6 +9,34 @@ useSeoMeta({
   ogTitle: t('landing.seoTitle'),
   ogDescription: t('landing.seoDescription'),
   ogType: 'website',
+  twitterTitle: t('landing.seoTitle'),
+  twitterDescription: t('landing.seoDescription'),
+})
+
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'Organization',
+            name: 'Eloria',
+            url: origin,
+            logo: `${origin}/eloria-wordmark-charcoal.svg`,
+            email: 'eloria.rsvp@gmail.com',
+          },
+          {
+            '@type': 'WebSite',
+            name: 'Eloria',
+            url: origin,
+            inLanguage: ['en', 'es'],
+          },
+        ],
+      }),
+    },
+  ],
 })
 
 const features = computed(() => [

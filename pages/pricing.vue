@@ -19,6 +19,11 @@ async function startSubscription() {
 useSeoMeta({
   title: t('pricing.seoTitle'),
   description: t('pricing.seoDescription'),
+  ogTitle: t('pricing.seoTitle'),
+  ogDescription: t('pricing.seoDescription'),
+  ogType: 'website',
+  twitterTitle: t('pricing.seoTitle'),
+  twitterDescription: t('pricing.seoDescription'),
 })
 
 const { data: tiers } = await useFetch('/api/tiers')

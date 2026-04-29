@@ -5,6 +5,11 @@ const previewUrl = useTemplatePreviewUrl()
 useSeoMeta({
   title: t('templates.seoTitle'),
   description: t('templates.seoDescription'),
+  ogTitle: t('templates.seoTitle'),
+  ogDescription: t('templates.seoDescription'),
+  ogType: 'website',
+  twitterTitle: t('templates.seoTitle'),
+  twitterDescription: t('templates.seoDescription'),
 })
 
 const categories = ['All', 'rustic', 'modern', 'elegant', 'minimal', 'classic'] as const

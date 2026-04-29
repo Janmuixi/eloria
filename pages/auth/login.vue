@@ -5,6 +5,7 @@ const { t } = useI18n()
 
 useSeoMeta({
   title: t('seo.signIn'),
+  robots: 'noindex, nofollow',
 })
 
 const { login } = useAuth()

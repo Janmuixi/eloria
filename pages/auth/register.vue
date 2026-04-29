@@ -5,6 +5,7 @@ const { t } = useI18n()
 
 useSeoMeta({
   title: t('seo.createAccount'),
+  robots: 'noindex, nofollow',
 })
 
 const { register } = useAuth()

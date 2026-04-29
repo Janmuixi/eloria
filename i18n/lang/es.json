@@ -78,7 +78,7 @@
   },
   "pricing": {
     "seoTitle": "Precios - Eloria",
-    "seoDescription": "Precios simples por evento para tus invitaciones de boda. Elige entre los planes Básico, Premium o Pro.",
+    "seoDescription": "Precios simples para tus invitaciones de boda — Básico, Premium o Pro para wedding planners. Usa nuestras plantillas o sube tu propio diseño.",
     "title": "Precios simples y transparentes",
     "subtitle": "Usa una de nuestras plantillas o sube tu propio diseño. Elige el plan que mejor se ajuste a tu boda — comienza gratis y mejora cuando quieras.",
     "mostPopular": "Más Popular",
@@ -284,6 +284,14 @@
     "saving": "Guardando...",
     "continueToCustomization": "Continuar a Personalización"
   },
+  "templateChange": {
+    "title": "Cambiar Plantilla",
+    "subtitle": "Elige un diseño diferente para tu invitación",
+    "currentlySelected": "Actual",
+    "save": "Guardar Plantilla",
+    "backToSettings": "← Volver a ajustes",
+    "replacingUploadWarning": "Elegir una plantilla reemplazará la imagen que subiste."
+  },
   "customization": {
     "title": "Personaliza Tu Invitación",
     "subtitle": "Personaliza el texto y el estilo",
@@ -453,7 +461,10 @@
     "failedToSendResetLink": "Error al enviar enlace de restablecimiento",
     "verificationFailed": "La verificación falló. El enlace puede haber expirado.",
     "registrationFailed": "Error en el registro",
-    "loginFailed": "Error al iniciar sesión"
+    "loginFailed": "Error al iniciar sesión",
+    "pageNotFoundTitle": "Página no encontrada",
+    "pageNotFoundDescription": "La página que buscas no existe o ha sido movida.",
+    "goHome": "Volver al inicio"
   },
   "seo": {
     "signIn": "Iniciar Sesión - Eloria",

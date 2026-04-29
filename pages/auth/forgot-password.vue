@@ -5,6 +5,7 @@ const { t } = useI18n()
 
 useSeoMeta({
   title: t('seo.resetPassword'),
+  robots: 'noindex, nofollow',
 })
 
 const email = ref('')
