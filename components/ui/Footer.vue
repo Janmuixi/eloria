@@ -8,7 +8,7 @@
       <div class="flex items-center gap-6">
         <NuxtLink to="/templates" class="text-sm text-charcoal-500 hover:text-charcoal-700 transition-colors">{{ $t('nav.templates') }}</NuxtLink>
         <NuxtLink to="/pricing" class="text-sm text-charcoal-500 hover:text-charcoal-700 transition-colors">{{ $t('nav.pricing') }}</NuxtLink>
-        <a href="#" class="text-sm text-charcoal-500 hover:text-charcoal-700 transition-colors">{{ $t('footer.contact') }}</a>
+        <a href="mailto:eloria.rsvp@gmail.com" class="text-sm text-charcoal-500 hover:text-charcoal-700 transition-colors">{{ $t('footer.contact') }}</a>
       </div>
     </div>
   </footer>

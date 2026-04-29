@@ -359,6 +359,13 @@
     "title": "Plantillas de Invitaciones",
     "subtitle": "Explora nuestra colección de plantillas de invitaciones de boda diseñadas profesionalmente. Encuentra la combinación perfecta para tu estilo.",
     "all": "Todas",
+    "categories": {
+      "rustic": "Rústico",
+      "modern": "Moderno",
+      "elegant": "Elegante",
+      "minimal": "Minimalista",
+      "classic": "Clásico"
+    },
     "comingSoonTitle": "¡Plantillas próximamente!",
     "comingSoonDescription": "Estamos diseñando hermosas invitaciones para ti. Vuelve pronto.",
     "together": "Junto con sus familias",

@@ -359,6 +359,13 @@
     "title": "Invitation Templates",
     "subtitle": "Browse our collection of professionally designed wedding invitation templates. Find the perfect match for your style.",
     "all": "All",
+    "categories": {
+      "rustic": "Rustic",
+      "modern": "Modern",
+      "elegant": "Elegant",
+      "minimal": "Minimal",
+      "classic": "Classic"
+    },
     "comingSoonTitle": "Templates coming soon!",
     "comingSoonDescription": "We're designing beautiful invitations for you. Check back soon.",
     "together": "Together with their families",

@@ -77,7 +77,7 @@ function onImageError(templateId: number) {
             ? 'bg-champagne-500 text-white rounded-full'
             : 'bg-charcoal-100 text-charcoal-500 rounded-full hover:bg-charcoal-200'"
         >
-          {{ cat === 'All' ? $t('templates.all') : cat.charAt(0).toUpperCase() + cat.slice(1) }}
+          {{ cat === 'All' ? $t('templates.all') : $t(`templates.categories.${cat}`) }}
         </button>
       </div>
 
@@ -106,7 +106,7 @@ function onImageError(templateId: number) {
               :class="categoryGradients[template.category] || 'from-champagne-400 to-champagne-100'"
             >
               <span class="text-white/90 text-2xl font-serif italic drop-shadow">{{ template.name }}</span>
-              <span class="text-white/60 text-xs mt-1 uppercase tracking-widest">{{ template.category }}</span>
+              <span class="text-white/60 text-xs mt-1 uppercase tracking-widest">{{ $t(`templates.categories.${template.category}`) }}</span>
             </div>
           </div>
 
@@ -116,7 +116,7 @@ function onImageError(templateId: number) {
                 class="text-xs font-medium px-2 py-0.5 rounded-full"
                 :class="categoryColors[template.category] || 'bg-charcoal-100 text-charcoal-700'"
               >
-                {{ template.category }}
+                {{ $t(`templates.categories.${template.category}`) }}
               </span>
               <span
                 v-if="!isBasicTier(template)"
