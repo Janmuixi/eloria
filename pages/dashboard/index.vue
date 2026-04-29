@@ -9,20 +9,20 @@ const { data: events, status } = await useFetch('/api/events')
   <div>
     <div class="flex items-center justify-between mb-6">
       <h1 class="font-display font-bold text-2xl text-charcoal-900">{{ $t('dashboard.myEvents') }}</h1>
-      <NuxtLink to="/dashboard/events/new"
+      <NuxtLinkLocale to="/dashboard/events/new"
         class="bg-champagne-500 text-white rounded-full px-5 py-2 font-medium hover:bg-champagne-600 transition-all duration-200">
         {{ $t('dashboard.createNewEvent') }}
-      </NuxtLink>
+      </NuxtLinkLocale>
     </div>
 
     <UiLoadingSpinner v-if="status === 'pending'" />
 
     <div v-else-if="!events?.length" class="text-center py-12">
       <p class="text-charcoal-500 mb-4">{{ $t('dashboard.noEvents') }}</p>
-      <NuxtLink to="/dashboard/events/new"
+      <NuxtLinkLocale to="/dashboard/events/new"
         class="bg-champagne-500 text-white rounded-full px-5 py-2 font-medium hover:bg-champagne-600 transition-all duration-200">
         {{ $t('dashboard.createFirstEvent') }}
-      </NuxtLink>
+      </NuxtLinkLocale>
     </div>
 
     <div v-else class="grid gap-4">
@@ -39,10 +39,10 @@ const { data: events, status } = await useFetch('/api/events')
           ]">
             {{ evt.paymentStatus === 'paid' ? $t('common.active') : $t('common.pendingPayment') }}
           </span>
-          <NuxtLink :to="`/dashboard/events/${evt.id}`"
+          <NuxtLinkLocale :to="`/dashboard/events/${evt.id}`"
             class="text-charcoal-700 hover:text-charcoal-900 font-medium hover:underline">
             {{ $t('common.manage') }}
-          </NuxtLink>
+          </NuxtLinkLocale>
         </div>
       </div>
     </div>

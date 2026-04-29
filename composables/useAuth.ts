@@ -41,7 +41,8 @@ export const useAuth = () => {
   const logout = async () => {
     await $fetch('/api/auth/logout', { method: 'POST' })
     user.value = null
-    navigateTo('/auth/login')
+    const localePath = useLocalePath()
+    navigateTo(localePath('/auth/login'))
   }
 
   return { user, loading, fetchUser, login, register, logout }

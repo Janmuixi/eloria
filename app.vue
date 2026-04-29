@@ -1,18 +1,16 @@
 <script setup lang="ts">
-const { locale } = useI18n()
+const i18nHead = useLocaleHead({ dir: true, lang: true, seo: true })
 const requestURL = useRequestURL()
 const origin = requestURL.origin
-const canonicalUrl = `${origin}${requestURL.pathname}`
 
-useHead({
-  htmlAttrs: { lang: () => locale.value },
-  link: [{ rel: 'canonical', href: canonicalUrl }],
-})
+useHead(() => ({
+  htmlAttrs: i18nHead.value.htmlAttrs,
+  link: i18nHead.value.link,
+  meta: i18nHead.value.meta,
+}))
 
 useSeoMeta({
   ogSiteName: 'Eloria',
-  ogLocale: () => (locale.value === 'es' ? 'es_ES' : 'en_US'),
-  ogUrl: canonicalUrl,
   ogImage: `${origin}/eloria-wordmark-charcoal.svg`,
   twitterCard: 'summary_large_image',
 })

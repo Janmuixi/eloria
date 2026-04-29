@@ -52,10 +52,10 @@ onMounted(async () => {
         </div>
         <h1 class="font-display text-2xl font-bold text-charcoal-900 mb-2">{{ $t('auth.emailVerified') }}</h1>
         <p class="text-charcoal-300 mb-6">{{ $t('auth.emailVerifiedMessage') }}</p>
-        <NuxtLink to="/dashboard"
+        <NuxtLinkLocale to="/dashboard"
           class="inline-block bg-champagne-500 text-charcoal-900 px-6 py-2 rounded-full font-medium hover:bg-champagne-600">
           {{ $t('auth.goToDashboard') }}
-        </NuxtLink>
+        </NuxtLinkLocale>
       </div>
 
       <!-- Error -->
@@ -65,10 +65,10 @@ onMounted(async () => {
         </div>
         <h1 class="font-display text-2xl font-bold text-charcoal-900 mb-2">{{ $t('auth.verificationFailed') }}</h1>
         <p class="text-charcoal-300 mb-6">{{ errorMessage }}</p>
-        <NuxtLink to="/dashboard"
+        <NuxtLinkLocale to="/dashboard"
           class="inline-block bg-champagne-500 text-charcoal-900 px-6 py-2 rounded-full font-medium hover:bg-champagne-600">
           {{ $t('auth.goToDashboard') }}
-        </NuxtLink>
+        </NuxtLinkLocale>
       </div>
     </div>
   </div>

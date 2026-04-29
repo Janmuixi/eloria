@@ -43,9 +43,9 @@ async function onSubmit() {
           </svg>
         </div>
         <p class="text-charcoal-700 mb-4">{{ $t('auth.resetLinkSent') }}</p>
-        <NuxtLink to="/auth/login" class="text-champagne-600 hover:text-champagne-500 underline">
+        <NuxtLinkLocale to="/auth/login" class="text-champagne-600 hover:text-champagne-500 underline">
           {{ $t('auth.backToSignIn') }}
-        </NuxtLink>
+        </NuxtLinkLocale>
       </div>
     </div>
 
@@ -69,7 +69,7 @@ async function onSubmit() {
       </button>
 
       <p class="text-center text-sm text-charcoal-500">
-        {{ $t('auth.rememberPassword') }} <NuxtLink to="/auth/login" class="text-champagne-600 hover:text-champagne-500 underline">{{ $t('auth.loginButton') }}</NuxtLink>
+        {{ $t('auth.rememberPassword') }} <NuxtLinkLocale to="/auth/login" class="text-champagne-600 hover:text-champagne-500 underline">{{ $t('auth.loginButton') }}</NuxtLinkLocale>
       </p>
     </form>
   </div>

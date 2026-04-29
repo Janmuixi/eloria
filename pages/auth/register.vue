@@ -9,6 +9,7 @@ useSeoMeta({
 })
 
 const { register } = useAuth()
+const localePath = useLocalePath()
 const form = reactive({ name: '', email: '', password: '' })
 const error = ref('')
 const submitting = ref(false)
@@ -19,7 +20,7 @@ async function onSubmit() {
   submitting.value = true
   try {
     await register(form.email, form.password, form.name)
-    navigateTo('/dashboard')
+    navigateTo(localePath('/dashboard'))
   } catch (e: any) {
     error.value = e.data?.statusMessage || t('errors.registrationFailed')
   } finally {
@@ -67,7 +68,7 @@ async function onSubmit() {
         {{ submitting ? $t('auth.registerSubmitting') : $t('auth.registerButton') }}
       </button>
       <p class="text-center text-sm text-charcoal-500">
-        {{ $t('auth.hasAccount') }} <NuxtLink to="/auth/login" class="text-champagne-600 hover:text-champagne-500 underline">{{ $t('auth.loginButton') }}</NuxtLink>
+        {{ $t('auth.hasAccount') }} <NuxtLinkLocale to="/auth/login" class="text-champagne-600 hover:text-champagne-500 underline">{{ $t('auth.loginButton') }}</NuxtLinkLocale>
       </p>
     </form>
   </div>

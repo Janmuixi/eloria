@@ -9,6 +9,7 @@ useSeoMeta({
 })
 
 const { login } = useAuth()
+const localePath = useLocalePath()
 const form = reactive({ email: '', password: '' })
 const error = ref('')
 const submitting = ref(false)
@@ -19,7 +20,7 @@ async function onSubmit() {
   submitting.value = true
   try {
     await login(form.email, form.password)
-    navigateTo('/dashboard')
+    navigateTo(localePath('/dashboard'))
   } catch (e: any) {
     error.value = e.data?.statusMessage || t('errors.loginFailed')
   } finally {
@@ -41,7 +42,7 @@ async function onSubmit() {
       <div>
         <div class="flex items-center justify-between mb-1">
           <label class="block text-sm font-medium text-charcoal-700">{{ $t('common.password') }}</label>
-          <NuxtLink to="/auth/forgot-password" class="text-sm text-champagne-600 hover:text-champagne-500">{{ $t('auth.forgotPassword') }}</NuxtLink>
+          <NuxtLinkLocale to="/auth/forgot-password" class="text-sm text-champagne-600 hover:text-champagne-500">{{ $t('auth.forgotPassword') }}</NuxtLinkLocale>
         </div>
         <div class="relative">
           <input v-model="form.password" :type="showPassword ? 'text' : 'password'" required minlength="8"
@@ -65,7 +66,7 @@ async function onSubmit() {
         {{ submitting ? $t('auth.loginSubmitting') : $t('auth.loginButton') }}
       </button>
       <p class="text-center text-sm text-charcoal-500">
-        {{ $t('auth.noAccount') }} <NuxtLink to="/auth/register" class="text-champagne-600 hover:text-champagne-500 underline">{{ $t('auth.createOne') }}</NuxtLink>
+        {{ $t('auth.noAccount') }} <NuxtLinkLocale to="/auth/register" class="text-champagne-600 hover:text-champagne-500 underline">{{ $t('auth.createOne') }}</NuxtLinkLocale>
       </p>
     </form>
   </div>

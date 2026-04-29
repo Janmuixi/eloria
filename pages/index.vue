@@ -75,12 +75,12 @@ const steps = computed(() => [
         <p class="text-lg text-charcoal-500 max-w-xl mx-auto mt-6">
           {{ $t('landing.heroSubtitle') }}
         </p>
-        <NuxtLink
+        <NuxtLinkLocale
           to="/auth/register"
           class="bg-champagne-500 text-white rounded-full px-8 py-3 font-medium hover:bg-champagne-600 hover:shadow-md transition-all duration-200 mt-8 inline-block"
         >
           {{ $t('landing.heroCta') }}
-        </NuxtLink>
+        </NuxtLinkLocale>
       </div>
     </section>
 
@@ -143,12 +143,12 @@ const steps = computed(() => [
       <div class="max-w-6xl mx-auto px-6">
         <h2 class="font-display font-semibold text-3xl text-charcoal-900 mb-4">{{ $t('landing.pricingTitle') }}</h2>
         <p class="text-charcoal-500 mb-8 max-w-xl mx-auto">{{ $t('landing.pricingSubtitle') }}</p>
-        <NuxtLink
+        <NuxtLinkLocale
           to="/pricing"
           class="text-champagne-600 font-medium hover:text-champagne-500 underline"
         >
           {{ $t('landing.viewPricing') }}
-        </NuxtLink>
+        </NuxtLinkLocale>
       </div>
     </section>
 
@@ -157,12 +157,12 @@ const steps = computed(() => [
       <div class="max-w-6xl mx-auto px-6 text-center">
         <h2 class="font-display font-semibold text-3xl text-ivory-50 mb-4">{{ $t('landing.ctaTitle') }}</h2>
         <p class="text-charcoal-300 mb-8">{{ $t('landing.ctaSubtitle') }}</p>
-        <NuxtLink
+        <NuxtLinkLocale
           to="/auth/register"
           class="bg-champagne-500 text-white rounded-full px-8 py-3 font-medium hover:bg-champagne-600 hover:shadow-md transition-all duration-200 inline-block"
         >
           {{ $t('landing.ctaButton') }}
-        </NuxtLink>
+        </NuxtLinkLocale>
       </div>
     </section>
   </div>

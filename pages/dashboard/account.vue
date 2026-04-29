@@ -114,12 +114,12 @@ function formatDate(dateStr: string | null): string {
 
       <div v-else class="space-y-4">
         <p class="text-charcoal-500">{{ t('account.noActiveSubscription') }}</p>
-        <NuxtLink
+        <NuxtLinkLocale
           to="/pricing"
           class="inline-block bg-champagne-500 text-white px-4 py-2 rounded-full font-medium hover:bg-champagne-600 transition-all duration-200"
         >
           {{ t('account.viewPlans') }}
-        </NuxtLink>
+        </NuxtLinkLocale>
       </div>
     </div>
 

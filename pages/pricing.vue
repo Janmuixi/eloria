@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { t } = useI18n()
+const localePath = useLocalePath()
 const { user } = useAuth()
 const loggedIn = computed(() => user.value !== null)
 
@@ -10,7 +11,7 @@ async function startSubscription() {
     const res = await $fetch<{ url: string }>('/api/subscriptions/create-checkout', { method: 'POST' })
     if (res.url) navigateTo(res.url, { external: true })
   } catch {
-    navigateTo('/auth/login')
+    navigateTo(localePath('/auth/login'))
   } finally {
     subscribing.value = false
   }
@@ -166,7 +167,7 @@ interface Tier {
           >
             {{ subscribing ? $t('common.loading') : $t('pricing.subscribeNow') }}
           </button>
-          <NuxtLink
+          <NuxtLinkLocale
             v-else
             to="/auth/register"
             class="block text-center font-medium py-2.5 transition-all duration-200"
@@ -175,7 +176,7 @@ interface Tier {
               : 'border border-charcoal-900 text-charcoal-900 rounded-full hover:bg-charcoal-100 hover:shadow-md'"
           >
             {{ $t('nav.getStarted') }}
-          </NuxtLink>
+          </NuxtLinkLocale>
         </div>
       </div>
     </div>

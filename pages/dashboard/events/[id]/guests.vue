@@ -130,14 +130,14 @@ async function copyPersonalLink(guest: { id: number; token: string }) {
 
 <template>
   <div>
-    <NuxtLink to="/dashboard" class="text-sm text-charcoal-500 hover:text-charcoal-900 hover:underline mb-4 block">
+    <NuxtLinkLocale to="/dashboard" class="text-sm text-charcoal-500 hover:text-charcoal-900 hover:underline mb-4 block">
       &larr; {{ t('eventDetail.backToEvents') }}
-    </NuxtLink>
+    </NuxtLinkLocale>
 
     <!-- Tabs -->
     <div class="border-b border-charcoal-200 mb-6">
       <nav class="flex gap-6">
-        <NuxtLink
+        <NuxtLinkLocale
           v-for="tab in tabs"
           :key="tab.to"
           :to="tab.to"
@@ -147,7 +147,7 @@ async function copyPersonalLink(guest: { id: number; token: string }) {
             : 'border-transparent text-charcoal-500 hover:text-charcoal-700'"
         >
           {{ tab.label }}
-        </NuxtLink>
+        </NuxtLinkLocale>
       </nav>
     </div>
 
@@ -195,10 +195,10 @@ async function copyPersonalLink(guest: { id: number; token: string }) {
       </form>
       <div v-if="addError" class="mt-3 flex items-center justify-between bg-red-50 border border-red-200 rounded-lg px-4 py-3">
         <p class="text-sm text-red-700">{{ addError }}</p>
-        <NuxtLink v-if="addError.includes(String(guestLimit))" to="/pricing"
+        <NuxtLinkLocale v-if="addError.includes(String(guestLimit))" to="/pricing"
           class="ml-4 px-3 py-1 bg-champagne-500 text-white rounded-full text-xs font-medium hover:bg-champagne-600 transition-colors whitespace-nowrap">
           {{ t('guests.upgradePlan') }}
-        </NuxtLink>
+        </NuxtLinkLocale>
       </div>
     </div>
 
@@ -223,10 +223,10 @@ async function copyPersonalLink(guest: { id: number; token: string }) {
       </div>
       <div v-if="importError" class="mt-3 flex items-center justify-between bg-red-50 border border-red-200 rounded-lg px-4 py-3">
         <p class="text-sm text-red-700">{{ importError }}</p>
-        <NuxtLink v-if="importError.includes(String(guestLimit))" to="/pricing"
+        <NuxtLinkLocale v-if="importError.includes(String(guestLimit))" to="/pricing"
           class="ml-4 px-3 py-1 bg-champagne-500 text-white rounded-full text-xs font-medium hover:bg-champagne-600 transition-colors whitespace-nowrap">
           {{ t('guests.upgradePlan') }}
-        </NuxtLink>
+        </NuxtLinkLocale>
       </div>
     </div>
 

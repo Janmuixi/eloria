@@ -9,6 +9,7 @@ useSeoMeta({
 })
 
 const route = useRoute()
+const localePath = useLocalePath()
 const token = computed(() => route.query.token as string)
 
 const newPassword = ref('')
@@ -70,7 +71,7 @@ async function onSubmit() {
     success.value = true
 
     setTimeout(() => {
-      navigateTo('/dashboard')
+      navigateTo(localePath('/dashboard'))
     }, 2000)
   } catch (e: any) {
     error.value = e.data?.statusMessage || t('errors.failedToResetPassword')
@@ -163,9 +164,9 @@ async function onSubmit() {
           </svg>
         </div>
         <p class="text-charcoal-700 mb-4">{{ error || $t('auth.invalidResetLink') }}</p>
-        <NuxtLink to="/auth/forgot-password" class="text-champagne-600 hover:text-champagne-500 underline">
+        <NuxtLinkLocale to="/auth/forgot-password" class="text-champagne-600 hover:text-champagne-500 underline">
           {{ $t('auth.requestNewResetLink') }}
-        </NuxtLink>
+        </NuxtLinkLocale>
       </div>
     </div>
   </div>

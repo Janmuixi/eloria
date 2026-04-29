@@ -6,16 +6,18 @@ export default defineNuxtConfig({
 
   i18n: {
     locales: [
-      { code: 'en', file: 'en.json', name: 'English' },
-      { code: 'es', file: 'es.json', name: 'Español' },
+      { code: 'en', file: 'en.json', name: 'English', language: 'en-US' },
+      { code: 'es', file: 'es.json', name: 'Español', language: 'es-ES' },
     ],
     defaultLocale: 'en',
     langDir: 'lang/',
-    strategy: 'no_prefix',
+    strategy: 'prefix_except_default',
+    baseUrl: process.env.BASE_URL || '',
     detectBrowserLanguage: {
       useCookie: true,
       cookieKey: 'i18n_locale',
       fallbackLocale: 'en',
+      redirectOn: 'root',
     },
   },
   typescript: { strict: true },

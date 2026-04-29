@@ -63,9 +63,9 @@ onMounted(async () => {
       <p class="text-charcoal-500 mb-6">{{ error }}</p>
     </template>
 
-    <NuxtLink :to="`/dashboard/events/${eventId}`"
+    <NuxtLinkLocale :to="`/dashboard/events/${eventId}`"
       class="bg-champagne-500 text-white px-6 py-2 rounded-full font-medium hover:bg-champagne-600 transition-colors">
       {{ t('success.goToDashboard') }}
-    </NuxtLink>
+    </NuxtLinkLocale>
   </div>
 </template>

@@ -16,22 +16,22 @@ const mobileOpen = ref(false)
     <nav class="max-w-7xl mx-auto px-6 py-4 flex items-center">
       <!-- Logo -->
       <div class="flex-1 flex items-center">
-        <NuxtLink to="/" class="flex items-center">
+        <NuxtLinkLocale to="/" class="flex items-center">
           <img src="/eloria-wordmark-charcoal.svg" alt="Eloria" class="h-8 w-auto block" />
-        </NuxtLink>
+        </NuxtLinkLocale>
       </div>
 
       <!-- Desktop nav links (centered) -->
       <div class="hidden md:flex items-center gap-8">
-        <NuxtLink to="/templates" class="text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors">{{ $t('nav.templates') }}</NuxtLink>
-        <NuxtLink to="/pricing" class="text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors">{{ $t('nav.pricing') }}</NuxtLink>
+        <NuxtLinkLocale to="/templates" class="text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors">{{ $t('nav.templates') }}</NuxtLinkLocale>
+        <NuxtLinkLocale to="/pricing" class="text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors">{{ $t('nav.pricing') }}</NuxtLinkLocale>
       </div>
 
       <!-- Desktop auth buttons -->
       <div class="hidden md:flex flex-1 items-center justify-end gap-4">
         <template v-if="!loading">
           <template v-if="user">
-            <NuxtLink to="/dashboard" class="text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors">{{ $t('nav.dashboard') }}</NuxtLink>
+            <NuxtLinkLocale to="/dashboard" class="text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors">{{ $t('nav.dashboard') }}</NuxtLinkLocale>
             <button
               @click="logout"
               class="text-sm text-charcoal-500 hover:text-charcoal-700"
@@ -40,13 +40,13 @@ const mobileOpen = ref(false)
             </button>
           </template>
           <template v-else>
-            <NuxtLink to="/auth/login" class="text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors">{{ $t('nav.signIn') }}</NuxtLink>
-            <NuxtLink
+            <NuxtLinkLocale to="/auth/login" class="text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors">{{ $t('nav.signIn') }}</NuxtLinkLocale>
+            <NuxtLinkLocale
               to="/auth/register"
               class="bg-champagne-500 text-white rounded-full px-5 py-2 font-medium hover:bg-champagne-600 transition-all duration-200 text-sm"
             >
               {{ $t('nav.getStarted') }}
-            </NuxtLink>
+            </NuxtLinkLocale>
           </template>
         </template>
       </div>
@@ -68,23 +68,23 @@ const mobileOpen = ref(false)
 
     <!-- Mobile menu -->
     <div v-if="mobileOpen" class="md:hidden border-t border-charcoal-200 px-6 py-4 space-y-3">
-      <NuxtLink to="/templates" class="block text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors" @click="mobileOpen = false">{{ $t('nav.templates') }}</NuxtLink>
-      <NuxtLink to="/pricing" class="block text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors" @click="mobileOpen = false">{{ $t('nav.pricing') }}</NuxtLink>
+      <NuxtLinkLocale to="/templates" class="block text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors" @click="mobileOpen = false">{{ $t('nav.templates') }}</NuxtLinkLocale>
+      <NuxtLinkLocale to="/pricing" class="block text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors" @click="mobileOpen = false">{{ $t('nav.pricing') }}</NuxtLinkLocale>
       <hr class="border-charcoal-200" />
       <template v-if="!loading">
         <template v-if="user">
-          <NuxtLink to="/dashboard" class="block text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors" @click="mobileOpen = false">{{ $t('nav.dashboard') }}</NuxtLink>
+          <NuxtLinkLocale to="/dashboard" class="block text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors" @click="mobileOpen = false">{{ $t('nav.dashboard') }}</NuxtLinkLocale>
           <button @click="logout(); mobileOpen = false" class="block text-sm text-charcoal-500 hover:text-charcoal-700">{{ $t('nav.signOut') }}</button>
         </template>
         <template v-else>
-          <NuxtLink to="/auth/login" class="block text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors" @click="mobileOpen = false">{{ $t('nav.signIn') }}</NuxtLink>
-          <NuxtLink
+          <NuxtLinkLocale to="/auth/login" class="block text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors" @click="mobileOpen = false">{{ $t('nav.signIn') }}</NuxtLinkLocale>
+          <NuxtLinkLocale
             to="/auth/register"
             class="block text-center bg-champagne-500 text-white rounded-full px-5 py-2 font-medium hover:bg-champagne-600 transition-all duration-200 text-sm"
             @click="mobileOpen = false"
           >
             {{ $t('nav.getStarted') }}
-          </NuxtLink>
+          </NuxtLinkLocale>
         </template>
       </template>
     </div>

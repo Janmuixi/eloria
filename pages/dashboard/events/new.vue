@@ -2,6 +2,7 @@
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const route = useRoute()
+const localePath = useLocalePath()
 const { t, locale } = useI18n()
 
 // ─── Subscription check ────────────────────────────────────────────────────
@@ -188,7 +189,7 @@ async function saveCustomization() {
 // ─── Step 4: Preview ───────────────────────────────────────────────────────
 function confirmPreview() {
   if (isSubscriber.value && eventId.value) {
-    navigateTo(`/dashboard/events/${eventId.value}`)
+    navigateTo(localePath(`/dashboard/events/${eventId.value}`))
   } else {
     currentStep.value = 5
   }
@@ -205,7 +206,7 @@ async function startSubscription() {
     })
     if (res.url) navigateTo(res.url, { external: true })
   } catch {
-    navigateTo('/auth/login')
+    navigateTo(localePath('/auth/login'))
   } finally {
     subscribing.value = false
   }

@@ -2,6 +2,7 @@
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const { t, locale } = useI18n()
+const localePath = useLocalePath()
 const route = useRoute()
 const eventId = route.params.id as string
 
@@ -87,7 +88,7 @@ async function deleteEvent() {
   deleting.value = true
   try {
     await $fetch(`/api/events/${eventId}`, { method: 'DELETE' })
-    navigateTo('/dashboard')
+    navigateTo(localePath('/dashboard'))
   } catch (e: any) {
     alert(e.data?.statusMessage || t('errors.failedToDeleteEvent'))
     deleting.value = false
@@ -122,14 +123,14 @@ async function downloadPdf() {
 
 <template>
   <div>
-    <NuxtLink to="/dashboard" class="text-sm text-charcoal-500 hover:text-charcoal-900 hover:underline mb-4 block">
+    <NuxtLinkLocale to="/dashboard" class="text-sm text-charcoal-500 hover:text-charcoal-900 hover:underline mb-4 block">
       &larr; {{ $t('eventDetail.backToEvents') }}
-    </NuxtLink>
+    </NuxtLinkLocale>
 
     <!-- Tabs -->
     <div class="border-b border-charcoal-200 mb-6">
       <nav class="flex gap-6">
-        <NuxtLink
+        <NuxtLinkLocale
           v-for="tab in tabs"
           :key="tab.to"
           :to="tab.to"
@@ -139,7 +140,7 @@ async function downloadPdf() {
             : 'border-transparent text-charcoal-500 hover:text-charcoal-700'"
         >
           {{ tab.label }}
-        </NuxtLink>
+        </NuxtLinkLocale>
       </nav>
     </div>
 
@@ -160,12 +161,12 @@ async function downloadPdf() {
           <p class="font-semibold text-amber-900">{{ $t('eventDetail.eventLocked') }}</p>
           <p class="text-sm text-amber-700 mt-1">{{ $t('eventDetail.eventLockedDescription') }}</p>
         </div>
-        <NuxtLink
+        <NuxtLinkLocale
           to="/dashboard/account"
           class="flex-shrink-0 px-4 py-2 bg-amber-500 text-white rounded-full text-sm font-medium hover:bg-amber-600 transition-colors"
         >
           {{ $t('eventDetail.reactivateSubscription') }}
-        </NuxtLink>
+        </NuxtLinkLocale>
       </div>
 
       <!-- Event Info Card -->
@@ -335,11 +336,11 @@ async function downloadPdf() {
 
       <!-- Quick Actions -->
       <div class="flex gap-3">
-        <NuxtLink :to="`/dashboard/events/${eventId}/guests`"
+        <NuxtLinkLocale :to="`/dashboard/events/${eventId}/guests`"
           class="flex-1 bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-6 text-center hover:border-champagne-400 hover:shadow-md transition-all duration-200">
           <p class="font-medium text-charcoal-900">{{ $t('eventDetail.manageGuests') }}</p>
           <p class="text-sm text-charcoal-500 mt-1">{{ $t('eventDetail.manageGuestsDescription') }}</p>
-        </NuxtLink>
+        </NuxtLinkLocale>
         <a v-if="evt.paymentStatus === 'paid' && !isLocked"
           :href="invitationUrl" target="_blank" rel="noopener noreferrer"
           class="flex-1 bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-6 text-center hover:border-champagne-400 hover:shadow-md transition-all duration-200">
