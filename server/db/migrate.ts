@@ -8,7 +8,7 @@ const migrationsFolder = 'server/db/migrations'
 console.log(`[migrate] opening database at ${dbPath}`)
 const sqlite = new Database(dbPath)
 sqlite.pragma('journal_mode = WAL')
-sqlite.pragma('foreign_keys = ON')
+sqlite.pragma('foreign_keys = OFF')
 
 try {
   const result = runMigrations(sqlite, migrationsFolder)
@@ -18,8 +18,10 @@ try {
   console.log('[migrate] done')
 } catch (err) {
   console.error('[migrate] failed:', err)
+  sqlite.pragma('foreign_keys = ON')
   sqlite.close()
   process.exit(1)
 }
 
+sqlite.pragma('foreign_keys = ON')
 sqlite.close()

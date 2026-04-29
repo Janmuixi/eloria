@@ -34,6 +34,12 @@ async function onSubmit() {
     <h1 class="font-display font-semibold text-2xl text-charcoal-900 text-center mb-6">{{ $t('auth.registerTitle') }}</h1>
     <form @submit.prevent="onSubmit" class="bg-ivory-100 rounded-2xl p-8 shadow-sm border border-charcoal-200 space-y-4">
       <div v-if="error" class="bg-red-50 text-red-600 p-3 rounded text-sm">{{ error }}</div>
+      <AuthGoogleSignInButton />
+      <div class="flex items-center gap-3 text-xs text-charcoal-500">
+        <span class="flex-1 h-px bg-charcoal-200"></span>
+        <span class="uppercase tracking-widest">{{ $t('auth.or') }}</span>
+        <span class="flex-1 h-px bg-charcoal-200"></span>
+      </div>
       <div>
         <label class="block text-sm font-medium text-charcoal-700 mb-1">{{ $t('common.name') }}</label>
         <input v-model="form.name" type="text" required

@@ -28,7 +28,9 @@ export const tiersRelations = relations(tiers, ({ many }) => ({
 export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   email: text('email').notNull().unique(),
-  passwordHash: text('password_hash').notNull(),
+  passwordHash: text('password_hash'),
+  googleId: text('google_id').unique(),
+  avatarUrl: text('avatar_url'),
   name: text('name').notNull(),
   emailVerified: integer('email_verified', { mode: 'boolean' }).default(false),
   resetToken: text('reset_token'),

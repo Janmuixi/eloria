@@ -10,8 +10,21 @@ useSeoMeta({
 
 const { login } = useAuth()
 const localePath = useLocalePath()
+const route = useRoute()
 const form = reactive({ email: '', password: '' })
-const error = ref('')
+const oauthErrorKey = computed(() => {
+  const e = route.query.error
+  if (typeof e !== 'string') return ''
+  const map: Record<string, string> = {
+    oauth_state: 'errors.oauthState',
+    oauth_token: 'errors.oauthToken',
+    oauth_userinfo: 'errors.oauthUserinfo',
+    oauth_email_unverified: 'errors.oauthEmailUnverified',
+    oauth_user: 'errors.oauthUser',
+  }
+  return map[e] || ''
+})
+const error = ref(oauthErrorKey.value ? t(oauthErrorKey.value) : '')
 const submitting = ref(false)
 const showPassword = ref(false)
 
@@ -34,6 +47,12 @@ async function onSubmit() {
     <h1 class="font-display font-semibold text-2xl text-charcoal-900 text-center mb-6">{{ $t('auth.loginTitle') }}</h1>
     <form @submit.prevent="onSubmit" class="bg-ivory-100 rounded-2xl p-8 shadow-sm border border-charcoal-200 space-y-4">
       <div v-if="error" class="bg-red-50 text-red-600 p-3 rounded text-sm">{{ error }}</div>
+      <AuthGoogleSignInButton />
+      <div class="flex items-center gap-3 text-xs text-charcoal-500">
+        <span class="flex-1 h-px bg-charcoal-200"></span>
+        <span class="uppercase tracking-widest">{{ $t('auth.or') }}</span>
+        <span class="flex-1 h-px bg-charcoal-200"></span>
+      </div>
       <div>
         <label class="block text-sm font-medium text-charcoal-700 mb-1">{{ $t('common.email') }}</label>
         <input v-model="form.email" type="email" required

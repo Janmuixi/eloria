@@ -99,6 +99,8 @@
     "loginTitle": "Sign in to Eloria",
     "loginButton": "Sign in",
     "loginSubmitting": "Signing in...",
+    "continueWithGoogle": "Continue with Google",
+    "or": "or",
     "forgotPassword": "Forgot password?",
     "noAccount": "Don't have an account?",
     "createOne": "Create one",
@@ -464,7 +466,12 @@
     "loginFailed": "Login failed",
     "pageNotFoundTitle": "Page not found",
     "pageNotFoundDescription": "The page you're looking for doesn't exist or has been moved.",
-    "goHome": "Back to home"
+    "goHome": "Back to home",
+    "oauthState": "Sign-in session expired. Please try again.",
+    "oauthToken": "Couldn't complete Google sign-in. Please try again.",
+    "oauthUserinfo": "Couldn't load your Google profile. Please try again.",
+    "oauthEmailUnverified": "Your Google email is not verified. Please verify it with Google and try again.",
+    "oauthUser": "Couldn't sign you in with Google. Please try again."
   },
   "seo": {
     "signIn": "Sign In - Eloria",

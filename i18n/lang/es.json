@@ -99,6 +99,8 @@
     "loginTitle": "Inicia sesión en Eloria",
     "loginButton": "Iniciar sesión",
     "loginSubmitting": "Iniciando sesión...",
+    "continueWithGoogle": "Continuar con Google",
+    "or": "o",
     "forgotPassword": "¿Olvidaste tu contraseña?",
     "noAccount": "¿No tienes cuenta?",
     "createOne": "Crea una",
@@ -464,7 +466,12 @@
     "loginFailed": "Error al iniciar sesión",
     "pageNotFoundTitle": "Página no encontrada",
     "pageNotFoundDescription": "La página que buscas no existe o ha sido movida.",
-    "goHome": "Volver al inicio"
+    "goHome": "Volver al inicio",
+    "oauthState": "La sesión de inicio expiró. Inténtalo de nuevo.",
+    "oauthToken": "No se pudo completar el inicio con Google. Inténtalo de nuevo.",
+    "oauthUserinfo": "No se pudo cargar tu perfil de Google. Inténtalo de nuevo.",
+    "oauthEmailUnverified": "Tu correo de Google no está verificado. Verifícalo con Google y vuelve a intentarlo.",
+    "oauthUser": "No se pudo iniciar sesión con Google. Inténtalo de nuevo."
   },
   "seo": {
     "signIn": "Iniciar Sesión - Eloria",
