@@ -29,7 +29,9 @@ export function createTestDb() {
     CREATE TABLE users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       email TEXT NOT NULL UNIQUE,
-      password_hash TEXT NOT NULL,
+      password_hash TEXT,
+      google_id TEXT UNIQUE,
+      avatar_url TEXT,
       name TEXT NOT NULL,
       email_verified INTEGER DEFAULT 0,
       reset_token TEXT,
@@ -87,6 +89,8 @@ export function createTestDb() {
       token TEXT NOT NULL UNIQUE,
       email_sent_at TEXT,
       email_opened_at TEXT,
+      allergies TEXT,
+      plus_one_allergies TEXT,
       created_at TEXT DEFAULT (datetime('now'))
     );
 
@@ -101,6 +105,32 @@ export function createTestDb() {
       current_period_end TEXT,
       canceled_at TEXT,
       created_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE menu_courses (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      event_id INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE menu_options (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      course_id INTEGER NOT NULL REFERENCES menu_courses(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE guest_menu_choices (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      guest_id INTEGER NOT NULL REFERENCES guests(id) ON DELETE CASCADE,
+      course_id INTEGER NOT NULL REFERENCES menu_courses(id) ON DELETE CASCADE,
+      option_id INTEGER REFERENCES menu_options(id) ON DELETE SET NULL,
+      for_plus_one INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT DEFAULT (datetime('now')),
+      UNIQUE (guest_id, course_id, for_plus_one)
     );
   `)
 
