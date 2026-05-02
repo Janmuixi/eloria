@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { MenuTreeInput } from '~/shared/menu'
+
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
 const route = useRoute()
@@ -23,6 +25,8 @@ const form = reactive({
   venueAddress: '',
   venueMapUrl: '',
   description: '',
+  offerMenu: false,
+  menu: { courses: [] } as MenuTreeInput,
 })
 
 const error = ref('')
@@ -32,9 +36,23 @@ async function submitDetails() {
   error.value = ''
   submitting.value = true
   try {
+    const payload: Record<string, unknown> = {
+      title: form.title,
+      coupleName1: form.coupleName1,
+      coupleName2: form.coupleName2,
+      date: form.date,
+      venue: form.venue,
+      venueAddress: form.venueAddress,
+      venueMapUrl: form.venueMapUrl,
+      description: form.description,
+    }
+    if (form.offerMenu && form.menu.courses.length > 0
+        && form.menu.courses.every(c => c.name.trim() && c.options.length > 0 && c.options.every(o => o.name.trim()))) {
+      payload.menu = form.menu
+    }
     const data = await $fetch<{ id: number }>('/api/events', {
       method: 'POST',
-      body: form,
+      body: payload,
     })
     eventId.value = data.id
     currentStep.value = 2
@@ -131,6 +149,9 @@ watch(currentStep, (step) => {
     loadTemplates()
   }
 })
+
+// Reset menu when user unchecks offerMenu
+watch(() => form.offerMenu, (v) => { if (!v) form.menu = { courses: [] } })
 
 // ─── Step 3: Customization ─────────────────────────────────────────────────
 const wording = ref('')
@@ -369,6 +390,19 @@ const stepLabels = computed(() => {
           <label class="block text-sm font-medium text-charcoal-700 mb-1">{{ $t('eventForm.additionalDetails') }}</label>
           <textarea v-model="form.description" rows="3" :placeholder="$t('eventForm.additionalDetailsPlaceholder')"
             class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
+        </div>
+
+        <div class="border-t border-charcoal-100 pt-4 mt-4">
+          <label class="flex items-start gap-2 cursor-pointer">
+            <input type="checkbox" v-model="form.offerMenu" class="mt-1 rounded text-champagne-600" />
+            <span>
+              <span class="font-medium text-charcoal-900">{{ $t('menu.wizard.offerMenu') }}</span>
+              <span class="block text-sm text-charcoal-300">{{ $t('menu.wizard.offerMenuHint') }}</span>
+            </span>
+          </label>
+          <div v-if="form.offerMenu" class="mt-4">
+            <MenuMenuBuilder v-model="form.menu" />
+          </div>
         </div>
 
         <button type="submit" :disabled="submitting"

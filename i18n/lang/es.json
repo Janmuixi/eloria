@@ -490,6 +490,12 @@
     "wordingPlaceholder": "El texto de tu invitación aparecerá aquí.",
     "iframeTitle": "Vista previa de invitación"
   },
+  "menu": {
+    "wizard": {
+      "offerMenu": "Incluir selección de menú",
+      "offerMenuHint": "Permite que los invitados elijan sus preferencias de comida al confirmar asistencia."
+    }
+  },
   "aria": {
     "toggleMenu": "Alternar menú",
     "scrollToRsvp": "Desplazarse al RSVP",
