@@ -126,6 +126,7 @@ export const eventsRelations = relations(events, ({ one, many }) => ({
     references: [tiers.id],
   }),
   guests: many(guests),
+  menuCourses: many(menuCourses),
 }))
 
 // ─── Guests ─────────────────────────────────────────────────────────────────
@@ -142,12 +143,59 @@ export const guests = sqliteTable('guests', {
   token: text('token').notNull().unique(),
   emailSentAt: text('email_sent_at'),
   emailOpenedAt: text('email_opened_at'),
+  allergies: text('allergies'),
+  plusOneAllergies: text('plus_one_allergies'),
   createdAt: text('created_at').default(new Date().toISOString()),
 })
 
-export const guestsRelations = relations(guests, ({ one }) => ({
+export const guestsRelations = relations(guests, ({ one, many }) => ({
   event: one(events, {
     fields: [guests.eventId],
     references: [events.id],
   }),
+  menuChoices: many(guestMenuChoices),
+}))
+
+// ─── Menu ───────────────────────────────────────────────────────────────────
+
+export const menuCourses = sqliteTable('menu_courses', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  eventId: integer('event_id').notNull().references(() => events.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  sortOrder: integer('sort_order').notNull().default(0),
+  createdAt: text('created_at').default(new Date().toISOString()),
+})
+
+export const menuOptions = sqliteTable('menu_options', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  courseId: integer('course_id').notNull().references(() => menuCourses.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  sortOrder: integer('sort_order').notNull().default(0),
+  createdAt: text('created_at').default(new Date().toISOString()),
+})
+
+export const guestMenuChoices = sqliteTable('guest_menu_choices', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  guestId: integer('guest_id').notNull().references(() => guests.id, { onDelete: 'cascade' }),
+  courseId: integer('course_id').notNull().references(() => menuCourses.id, { onDelete: 'cascade' }),
+  optionId: integer('option_id').references(() => menuOptions.id, { onDelete: 'set null' }),
+  forPlusOne: integer('for_plus_one', { mode: 'boolean' }).notNull().default(false),
+  createdAt: text('created_at').default(new Date().toISOString()),
+})
+
+export const menuCoursesRelations = relations(menuCourses, ({ one, many }) => ({
+  event: one(events, { fields: [menuCourses.eventId], references: [events.id] }),
+  options: many(menuOptions),
+  choices: many(guestMenuChoices),
+}))
+
+export const menuOptionsRelations = relations(menuOptions, ({ one, many }) => ({
+  course: one(menuCourses, { fields: [menuOptions.courseId], references: [menuCourses.id] }),
+  choices: many(guestMenuChoices),
+}))
+
+export const guestMenuChoicesRelations = relations(guestMenuChoices, ({ one }) => ({
+  guest: one(guests, { fields: [guestMenuChoices.guestId], references: [guests.id] }),
+  course: one(menuCourses, { fields: [guestMenuChoices.courseId], references: [menuCourses.id] }),
+  option: one(menuOptions, { fields: [guestMenuChoices.optionId], references: [menuOptions.id] }),
 }))
