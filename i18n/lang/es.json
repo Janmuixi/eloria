@@ -8,6 +8,8 @@
     "copy": "Copiar",
     "copied": "¡Copiado!",
     "save": "Guardar",
+    "saving": "Guardando…",
+    "unsavedChanges": "Cambios sin guardar",
     "delete": "Eliminar",
     "remove": "Eliminar",
     "email": "Correo electrónico",
@@ -212,7 +214,10 @@
     "upgradePlan": "Mejorar Plan",
     "copyLink": "Copiar enlace",
     "plusOne": "+1",
-    "plusOneWithName": "+1: {name}"
+    "plusOneWithName": "+1: {name}",
+    "details": "Detalles",
+    "filterActive": "Filtro activo",
+    "clearFilter": "Quitar filtro"
   },
   "settings": {
     "title": "Configuración del Evento",
@@ -361,7 +366,16 @@
     "poweredBy": "Creado con Eloria",
     "weddingInvitation": "Invitación de Boda",
     "youreInvited": "Estás invitado/a a la boda de {couple1} y {couple2} el {date}.",
-    "joinUs": "Acompáñanos el {date} en {venue}"
+    "joinUs": "Acompáñanos el {date} en {venue}",
+    "menu": {
+      "title": "Elige tu menú",
+      "plusOneTitle": "El menú de tu acompañante",
+      "required": "Elige una opción"
+    },
+    "allergies": {
+      "title": "Alergias y dieta",
+      "plusOneTitle": "Alergias y dieta de tu acompañante"
+    }
   },
   "templates": {
     "seoTitle": "Plantillas de Invitaciones de Boda - Eloria",
@@ -494,7 +508,39 @@
     "wizard": {
       "offerMenu": "Incluir selección de menú",
       "offerMenuHint": "Permite que los invitados elijan sus preferencias de comida al confirmar asistencia."
+    },
+    "tab": {
+      "label": "Menú"
+    },
+    "builder": {
+      "title": "Opciones del menú",
+      "empty": "Configura un menú para que tus invitados elijan.",
+      "addCourse": "Añadir plato",
+      "addOption": "Añadir opción",
+      "coursePlaceholder": "ej. Primer plato",
+      "optionPlaceholder": "ej. Solomillo Wellington",
+      "deleteWarning": "{count} invitados han elegido esto. Su elección se eliminará."
+    },
+    "summary": {
+      "title": "Preferencias de los invitados",
+      "noChoiceYet": "Sin elegir todavía",
+      "viewGuests": "Ver invitados",
+      "coursesAndPicked": "{courses} platos · {picked} invitados han elegido",
+      "allergies": {
+        "title": "Alergias y restricciones"
+      }
     }
+  },
+  "allergies": {
+    "nuts": "Frutos secos",
+    "gluten": "Gluten",
+    "dairy": "Lácteos",
+    "shellfish": "Marisco",
+    "eggs": "Huevo",
+    "vegetarian": "Vegetariano",
+    "vegan": "Vegano",
+    "other": "Otra",
+    "otherPlaceholder": "¿Algo más?"
   },
   "aria": {
     "toggleMenu": "Alternar menú",

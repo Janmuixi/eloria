@@ -8,6 +8,8 @@
     "copy": "Copy",
     "copied": "Copied!",
     "save": "Save",
+    "saving": "Saving…",
+    "unsavedChanges": "Unsaved changes",
     "delete": "Delete",
     "remove": "Remove",
     "email": "Email",
@@ -212,7 +214,10 @@
     "upgradePlan": "Upgrade Plan",
     "copyLink": "Copy link",
     "plusOne": "+1",
-    "plusOneWithName": "+1: {name}"
+    "plusOneWithName": "+1: {name}",
+    "details": "Details",
+    "filterActive": "Filter active",
+    "clearFilter": "Clear filter"
   },
   "settings": {
     "title": "Event Settings",
@@ -361,7 +366,16 @@
     "poweredBy": "Powered by Eloria",
     "weddingInvitation": "Wedding Invitation",
     "youreInvited": "You're invited to {couple1} & {couple2}'s wedding on {date}.",
-    "joinUs": "Join us on {date} at {venue}"
+    "joinUs": "Join us on {date} at {venue}",
+    "menu": {
+      "title": "Choose your menu",
+      "plusOneTitle": "Your guest's menu",
+      "required": "Please choose an option"
+    },
+    "allergies": {
+      "title": "Allergies & dietary",
+      "plusOneTitle": "Your guest's allergies & dietary"
+    }
   },
   "templates": {
     "seoTitle": "Wedding Invitation Templates - Eloria",
@@ -494,7 +508,39 @@
     "wizard": {
       "offerMenu": "Include menu selection",
       "offerMenuHint": "Let guests pick their meal preferences when they RSVP."
+    },
+    "tab": {
+      "label": "Menu"
+    },
+    "builder": {
+      "title": "Menu options",
+      "empty": "Set up a menu for your guests to choose from.",
+      "addCourse": "Add course",
+      "addOption": "Add option",
+      "coursePlaceholder": "e.g. First course",
+      "optionPlaceholder": "e.g. Beef Wellington",
+      "deleteWarning": "{count} guests have picked this. Their choice will be cleared."
+    },
+    "summary": {
+      "title": "Guest preferences",
+      "noChoiceYet": "No choice yet",
+      "viewGuests": "View guests",
+      "coursesAndPicked": "{courses} courses · {picked} guests have picked",
+      "allergies": {
+        "title": "Allergies & dietary restrictions"
+      }
     }
+  },
+  "allergies": {
+    "nuts": "Nuts",
+    "gluten": "Gluten",
+    "dairy": "Dairy",
+    "shellfish": "Shellfish",
+    "eggs": "Eggs",
+    "vegetarian": "Vegetarian",
+    "vegan": "Vegan",
+    "other": "Other",
+    "otherPlaceholder": "Anything else?"
   },
   "aria": {
     "toggleMenu": "Toggle menu",
