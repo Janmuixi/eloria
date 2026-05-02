@@ -98,6 +98,30 @@ describe('Events API', () => {
         statusCode: 400,
       })
     })
+
+    it('persists an optional menu when provided in the body', async () => {
+      const user = await createTestUser(testDb, { email: 'menu@test.com', name: 'Menu' })
+
+      const event = authEvent(user!.id, user!.email, {
+        method: 'POST',
+        body: {
+          title: 'Wedding', coupleName1: 'A', coupleName2: 'B',
+          date: '2026-09-01', venue: 'V', venueAddress: '1 St',
+          menu: { courses: [{ name: 'First', sortOrder: 0, options: [{ name: 'Beef', sortOrder: 0 }] }] },
+        },
+      })
+
+      const created = await createHandler(event)
+      expect(created.id).toBeGreaterThan(0)
+
+      const { menuCourses, menuOptions } = await import('../../db/schema')
+      const { eq } = await import('drizzle-orm')
+
+      const courses = testDb.select().from(menuCourses).where(eq(menuCourses.eventId, created.id)).all()
+      expect(courses).toHaveLength(1)
+      const opts = testDb.select().from(menuOptions).where(eq(menuOptions.courseId, courses[0].id)).all()
+      expect(opts).toHaveLength(1)
+    })
   })
 
   describe('GET /api/events/:id', () => {
