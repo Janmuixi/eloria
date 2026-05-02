@@ -401,7 +401,7 @@ const stepLabels = computed(() => {
             </span>
           </label>
           <div v-if="form.offerMenu" class="mt-4">
-            <MenuMenuBuilder v-model="form.menu" />
+            <MenuBuilder v-model="form.menu" />
           </div>
         </div>
 

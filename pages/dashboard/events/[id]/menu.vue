@@ -73,7 +73,7 @@ async function save() {
     <div class="max-w-4xl space-y-8">
       <section>
         <h2 class="text-xl font-serif text-charcoal-900 mb-4">{{ $t('menu.builder.title') }}</h2>
-        <MenuMenuBuilder v-model="draft" />
+        <MenuBuilder v-model="draft" />
         <div class="flex items-center gap-3 mt-4">
           <button type="button" :disabled="!dirty || saving" @click="save"
             class="px-5 py-2 bg-champagne-600 text-white rounded-lg disabled:opacity-50">
@@ -86,7 +86,7 @@ async function save() {
 
       <section v-if="summary && summary.courses.length > 0">
         <h2 class="text-xl font-serif text-charcoal-900 mb-4">{{ $t('menu.summary.title') }}</h2>
-        <MenuMenuSummary :summary="summary" :event-id="eventId" />
+        <MenuSummary :summary="summary" :event-id="eventId" />
       </section>
     </div>
   </div>
