@@ -185,3 +185,75 @@ describe('PUT /api/events/:id/menu', () => {
     }))).rejects.toMatchObject({ statusCode: 400 })
   })
 })
+
+import { guests as guestsTable } from '../../db/schema'
+const summaryHandler = (await import('../../api/events/[id]/menu/summary.get')).default
+
+describe('GET /api/events/:id/menu/summary', () => {
+  let eventId: number
+  let courseId: number
+  let beefId: number
+  let salmonId: number
+
+  beforeEach(async () => {
+    testDb = createTestDb()
+    const user = await createTestUser(testDb, { email: 'host@example.com' })
+    currentUserId = user.id
+    const evt = createTestEvent(testDb, user.id)
+    eventId = evt.id
+
+    // Build a one-course menu via the PUT handler so we exercise it end-to-end.
+    const saved = await putMenuHandler(createMockEvent({
+      method: 'PUT', params: { id: String(eventId) },
+      body: { courses: [{ name: 'First', sortOrder: 0, options: [
+        { name: 'Beef', sortOrder: 0 }, { name: 'Salmon', sortOrder: 1 },
+      ] }] },
+    }))
+    courseId = saved.courses[0].id
+    beefId = saved.courses[0].options[0].id
+    salmonId = saved.courses[0].options[1].id
+  })
+
+  it('returns zero counts when no guests have picked', async () => {
+    const result = await summaryHandler(createMockEvent({ params: { id: String(eventId) } }))
+    expect(result.courses[0].options).toEqual([
+      { id: beefId, name: 'Beef', count: 0 },
+      { id: salmonId, name: 'Salmon', count: 0 },
+    ])
+    expect(result.courses[0].unpickedConfirmedGuests).toBe(0)
+    expect(result.allergies.keys).toEqual({})
+    expect(result.allergies.other).toEqual([])
+  })
+
+  it('aggregates choices and allergies for confirmed guests only', async () => {
+    const g1 = createTestGuest(testDb, eventId, { token: 't1', rsvpStatus: 'confirmed' })
+    const g2 = createTestGuest(testDb, eventId, { token: 't2', rsvpStatus: 'confirmed', plusOne: true })
+    const g3 = createTestGuest(testDb, eventId, { token: 't3', rsvpStatus: 'declined' })
+
+    // g1 picks Beef + has nut allergy
+    testDb.insert((await import('../../db/schema')).guestMenuChoices).values({
+      guestId: g1.id, courseId, optionId: beefId, forPlusOne: false,
+    }).run()
+    testDb.update(guestsTable).set({ allergies: JSON.stringify({ keys: ['nuts'], other: '' }) })
+      .where((await import('drizzle-orm')).eq(guestsTable.id, g1.id)).run()
+
+    // g2 picks Beef for self, Salmon for plus-one; plus-one has "sesame" other
+    testDb.insert((await import('../../db/schema')).guestMenuChoices).values([
+      { guestId: g2.id, courseId, optionId: beefId, forPlusOne: false },
+      { guestId: g2.id, courseId, optionId: salmonId, forPlusOne: true },
+    ]).run()
+    testDb.update(guestsTable).set({
+      plusOneAllergies: JSON.stringify({ keys: ['nuts'], other: 'sesame' }),
+    }).where((await import('drizzle-orm')).eq(guestsTable.id, g2.id)).run()
+
+    // g3 declined — should not contribute
+    void g3
+
+    const result = await summaryHandler(createMockEvent({ params: { id: String(eventId) } }))
+    expect(result.courses[0].options.find((o: any) => o.id === beefId).count).toBe(2)
+    expect(result.courses[0].options.find((o: any) => o.id === salmonId).count).toBe(1)
+    expect(result.courses[0].unpickedConfirmedGuests).toBe(0) // g2 has both picks
+    expect(result.allergies.keys.nuts).toBe(2)
+    expect(result.allergies.other).toEqual([{ text: 'sesame', count: 1 }])
+  })
+})
