@@ -36,6 +36,13 @@
       "when": 1777729531381,
       "tag": "0004_wet_lorna_dane",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1777729821265,
+      "tag": "0005_known_hellcat",
+      "breakpoints": true
     }
   ]
 }

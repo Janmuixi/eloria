@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
+import { sqliteTable, text, integer, uniqueIndex } from 'drizzle-orm/sqlite-core'
 import { relations } from 'drizzle-orm'
 
 // ─── Tiers ──────────────────────────────────────────────────────────────────
@@ -181,7 +181,10 @@ export const guestMenuChoices = sqliteTable('guest_menu_choices', {
   optionId: integer('option_id').references(() => menuOptions.id, { onDelete: 'set null' }),
   forPlusOne: integer('for_plus_one', { mode: 'boolean' }).notNull().default(false),
   createdAt: text('created_at').default(new Date().toISOString()),
-})
+}, (t) => ({
+  guestCourseForPlusOneUnq: uniqueIndex('guest_menu_choices_guest_course_plusone_unq')
+    .on(t.guestId, t.courseId, t.forPlusOne),
+}))
 
 export const menuCoursesRelations = relations(menuCourses, ({ one, many }) => ({
   event: one(events, { fields: [menuCourses.eventId], references: [events.id] }),
