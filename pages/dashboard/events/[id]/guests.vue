@@ -20,6 +20,7 @@ const guestCountLabel = computed(() => {
 const tabs = computed(() => [
   { label: t('eventDetail.tabOverview'), to: `/dashboard/events/${eventId}` },
   { label: t('eventDetail.tabGuests'), to: `/dashboard/events/${eventId}/guests` },
+  { label: t('menu.tab.label'), to: `/dashboard/events/${eventId}/menu` },
   { label: t('eventDetail.tabSettings'), to: `/dashboard/events/${eventId}/settings` },
 ])
 
