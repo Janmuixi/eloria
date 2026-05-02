@@ -7,8 +7,11 @@ import {
   type TestDb,
 } from '../../__helpers__/db'
 import { createMockEvent } from '../../__helpers__/event'
+import { menuCourses, menuOptions, guestMenuChoices, guests as guestsTable } from '../../db/schema'
+import { eq } from 'drizzle-orm'
 
 let testDb: TestDb
+let guest: ReturnType<typeof createTestGuest>
 
 vi.mock('~/server/db', () => ({
   get db() {
@@ -20,8 +23,6 @@ const getHandler = (await import('../../api/rsvp/[token].get')).default
 const postHandler = (await import('../../api/rsvp/[token].post')).default
 
 describe('RSVP API', () => {
-  let guest: ReturnType<typeof createTestGuest>
-
   beforeEach(async () => {
     testDb = createTestDb()
     const user = await createTestUser(testDb, { email: 'host@example.com' })
@@ -41,7 +42,7 @@ describe('RSVP API', () => {
 
       const result = await getHandler(event)
 
-      expect(result).toEqual({
+      expect(result).toMatchObject({
         name: 'Invitee',
         rsvpStatus: 'pending',
         plusOne: false,
@@ -154,5 +155,42 @@ describe('RSVP API', () => {
         statusCode: 404,
       })
     })
+  })
+})
+
+describe('GET /api/rsvp/:token — menu fields', () => {
+  beforeEach(async () => {
+    testDb = createTestDb()
+    const user = await createTestUser(testDb, { email: 'host@example.com' })
+    const evt = createTestEvent(testDb, user.id)
+    guest = createTestGuest(testDb, evt.id, {
+      name: 'Invitee',
+      email: 'invitee@example.com',
+      token: 'valid-token-123',
+    })
+  })
+
+  it('returns null menu when none exists', async () => {
+    const event = createMockEvent({ params: { token: 'valid-token-123' } })
+    const result = await getHandler(event)
+    expect(result.menu).toBeNull()
+    expect(result.choices).toEqual({})
+    expect(result.allergies).toBeNull()
+  })
+
+  it('returns menu tree and existing choices', async () => {
+    // Build a menu under the same event the guest belongs to.
+    const evt = testDb.select().from((await import('../../db/schema')).events).all()[0]
+    const [course] = testDb.insert(menuCourses).values({ eventId: evt.id, name: 'First', sortOrder: 0 }).returning().all()
+    const [opt] = testDb.insert(menuOptions).values({ courseId: course.id, name: 'Beef', sortOrder: 0 }).returning().all()
+    testDb.insert(guestMenuChoices).values({ guestId: guest.id, courseId: course.id, optionId: opt.id, forPlusOne: false }).run()
+    testDb.update(guestsTable).set({ allergies: JSON.stringify({ keys: ['nuts'], other: '' }) }).where(eq(guestsTable.id, guest.id)).run()
+
+    const event = createMockEvent({ params: { token: 'valid-token-123' } })
+    const result = await getHandler(event)
+
+    expect(result.menu?.courses).toHaveLength(1)
+    expect(result.choices).toEqual({ [course.id]: opt.id })
+    expect(result.allergies).toEqual({ keys: ['nuts'], other: '' })
   })
 })
