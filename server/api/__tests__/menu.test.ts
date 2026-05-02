@@ -167,4 +167,21 @@ describe('PUT /api/events/:id/menu', () => {
     expect(allCourses).toHaveLength(1)
     expect(allOptions).toHaveLength(1)
   })
+
+  it('rejects duplicate course ids (400)', async () => {
+    const initial = await putMenuHandler(createMockEvent({
+      method: 'PUT', params: { id: String(eventId) },
+      body: { courses: [{ name: 'A', sortOrder: 0, options: [{ name: 'a1', sortOrder: 0 }] }] },
+    }))
+    const courseId = initial.courses[0].id
+    await expect(putMenuHandler(createMockEvent({
+      method: 'PUT', params: { id: String(eventId) },
+      body: {
+        courses: [
+          { id: courseId, name: 'A', sortOrder: 0, options: [{ name: 'a1', sortOrder: 0 }] },
+          { id: courseId, name: 'B', sortOrder: 1, options: [{ name: 'b1', sortOrder: 0 }] },
+        ],
+      },
+    }))).rejects.toMatchObject({ statusCode: 400 })
+  })
 })

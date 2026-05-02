@@ -22,6 +22,24 @@ export function validateMenuTree(input: unknown): MenuTreeInput {
       }
     }
   }
+  const seenCourseIds = new Set<number>()
+  for (const c of courses) {
+    if (typeof c.id === 'number') {
+      if (seenCourseIds.has(c.id)) {
+        throw createError({ statusCode: 400, statusMessage: 'duplicate course id in menu' })
+      }
+      seenCourseIds.add(c.id)
+    }
+    const seenOptionIds = new Set<number>()
+    for (const o of c.options) {
+      if (typeof o.id === 'number') {
+        if (seenOptionIds.has(o.id)) {
+          throw createError({ statusCode: 400, statusMessage: 'duplicate option id in course' })
+        }
+        seenOptionIds.add(o.id)
+      }
+    }
+  }
   return input as MenuTreeInput
 }
 
