@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Allergies } from '~/shared/menu'
+
 definePageMeta({ layout: 'blank' })
 
 const { t } = useI18n()
@@ -36,6 +38,11 @@ const rsvpForm = reactive({
   plusOneName: '',
 })
 
+const menuChoices = ref<Record<number, number | null>>({})
+const plusOneMenuChoices = ref<Record<number, number | null>>({})
+const allergies = ref<Allergies | null>(null)
+const plusOneAllergies = ref<Allergies | null>(null)
+
 const rsvpSubmitting = ref(false)
 const rsvpError = ref('')
 
@@ -44,11 +51,31 @@ watch(guestData, (data) => {
     rsvpForm.rsvpStatus = data.rsvpStatus !== 'pending' ? data.rsvpStatus : ''
     rsvpForm.plusOne = data.plusOne || false
     rsvpForm.plusOneName = data.plusOneName || ''
+    if (data.menu) {
+      for (const c of data.menu.courses) {
+        if (!(c.id in menuChoices.value)) menuChoices.value[c.id] = data.choices?.[c.id] ?? null
+        if (!(c.id in plusOneMenuChoices.value)) plusOneMenuChoices.value[c.id] = data.plusOneChoices?.[c.id] ?? null
+      }
+      allergies.value = data.allergies ?? null
+      plusOneAllergies.value = data.plusOneAllergies ?? null
+    }
   }
 }, { immediate: true })
 
+const canSubmit = computed(() => {
+  if (!rsvpForm.rsvpStatus) return false
+  if (rsvpForm.rsvpStatus !== 'confirmed') return true
+  const m = guestData.value?.menu
+  if (!m) return true
+  for (const c of m.courses) {
+    if (!menuChoices.value[c.id]) return false
+    if (rsvpForm.plusOne && !plusOneMenuChoices.value[c.id]) return false
+  }
+  return true
+})
+
 async function submitRsvp() {
-  if (!guestToken.value || !rsvpForm.rsvpStatus) return
+  if (!guestToken.value || !canSubmit.value) return
   rsvpSubmitting.value = true
   rsvpError.value = ''
 
@@ -59,6 +86,10 @@ async function submitRsvp() {
         rsvpStatus: rsvpForm.rsvpStatus,
         plusOne: rsvpForm.plusOne,
         plusOneName: rsvpForm.plusOneName,
+        menuChoices: menuChoices.value,
+        plusOneMenuChoices: rsvpForm.plusOne ? plusOneMenuChoices.value : undefined,
+        allergies: allergies.value,
+        plusOneAllergies: rsvpForm.plusOne ? plusOneAllergies.value : undefined,
       },
     })
     await refreshGuest()
@@ -173,11 +204,46 @@ onBeforeUnmount(() => {
                 :placeholder="$t('rsvp.plusOneName')"
                 class="w-full px-3 py-2 border border-charcoal-200 rounded-lg text-sm focus:ring-2 focus:ring-champagne-500 focus:border-champagne-500"
               />
+
+              <div v-if="guestData?.menu" class="mt-6 space-y-6">
+                <fieldset v-for="course in guestData.menu.courses" :key="course.id" class="text-left">
+                  <legend class="block text-sm font-medium text-charcoal-500 mb-2">{{ course.name }}</legend>
+                  <label v-for="o in course.options" :key="o.id"
+                    class="flex items-center gap-3 p-2 rounded border cursor-pointer mb-1"
+                    :class="menuChoices[course.id] === o.id ? 'border-champagne-400 bg-champagne-50' : 'border-charcoal-100 hover:bg-ivory-50'">
+                    <input type="radio" :name="`course-${course.id}`" :value="o.id" v-model="menuChoices[course.id]" />
+                    <span>{{ o.name }}</span>
+                  </label>
+                </fieldset>
+
+                <template v-if="rsvpForm.plusOne">
+                  <fieldset v-for="course in guestData.menu.courses" :key="`p1-${course.id}`" class="text-left">
+                    <legend class="block text-sm font-medium text-charcoal-500 mb-2">
+                      {{ $t('rsvp.menu.plusOneTitle') }} — {{ course.name }}
+                    </legend>
+                    <label v-for="o in course.options" :key="o.id"
+                      class="flex items-center gap-3 p-2 rounded border cursor-pointer mb-1"
+                      :class="plusOneMenuChoices[course.id] === o.id ? 'border-champagne-400 bg-champagne-50' : 'border-charcoal-100 hover:bg-ivory-50'">
+                      <input type="radio" :name="`p1-course-${course.id}`" :value="o.id" v-model="plusOneMenuChoices[course.id]" />
+                      <span>{{ o.name }}</span>
+                    </label>
+                  </fieldset>
+                </template>
+
+                <div class="text-left">
+                  <label class="block text-sm font-medium text-charcoal-500 mb-2">{{ $t('rsvp.allergies.title') }}</label>
+                  <MenuAllergyPicker v-model="allergies" />
+                </div>
+                <div v-if="rsvpForm.plusOne" class="text-left">
+                  <label class="block text-sm font-medium text-charcoal-500 mb-2">{{ $t('rsvp.allergies.plusOneTitle') }}</label>
+                  <MenuAllergyPicker v-model="plusOneAllergies" />
+                </div>
+              </div>
             </div>
 
             <button
               @click="submitRsvp"
-              :disabled="!rsvpForm.rsvpStatus || rsvpSubmitting"
+              :disabled="!canSubmit || rsvpSubmitting"
               class="w-full bg-champagne-600 text-white py-3 rounded-lg font-medium hover:bg-champagne-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {{ rsvpSubmitting ? $t('rsvp.submitting') : $t('rsvp.submit') }}
