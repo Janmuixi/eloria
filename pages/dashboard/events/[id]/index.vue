@@ -8,6 +8,16 @@ const eventId = route.params.id as string
 
 const { data: evt, status } = await useFetch(`/api/events/${eventId}`)
 
+const { data: menuSummary } = await useFetch<any>(`/api/events/${eventId}/menu/summary`)
+const hasMenu = computed(() => (menuSummary.value?.courses?.length ?? 0) > 0)
+const totalPickedGuests = computed(() => {
+  const s = menuSummary.value
+  if (!s) return 0
+  // count = sum of first course's option counts (every confirmed guest must pick every course, so first is representative)
+  const first = s.courses[0]
+  return first ? first.options.reduce((acc: number, o: any) => acc + o.count, 0) : 0
+})
+
 const isLocked = computed(() => evt.value?.paymentStatus === 'locked')
 
 const tabs = computed(() => [
@@ -257,6 +267,25 @@ async function downloadPdf() {
         <div class="bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-4 text-center">
           <p class="font-display font-bold text-2xl text-champagne-600">{{ rsvpStats.plusOnes }}</p>
           <p class="text-charcoal-500 text-sm">{{ $t('eventDetail.plusOnes') }}</p>
+        </div>
+      </div>
+
+      <!-- Menu Card -->
+      <div class="bg-white rounded-2xl border border-charcoal-100 p-5 mb-6">
+        <h3 class="font-medium text-charcoal-900 mb-2">{{ $t('menu.tab.label') }}</h3>
+        <div v-if="!hasMenu">
+          <p class="text-sm text-charcoal-300 mb-3">{{ $t('menu.builder.empty') }}</p>
+          <NuxtLinkLocale :to="`/dashboard/events/${eventId}/menu`" class="text-sm text-champagne-700 hover:underline">
+            {{ $t('menu.wizard.offerMenu') }} →
+          </NuxtLinkLocale>
+        </div>
+        <div v-else>
+          <p class="text-sm text-charcoal-500">
+            {{ $t('menu.summary.coursesAndPicked', { courses: menuSummary.courses.length, picked: totalPickedGuests }) }}
+          </p>
+          <NuxtLinkLocale :to="`/dashboard/events/${eventId}/menu`" class="text-sm text-champagne-700 hover:underline">
+            {{ $t('menu.summary.viewGuests') }} →
+          </NuxtLinkLocale>
         </div>
       </div>
 
