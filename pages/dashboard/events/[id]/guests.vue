@@ -7,6 +7,9 @@ const eventId = route.params.id as string
 
 const { data: guests, refresh: refreshGuests, status } = await useFetch(`/api/events/${eventId}/guests`)
 const { data: evt } = await useFetch(`/api/events/${eventId}`)
+const { data: menu } = await useFetch<{ courses: Array<{ id: number; name: string; options: Array<{ id: number; name: string }> }> }>(
+  `/api/events/${eventId}/menu`,
+)
 
 const guestLimit = computed(() => evt.value?.tier?.guestLimit ?? null)
 const guestCountLabel = computed(() => {
@@ -127,6 +130,44 @@ async function copyPersonalLink(guest: { id: number; token: string }) {
     /* clipboard rejected; ignore */
   }
 }
+
+// Expandable per-guest detail
+const expandedId = ref<number | null>(null)
+
+function optionName(courseId: number, optionId: number | undefined) {
+  if (!optionId) return null
+  const course = (menu.value?.courses ?? []).find((c: any) => c.id === courseId)
+  const opt = course?.options.find((o: any) => o.id === optionId)
+  return opt?.name ?? null
+}
+
+function formatAllergies(a: { keys: string[]; other: string }) {
+  const labels = a.keys.map(k => t(`allergies.${k}`))
+  if (a.other) labels.push(`"${a.other}"`)
+  return labels.join(', ')
+}
+
+// Filter via query params
+const filteredGuests = computed(() => {
+  const list = (guests.value ?? []) as any[]
+  const opt = route.query.menuOption ? Number(route.query.menuOption) : null
+  const allergy = (route.query.allergy as string) || null
+  return list.filter((g: any) => {
+    if (opt) {
+      const picksHere = Object.values(g.menuChoices ?? {}).includes(opt)
+        || Object.values(g.plusOneMenuChoices ?? {}).includes(opt)
+      if (!picksHere) return false
+    }
+    if (allergy) {
+      const has = (g.allergies?.keys ?? []).includes(allergy)
+        || (g.plusOneAllergies?.keys ?? []).includes(allergy)
+      if (!has) return false
+    }
+    return true
+  })
+})
+
+const isFiltered = computed(() => !!(route.query.menuOption || route.query.allergy))
 </script>
 
 <template>
@@ -240,44 +281,83 @@ async function copyPersonalLink(guest: { id: number; token: string }) {
       <p class="text-sm text-charcoal-400">{{ t('guests.noGuestsHelp') }}</p>
     </div>
 
-    <!-- Guest table -->
-    <div v-else class="bg-white rounded-2xl shadow-sm border border-charcoal-200 overflow-hidden">
-      <table class="w-full">
-        <thead class="bg-ivory-100 border-b border-charcoal-200">
-          <tr>
-            <th class="text-left px-6 py-3 text-sm font-medium text-charcoal-700 uppercase tracking-wider">{{ t('guests.tableHeaderName') }}</th>
-            <th class="text-left px-6 py-3 text-sm font-medium text-charcoal-700 uppercase tracking-wider">{{ t('guests.tableHeaderEmail') }}</th>
-            <th class="text-left px-6 py-3 text-sm font-medium text-charcoal-700 uppercase tracking-wider">{{ t('guests.tableHeaderRsvp') }}</th>
-            <th class="text-right px-6 py-3 text-sm font-medium text-charcoal-700 uppercase tracking-wider">{{ t('guests.tableHeaderActions') }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="guest in guests" :key="guest.id" class="border-b border-charcoal-200 hover:bg-ivory-100/50 transition-colors">
-            <td class="px-6 py-4 text-sm font-medium text-charcoal-900">
-              <div>{{ guest.name }}</div>
-              <div v-if="guest.plusOne" class="text-xs text-charcoal-500 font-normal mt-0.5">
-                {{ guest.plusOneName ? t('guests.plusOneWithName', { name: guest.plusOneName }) : t('guests.plusOne') }}
-              </div>
-            </td>
-            <td class="px-6 py-4 text-sm text-charcoal-500">{{ guest.email || t('guests.noEmail') }}</td>
-            <td class="px-6 py-4">
-              <span :class="['px-2 py-1 rounded-full text-xs font-medium', statusBadgeClass(guest.rsvpStatus)]">
-                {{ guest.rsvpStatus }}
-              </span>
-            </td>
-            <td class="px-6 py-4 text-right space-x-3 whitespace-nowrap">
-              <button @click="copyPersonalLink(guest)"
-                class="text-sm text-charcoal-700 hover:text-charcoal-900 font-medium">
-                {{ copiedGuestId === guest.id ? t('common.copied') : t('guests.copyLink') }}
-              </button>
-              <button @click="deleteGuest(guest.id)"
-                class="text-sm text-red-600 hover:text-red-800 font-medium">
-                {{ t('common.remove') }}
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <template v-else>
+      <!-- Filter active pill -->
+      <div v-if="isFiltered" class="flex items-center gap-2 mb-4">
+        <span class="px-3 py-1 bg-champagne-100 text-champagne-700 rounded-full text-xs font-medium">
+          {{ t('guests.filterActive') }}
+        </span>
+        <NuxtLinkLocale :to="`/dashboard/events/${eventId}/guests`"
+          class="text-xs text-charcoal-500 hover:text-charcoal-800 underline">
+          {{ t('guests.clearFilter') }}
+        </NuxtLinkLocale>
+      </div>
+
+      <!-- Guest table -->
+      <div class="bg-white rounded-2xl shadow-sm border border-charcoal-200 overflow-hidden">
+        <table class="w-full">
+          <thead class="bg-ivory-100 border-b border-charcoal-200">
+            <tr>
+              <th class="text-left px-6 py-3 text-sm font-medium text-charcoal-700 uppercase tracking-wider">{{ t('guests.tableHeaderName') }}</th>
+              <th class="text-left px-6 py-3 text-sm font-medium text-charcoal-700 uppercase tracking-wider">{{ t('guests.tableHeaderEmail') }}</th>
+              <th class="text-left px-6 py-3 text-sm font-medium text-charcoal-700 uppercase tracking-wider">{{ t('guests.tableHeaderRsvp') }}</th>
+              <th class="text-right px-6 py-3 text-sm font-medium text-charcoal-700 uppercase tracking-wider">{{ t('guests.tableHeaderActions') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template v-for="g in filteredGuests" :key="g.id">
+              <tr class="border-b border-charcoal-200 hover:bg-ivory-100/50 transition-colors">
+                <td class="px-6 py-4 text-sm font-medium text-charcoal-900">
+                  <div>{{ g.name }}</div>
+                  <div v-if="g.plusOne" class="text-xs text-charcoal-500 font-normal mt-0.5">
+                    {{ g.plusOneName ? t('guests.plusOneWithName', { name: g.plusOneName }) : t('guests.plusOne') }}
+                  </div>
+                  <button type="button" @click="expandedId = expandedId === g.id ? null : g.id"
+                    class="text-sm text-charcoal-300 hover:text-charcoal-700 mt-1">
+                    {{ expandedId === g.id ? '▴' : '▾' }} {{ t('guests.details') }}
+                  </button>
+                  <div v-if="expandedId === g.id" class="mt-3 pl-4 border-l-2 border-charcoal-100 space-y-2 text-sm">
+                    <div v-for="course in menu?.courses ?? []" :key="course.id">
+                      <span class="text-charcoal-300">{{ course.name }}:</span>
+                      <span class="ml-1">{{ optionName(course.id, g.menuChoices?.[course.id]) ?? '—' }}</span>
+                    </div>
+                    <div v-if="g.allergies">
+                      <span class="text-charcoal-300">{{ t('rsvp.allergies.title') }}:</span>
+                      <span class="ml-1">{{ formatAllergies(g.allergies) }}</span>
+                    </div>
+                    <template v-if="g.plusOne">
+                      <div v-for="course in menu?.courses ?? []" :key="`p1-${course.id}`">
+                        <span class="text-charcoal-300">{{ t('rsvp.menu.plusOneTitle') }} — {{ course.name }}:</span>
+                        <span class="ml-1">{{ optionName(course.id, g.plusOneMenuChoices?.[course.id]) ?? '—' }}</span>
+                      </div>
+                      <div v-if="g.plusOneAllergies">
+                        <span class="text-charcoal-300">{{ t('rsvp.allergies.plusOneTitle') }}:</span>
+                        <span class="ml-1">{{ formatAllergies(g.plusOneAllergies) }}</span>
+                      </div>
+                    </template>
+                  </div>
+                </td>
+                <td class="px-6 py-4 text-sm text-charcoal-500">{{ g.email || t('guests.noEmail') }}</td>
+                <td class="px-6 py-4">
+                  <span :class="['px-2 py-1 rounded-full text-xs font-medium', statusBadgeClass(g.rsvpStatus)]">
+                    {{ g.rsvpStatus }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 text-right space-x-3 whitespace-nowrap">
+                  <button @click="copyPersonalLink(g)"
+                    class="text-sm text-charcoal-700 hover:text-charcoal-900 font-medium">
+                    {{ copiedGuestId === g.id ? t('common.copied') : t('guests.copyLink') }}
+                  </button>
+                  <button @click="deleteGuest(g.id)"
+                    class="text-sm text-red-600 hover:text-red-800 font-medium">
+                    {{ t('common.remove') }}
+                  </button>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </template>
   </div>
 </template>

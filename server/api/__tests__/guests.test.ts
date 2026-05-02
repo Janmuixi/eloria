@@ -8,6 +8,7 @@ import {
   type TestDb,
 } from '../../__helpers__/db'
 import { createMockEvent } from '../../__helpers__/event'
+import { menuCourses, menuOptions, guestMenuChoices } from '../../db/schema'
 
 let testDb: TestDb
 
@@ -53,6 +54,78 @@ describe('Guests API', () => {
       expect(result).toHaveLength(2)
       expect(result.map((g: any) => g.name)).toContain('Alice')
       expect(result.map((g: any) => g.name)).toContain('Bob')
+    })
+
+    it('includes menuChoices for a guest who has picks', async () => {
+      const guest = createTestGuest(testDb, evt.id, { name: 'Alice', email: 'alice@example.com' })
+      const [course] = testDb.insert(menuCourses).values({ eventId: evt.id, name: 'Main', sortOrder: 0 }).returning().all()
+      const [opt] = testDb.insert(menuOptions).values({ courseId: course.id, name: 'Beef', sortOrder: 0 }).returning().all()
+      testDb.insert(guestMenuChoices).values({ guestId: guest.id, courseId: course.id, optionId: opt.id, forPlusOne: false }).run()
+
+      const event = authEvent(user.id, user.email, { params: { id: String(evt.id) } })
+      const result = await listHandler(event)
+
+      const alice = result.find((g: any) => g.name === 'Alice')
+      expect(alice).toBeDefined()
+      expect(alice.menuChoices).toEqual({ [course.id]: opt.id })
+      expect(alice.plusOneMenuChoices).toEqual({})
+    })
+
+    it('includes plus-one menuChoices separately', async () => {
+      const guest = createTestGuest(testDb, evt.id, { name: 'Bob', plusOne: true })
+      const [course] = testDb.insert(menuCourses).values({ eventId: evt.id, name: 'Starter', sortOrder: 0 }).returning().all()
+      const [selfOpt] = testDb.insert(menuOptions).values({ courseId: course.id, name: 'Soup', sortOrder: 0 }).returning().all()
+      const [p1Opt] = testDb.insert(menuOptions).values({ courseId: course.id, name: 'Salad', sortOrder: 1 }).returning().all()
+      testDb.insert(guestMenuChoices).values([
+        { guestId: guest.id, courseId: course.id, optionId: selfOpt.id, forPlusOne: false },
+        { guestId: guest.id, courseId: course.id, optionId: p1Opt.id, forPlusOne: true },
+      ]).run()
+
+      const event = authEvent(user.id, user.email, { params: { id: String(evt.id) } })
+      const result = await listHandler(event)
+
+      const bob = result.find((g: any) => g.name === 'Bob')
+      expect(bob.menuChoices).toEqual({ [course.id]: selfOpt.id })
+      expect(bob.plusOneMenuChoices).toEqual({ [course.id]: p1Opt.id })
+    })
+
+    it('guests with no picks have empty menuChoices objects (not undefined)', async () => {
+      createTestGuest(testDb, evt.id, { name: 'Charlie' })
+
+      const event = authEvent(user.id, user.email, { params: { id: String(evt.id) } })
+      const result = await listHandler(event)
+
+      const charlie = result.find((g: any) => g.name === 'Charlie')
+      expect(charlie.menuChoices).toEqual({})
+      expect(charlie.plusOneMenuChoices).toEqual({})
+    })
+
+    it('parses allergies correctly', async () => {
+      createTestGuest(testDb, evt.id, { name: 'Dana' })
+      // Set allergies via direct DB update
+      const { guests: guestsTable } = await import('../../db/schema')
+      const { eq } = await import('drizzle-orm')
+      testDb.update(guestsTable)
+        .set({ allergies: JSON.stringify({ keys: ['nuts', 'gluten'], other: 'sesame' }) })
+        .where(eq(guestsTable.eventId, evt.id))
+        .run()
+
+      const event = authEvent(user.id, user.email, { params: { id: String(evt.id) } })
+      const result = await listHandler(event)
+
+      const dana = result.find((g: any) => g.name === 'Dana')
+      expect(dana.allergies).toEqual({ keys: ['nuts', 'gluten'], other: 'sesame' })
+    })
+
+    it('guests with no allergies have null allergies', async () => {
+      createTestGuest(testDb, evt.id, { name: 'Eve' })
+
+      const event = authEvent(user.id, user.email, { params: { id: String(evt.id) } })
+      const result = await listHandler(event)
+
+      const eve = result.find((g: any) => g.name === 'Eve')
+      expect(eve.allergies).toBeNull()
+      expect(eve.plusOneAllergies).toBeNull()
     })
 
     it('rejects access to another user\'s event guests (404)', async () => {
