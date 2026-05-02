@@ -158,6 +158,98 @@ describe('RSVP API', () => {
   })
 })
 
+describe('POST /api/rsvp/:token — menu picks', () => {
+  let course1: any, course2: any, beef: any, salmon: any, cake: any
+
+  beforeEach(async () => {
+    testDb = createTestDb()
+    const user = await createTestUser(testDb, { email: 'host@example.com' })
+    const evt = createTestEvent(testDb, user.id)
+    guest = createTestGuest(testDb, evt.id, {
+      name: 'Invitee',
+      email: 'invitee@example.com',
+      token: 'valid-token-123',
+    })
+    ;[course1] = testDb.insert(menuCourses).values({ eventId: evt.id, name: 'First', sortOrder: 0 }).returning().all()
+    ;[course2] = testDb.insert(menuCourses).values({ eventId: evt.id, name: 'Dessert', sortOrder: 1 }).returning().all()
+    ;[beef] = testDb.insert(menuOptions).values({ courseId: course1.id, name: 'Beef', sortOrder: 0 }).returning().all()
+    ;[salmon] = testDb.insert(menuOptions).values({ courseId: course1.id, name: 'Salmon', sortOrder: 1 }).returning().all()
+    ;[cake] = testDb.insert(menuOptions).values({ courseId: course2.id, name: 'Cake', sortOrder: 0 }).returning().all()
+  })
+
+  it('rejects when a confirming guest is missing a course pick (400)', async () => {
+    await expect(postHandler(createMockEvent({
+      method: 'POST', params: { token: 'valid-token-123' },
+      body: { rsvpStatus: 'confirmed', plusOne: false, menuChoices: { [course1.id]: beef.id } },
+    }))).rejects.toMatchObject({ statusCode: 400 })
+  })
+
+  it('saves menu picks and allergies', async () => {
+    await postHandler(createMockEvent({
+      method: 'POST', params: { token: 'valid-token-123' },
+      body: {
+        rsvpStatus: 'confirmed', plusOne: false,
+        menuChoices: { [course1.id]: beef.id, [course2.id]: cake.id },
+        allergies: { keys: ['nuts'], other: 'sesame' },
+      },
+    }))
+
+    const get = await getHandler(createMockEvent({ params: { token: 'valid-token-123' } }))
+    expect(get.choices).toEqual({ [course1.id]: beef.id, [course2.id]: cake.id })
+    expect(get.allergies).toEqual({ keys: ['nuts'], other: 'sesame' })
+  })
+
+  it('requires plus-one picks for every course when plus-one is true', async () => {
+    await expect(postHandler(createMockEvent({
+      method: 'POST', params: { token: 'valid-token-123' },
+      body: {
+        rsvpStatus: 'confirmed', plusOne: true, plusOneName: 'Partner',
+        menuChoices: { [course1.id]: beef.id, [course2.id]: cake.id },
+        plusOneMenuChoices: { [course1.id]: salmon.id }, // missing course2
+      },
+    }))).rejects.toMatchObject({ statusCode: 400 })
+  })
+
+  it('discards plus-one fields when plusOne is false', async () => {
+    await postHandler(createMockEvent({
+      method: 'POST', params: { token: 'valid-token-123' },
+      body: {
+        rsvpStatus: 'confirmed', plusOne: false,
+        menuChoices: { [course1.id]: beef.id, [course2.id]: cake.id },
+        plusOneMenuChoices: { [course1.id]: salmon.id },
+        plusOneAllergies: { keys: ['dairy'], other: '' },
+      },
+    }))
+    const get = await getHandler(createMockEvent({ params: { token: 'valid-token-123' } }))
+    expect(get.plusOneChoices).toEqual({})
+    expect(get.plusOneAllergies).toBeNull()
+  })
+
+  it('ignores menu fields when declining', async () => {
+    await postHandler(createMockEvent({
+      method: 'POST', params: { token: 'valid-token-123' },
+      body: {
+        rsvpStatus: 'declined',
+        menuChoices: { [course1.id]: beef.id, [course2.id]: cake.id },
+        allergies: { keys: ['nuts'], other: '' },
+      },
+    }))
+    const get = await getHandler(createMockEvent({ params: { token: 'valid-token-123' } }))
+    expect(get.choices).toEqual({})
+    expect(get.allergies).toBeNull()
+  })
+
+  it('rejects an optionId that does not belong to the named course (400)', async () => {
+    await expect(postHandler(createMockEvent({
+      method: 'POST', params: { token: 'valid-token-123' },
+      body: {
+        rsvpStatus: 'confirmed', plusOne: false,
+        menuChoices: { [course1.id]: cake.id, [course2.id]: cake.id }, // cake belongs to course2 not course1
+      },
+    }))).rejects.toMatchObject({ statusCode: 400 })
+  })
+})
+
 describe('GET /api/rsvp/:token — menu fields', () => {
   beforeEach(async () => {
     testDb = createTestDb()
