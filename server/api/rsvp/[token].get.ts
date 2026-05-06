@@ -1,6 +1,6 @@
 import { db } from '~/server/db'
 import { guests, menuCourses, menuOptions, guestMenuChoices } from '~/server/db/schema'
-import { eq, and, asc } from 'drizzle-orm'
+import { eq, asc } from 'drizzle-orm'
 import { parseAllergies } from '~/server/utils/menu-validation'
 
 export default defineEventHandler(async (event) => {
@@ -9,8 +9,11 @@ export default defineEventHandler(async (event) => {
 
   const guest = await db.query.guests.findFirst({
     where: eq(guests.token, token),
+    with: { event: true },
   })
   if (!guest) throw createError({ statusCode: 404, statusMessage: 'Guest not found' })
+
+  const allergiesEnabled = guest.event?.allergiesEnabled === true
 
   const courses = await db.query.menuCourses.findMany({
     where: eq(menuCourses.eventId, guest.eventId),
@@ -45,7 +48,8 @@ export default defineEventHandler(async (event) => {
     menu,
     choices,
     plusOneChoices,
-    allergies: parseAllergies(guest.allergies),
-    plusOneAllergies: parseAllergies(guest.plusOneAllergies),
+    allergiesEnabled,
+    allergies: allergiesEnabled ? parseAllergies(guest.allergies) : null,
+    plusOneAllergies: allergiesEnabled ? parseAllergies(guest.plusOneAllergies) : null,
   }
 })

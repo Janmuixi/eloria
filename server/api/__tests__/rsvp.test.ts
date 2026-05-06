@@ -185,6 +185,11 @@ describe('POST /api/rsvp/:token — menu picks', () => {
   })
 
   it('saves menu picks and allergies', async () => {
+    const evtRow = testDb.select().from((await import('../../db/schema')).events).all()[0]
+    testDb.update((await import('../../db/schema')).events)
+      .set({ allergiesEnabled: true })
+      .where(eq((await import('../../db/schema')).events.id, evtRow.id)).run()
+
     await postHandler(createMockEvent({
       method: 'POST', params: { token: 'valid-token-123' },
       body: {
@@ -273,6 +278,9 @@ describe('GET /api/rsvp/:token — menu fields', () => {
   it('returns menu tree and existing choices', async () => {
     // Build a menu under the same event the guest belongs to.
     const evt = testDb.select().from((await import('../../db/schema')).events).all()[0]
+    testDb.update((await import('../../db/schema')).events)
+      .set({ allergiesEnabled: true })
+      .where(eq((await import('../../db/schema')).events.id, evt.id)).run()
     const [course] = testDb.insert(menuCourses).values({ eventId: evt.id, name: 'First', sortOrder: 0 }).returning().all()
     const [opt] = testDb.insert(menuOptions).values({ courseId: course.id, name: 'Beef', sortOrder: 0 }).returning().all()
     testDb.insert(guestMenuChoices).values({ guestId: guest.id, courseId: course.id, optionId: opt.id, forPlusOne: false }).run()
@@ -284,5 +292,35 @@ describe('GET /api/rsvp/:token — menu fields', () => {
     expect(result.menu?.courses).toHaveLength(1)
     expect(result.choices).toEqual({ [course.id]: opt.id })
     expect(result.allergies).toEqual({ keys: ['nuts'], other: '' })
+  })
+
+  it('returns allergiesEnabled = false by default and nulls stored allergies', async () => {
+    testDb.update(guestsTable).set({
+      allergies: JSON.stringify({ keys: ['nuts'], other: '' }),
+      plusOneAllergies: JSON.stringify({ keys: ['dairy'], other: '' }),
+    }).where(eq(guestsTable.id, guest.id)).run()
+
+    const result = await getHandler(createMockEvent({ params: { token: 'valid-token-123' } }))
+
+    expect(result.allergiesEnabled).toBe(false)
+    expect(result.allergies).toBeNull()
+    expect(result.plusOneAllergies).toBeNull()
+  })
+
+  it('returns stored allergies when allergiesEnabled = true', async () => {
+    const evtRow = testDb.select().from((await import('../../db/schema')).events).all()[0]
+    testDb.update((await import('../../db/schema')).events)
+      .set({ allergiesEnabled: true })
+      .where(eq((await import('../../db/schema')).events.id, evtRow.id)).run()
+    testDb.update(guestsTable).set({
+      allergies: JSON.stringify({ keys: ['nuts'], other: '' }),
+      plusOneAllergies: JSON.stringify({ keys: ['dairy'], other: '' }),
+    }).where(eq(guestsTable.id, guest.id)).run()
+
+    const result = await getHandler(createMockEvent({ params: { token: 'valid-token-123' } }))
+
+    expect(result.allergiesEnabled).toBe(true)
+    expect(result.allergies).toEqual({ keys: ['nuts'], other: '' })
+    expect(result.plusOneAllergies).toEqual({ keys: ['dairy'], other: '' })
   })
 })
