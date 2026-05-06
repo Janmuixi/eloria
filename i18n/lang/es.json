@@ -537,6 +537,7 @@
     "allergies": {
       "toggleLabel": "Preguntar alergias a los invitados",
       "toggleHint": "Si se activa, el formulario de RSVP incluye un campo de restricciones alimentarias, aunque no hayas configurado menú.",
+      "saved": "Guardado",
       "saveError": "No se pudo guardar. Inténtalo de nuevo."
     }
   },

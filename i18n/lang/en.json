@@ -537,6 +537,7 @@
     "allergies": {
       "toggleLabel": "Ask guests for allergies",
       "toggleHint": "When on, the RSVP form includes a dietary-restrictions field — even if you have no menu set up.",
+      "saved": "Saved",
       "saveError": "Could not save. Try again."
     }
   },

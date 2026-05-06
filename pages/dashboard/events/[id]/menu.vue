@@ -20,7 +20,9 @@ const allergiesEnabled = ref<boolean>(evt.value?.allergiesEnabled === true)
 watch(evt, (v) => { if (v) allergiesEnabled.value = v.allergiesEnabled === true })
 
 const allergiesSaving = ref(false)
+const allergiesSaved = ref(false)
 const allergiesError = ref('')
+let savedTimer: ReturnType<typeof setTimeout> | null = null
 async function toggleAllergies(next: boolean) {
   allergiesSaving.value = true
   allergiesError.value = ''
@@ -29,6 +31,9 @@ async function toggleAllergies(next: boolean) {
   try {
     await $fetch(`/api/events/${eventId}`, { method: 'PUT', body: { allergiesEnabled: next } })
     await refreshEvent()
+    if (savedTimer) clearTimeout(savedTimer)
+    allergiesSaved.value = true
+    savedTimer = setTimeout(() => { allergiesSaved.value = false }, 1500)
   } catch (e: any) {
     allergiesEnabled.value = previous
     allergiesError.value = e.data?.statusMessage || t('menu.allergies.saveError')
@@ -101,9 +106,14 @@ async function save() {
             :disabled="allergiesSaving"
             @change="toggleAllergies(($event.target as HTMLInputElement).checked)"
           />
-          <span>
+          <span class="flex-1">
             <span class="font-medium text-charcoal-900">{{ $t('menu.allergies.toggleLabel') }}</span>
             <span class="block text-sm text-charcoal-300">{{ $t('menu.allergies.toggleHint') }}</span>
+          </span>
+          <span aria-live="polite"
+            class="text-xs text-green-600 mt-1 transition-opacity duration-200 whitespace-nowrap"
+            :class="allergiesSaved ? 'opacity-100' : 'opacity-0'">
+            ✓ {{ $t('menu.allergies.saved') }}
           </span>
         </label>
         <p v-if="allergiesError" class="text-xs text-red-600 mt-2">{{ allergiesError }}</p>
