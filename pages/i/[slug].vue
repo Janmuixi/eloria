@@ -56,6 +56,8 @@ watch(guestData, (data) => {
         if (!(c.id in menuChoices.value)) menuChoices.value[c.id] = data.choices?.[c.id] ?? null
         if (!(c.id in plusOneMenuChoices.value)) plusOneMenuChoices.value[c.id] = data.plusOneChoices?.[c.id] ?? null
       }
+    }
+    if (data.allergiesEnabled) {
       allergies.value = data.allergies ?? null
       plusOneAllergies.value = data.plusOneAllergies ?? null
     }
@@ -229,7 +231,9 @@ onBeforeUnmount(() => {
                     </label>
                   </fieldset>
                 </template>
+              </div>
 
+              <div v-if="guestData?.allergiesEnabled" class="mt-6 space-y-4">
                 <div class="text-left">
                   <label class="block text-sm font-medium text-charcoal-500 mb-2">{{ $t('rsvp.allergies.title') }}</label>
                   <MenuAllergyPicker v-model="allergies" />
