@@ -164,7 +164,7 @@ describe('POST /api/rsvp/:token — menu picks', () => {
   beforeEach(async () => {
     testDb = createTestDb()
     const user = await createTestUser(testDb, { email: 'host@example.com' })
-    const evt = createTestEvent(testDb, user.id)
+    const evt = createTestEvent(testDb, user.id, { allergiesEnabled: true })
     guest = createTestGuest(testDb, evt.id, {
       name: 'Invitee',
       email: 'invitee@example.com',
@@ -185,11 +185,6 @@ describe('POST /api/rsvp/:token — menu picks', () => {
   })
 
   it('saves menu picks and allergies', async () => {
-    const evtRow = testDb.select().from((await import('../../db/schema')).events).all()[0]
-    testDb.update((await import('../../db/schema')).events)
-      .set({ allergiesEnabled: true })
-      .where(eq((await import('../../db/schema')).events.id, evtRow.id)).run()
-
     await postHandler(createMockEvent({
       method: 'POST', params: { token: 'valid-token-123' },
       body: {
@@ -252,6 +247,64 @@ describe('POST /api/rsvp/:token — menu picks', () => {
         menuChoices: { [course1.id]: cake.id, [course2.id]: cake.id }, // cake belongs to course2 not course1
       },
     }))).rejects.toMatchObject({ statusCode: 400 })
+  })
+})
+
+describe('POST /api/rsvp/:token — allergies gating (independent of menu)', () => {
+  beforeEach(async () => {
+    testDb = createTestDb()
+    const user = await createTestUser(testDb, { email: 'host@example.com' })
+    const evt = createTestEvent(testDb, user.id, { allergiesEnabled: true })
+    guest = createTestGuest(testDb, evt.id, {
+      name: 'Invitee',
+      email: 'invitee@example.com',
+      token: 'valid-token-123',
+    })
+  })
+
+  it('persists allergies when allergiesEnabled = true and no menu exists', async () => {
+    await postHandler(createMockEvent({
+      method: 'POST', params: { token: 'valid-token-123' },
+      body: {
+        rsvpStatus: 'confirmed', plusOne: false,
+        allergies: { keys: ['nuts'], other: 'sesame' },
+      },
+    }))
+
+    const get = await getHandler(createMockEvent({ params: { token: 'valid-token-123' } }))
+    expect(get.allergies).toEqual({ keys: ['nuts'], other: 'sesame' })
+  })
+
+  it('persists plus-one allergies when allergiesEnabled = true and no menu exists', async () => {
+    await postHandler(createMockEvent({
+      method: 'POST', params: { token: 'valid-token-123' },
+      body: {
+        rsvpStatus: 'confirmed', plusOne: true, plusOneName: 'Partner',
+        allergies: { keys: [], other: '' },
+        plusOneAllergies: { keys: ['dairy'], other: '' },
+      },
+    }))
+
+    const get = await getHandler(createMockEvent({ params: { token: 'valid-token-123' } }))
+    expect(get.plusOneAllergies).toEqual({ keys: ['dairy'], other: '' })
+  })
+
+  it('ignores allergy fields when allergiesEnabled = false', async () => {
+    // Flip the flag off for this test
+    const { events: eventsTable } = await import('../../db/schema')
+    const evtRow = testDb.select().from(eventsTable).all()[0]
+    testDb.update(eventsTable).set({ allergiesEnabled: false }).where(eq(eventsTable.id, evtRow.id)).run()
+
+    await postHandler(createMockEvent({
+      method: 'POST', params: { token: 'valid-token-123' },
+      body: {
+        rsvpStatus: 'confirmed', plusOne: false,
+        allergies: { keys: ['nuts'], other: '' },
+      },
+    }))
+
+    const get = await getHandler(createMockEvent({ params: { token: 'valid-token-123' } }))
+    expect(get.allergies).toBeNull()
   })
 })
 

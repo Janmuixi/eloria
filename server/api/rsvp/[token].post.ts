@@ -1,5 +1,5 @@
 import { db } from '~/server/db'
-import { guests, menuCourses, menuOptions, guestMenuChoices } from '~/server/db/schema'
+import { guests, menuCourses, guestMenuChoices } from '~/server/db/schema'
 import { eq } from 'drizzle-orm'
 import { validateAllergies, serializeAllergies } from '~/server/utils/menu-validation'
 
@@ -14,8 +14,13 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Invalid RSVP status' })
   }
 
-  const guest = await db.query.guests.findFirst({ where: eq(guests.token, token) })
+  const guest = await db.query.guests.findFirst({
+    where: eq(guests.token, token),
+    with: { event: true },
+  })
   if (!guest) throw createError({ statusCode: 404, statusMessage: 'Guest not found' })
+
+  const allergiesEnabled = guest.event?.allergiesEnabled === true
 
   const isConfirming = rsvpStatus === 'confirmed'
   const wantsPlusOne = isConfirming && !!plusOne
@@ -57,7 +62,7 @@ export default defineEventHandler(async (event) => {
     selfPicks = validatePickMap(menuChoices, 'menuChoices')
     if (wantsPlusOne) p1Picks = validatePickMap(plusOneMenuChoices, 'plusOneMenuChoices')
   }
-  if (isConfirming) {
+  if (isConfirming && allergiesEnabled) {
     selfAllergies = validateAllergies(allergies)
     if (wantsPlusOne) p1AllergiesParsed = validateAllergies(plusOneAllergies)
   }
@@ -68,8 +73,8 @@ export default defineEventHandler(async (event) => {
       rsvpStatus,
       plusOne: wantsPlusOne,
       plusOneName: wantsPlusOne ? plusOneName : null,
-      allergies: isConfirming ? serializeAllergies(selfAllergies) : null,
-      plusOneAllergies: wantsPlusOne ? serializeAllergies(p1AllergiesParsed) : null,
+      allergies: isConfirming && allergiesEnabled ? serializeAllergies(selfAllergies) : null,
+      plusOneAllergies: wantsPlusOne && allergiesEnabled ? serializeAllergies(p1AllergiesParsed) : null,
     }).where(eq(guests.token, token)).run()
 
     // Replace this guest's choice rows
