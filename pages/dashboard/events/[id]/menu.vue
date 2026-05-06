@@ -15,6 +15,27 @@ const tabs = computed(() => [
 
 const { data: menu, refresh: refreshMenu } = await useFetch<{ courses: any[] }>(`/api/events/${eventId}/menu`)
 const { data: summary, refresh: refreshSummary } = await useFetch<any>(`/api/events/${eventId}/menu/summary`)
+const { data: evt, refresh: refreshEvent } = await useFetch<any>(`/api/events/${eventId}`)
+const allergiesEnabled = ref<boolean>(evt.value?.allergiesEnabled === true)
+watch(evt, (v) => { if (v) allergiesEnabled.value = v.allergiesEnabled === true })
+
+const allergiesSaving = ref(false)
+const allergiesError = ref('')
+async function toggleAllergies(next: boolean) {
+  allergiesSaving.value = true
+  allergiesError.value = ''
+  const previous = allergiesEnabled.value
+  allergiesEnabled.value = next
+  try {
+    await $fetch(`/api/events/${eventId}`, { method: 'PUT', body: { allergiesEnabled: next } })
+    await refreshEvent()
+  } catch (e: any) {
+    allergiesEnabled.value = previous
+    allergiesError.value = e.data?.statusMessage || t('menu.allergies.saveError')
+  } finally {
+    allergiesSaving.value = false
+  }
+}
 
 const draft = ref<MenuTreeInput>({ courses: [] })
 function syncDraftFromMenu() {
@@ -71,6 +92,24 @@ async function save() {
     </div>
 
     <div class="max-w-4xl space-y-8">
+      <section class="border border-charcoal-100 rounded-lg p-4">
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            class="mt-1 rounded text-champagne-600"
+            :checked="allergiesEnabled"
+            :disabled="allergiesSaving"
+            @change="toggleAllergies(($event.target as HTMLInputElement).checked)"
+          />
+          <span>
+            <span class="font-medium text-charcoal-900">{{ $t('menu.allergies.toggleLabel') }}</span>
+            <span class="block text-sm text-charcoal-300">{{ $t('menu.allergies.toggleHint') }}</span>
+          </span>
+        </label>
+        <p v-if="allergiesSaving" class="text-xs text-charcoal-300 mt-2">{{ $t('menu.allergies.saving') }}</p>
+        <p v-if="allergiesError" class="text-xs text-red-600 mt-2">{{ allergiesError }}</p>
+      </section>
+
       <section>
         <h2 class="text-xl font-serif text-charcoal-900 mb-4">{{ $t('menu.builder.title') }}</h2>
         <MenuBuilder v-model="draft" />
