@@ -36,6 +36,7 @@ export default defineEventHandler(async (event) => {
     venueAddress: body.venueAddress ?? existing.venueAddress,
     venueMapUrl: body.venueMapUrl ?? existing.venueMapUrl,
     description: body.description ?? existing.description,
+    allergiesEnabled: typeof body.allergiesEnabled === 'boolean' ? body.allergiesEnabled : existing.allergiesEnabled,
   }
 
   if (settingTemplate) {

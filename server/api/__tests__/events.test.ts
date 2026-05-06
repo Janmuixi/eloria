@@ -234,6 +234,48 @@ describe('Events API', () => {
       })
     })
 
+    it('updates allergiesEnabled', async () => {
+      const user = await createTestUser(testDb, { email: 'put-a@test.com', name: 'PA' })
+      const evt = createTestEvent(testDb, user!.id, { allergiesEnabled: false })
+
+      const event = authEvent(user!.id, user!.email, {
+        method: 'PUT',
+        params: { id: String(evt.id) },
+        body: { allergiesEnabled: true },
+      })
+
+      const updated = await updateHandler(event)
+      expect(updated.allergiesEnabled).toBe(true)
+    })
+
+    it('leaves allergiesEnabled unchanged when not in body', async () => {
+      const user = await createTestUser(testDb, { email: 'put-b@test.com', name: 'PB' })
+      const evt = createTestEvent(testDb, user!.id, { allergiesEnabled: true })
+
+      const event = authEvent(user!.id, user!.email, {
+        method: 'PUT',
+        params: { id: String(evt.id) },
+        body: { title: 'Updated' },
+      })
+
+      const updated = await updateHandler(event)
+      expect(updated.allergiesEnabled).toBe(true)
+    })
+
+    it('flips allergiesEnabled from true to false when body sends false', async () => {
+      const user = await createTestUser(testDb, { email: 'put-c@test.com', name: 'PC' })
+      const evt = createTestEvent(testDb, user!.id, { allergiesEnabled: true })
+
+      const event = authEvent(user!.id, user!.email, {
+        method: 'PUT',
+        params: { id: String(evt.id) },
+        body: { allergiesEnabled: false },
+      })
+
+      const updated = await updateHandler(event)
+      expect(updated.allergiesEnabled).toBe(false)
+    })
+
     it('clears customImagePath and deletes file when templateId is set', async () => {
       const { saveImage, imageAbsolutePath } = await import('../../utils/image-storage')
       const { existsSync, mkdtempSync, rmSync } = await import('node:fs')
