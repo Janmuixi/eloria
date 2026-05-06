@@ -507,10 +507,12 @@
   "menu": {
     "wizard": {
       "offerMenu": "Incluir selección de menú",
-      "offerMenuHint": "Permite que los invitados elijan sus preferencias de comida al confirmar asistencia."
+      "offerMenuHint": "Permite que los invitados elijan sus preferencias de comida al confirmar asistencia.",
+      "askAllergies": "Preguntar alergias",
+      "askAllergiesHint": "Permite que los invitados indiquen restricciones alimentarias al confirmar asistencia."
     },
     "tab": {
-      "label": "Menú"
+      "label": "Menú y dietas"
     },
     "builder": {
       "title": "Opciones del menú",
@@ -529,6 +531,12 @@
       "allergies": {
         "title": "Alergias y restricciones"
       }
+    },
+    "allergies": {
+      "toggleLabel": "Preguntar alergias a los invitados",
+      "toggleHint": "Si se activa, el formulario de RSVP incluye un campo de restricciones alimentarias, aunque no hayas configurado menú.",
+      "saving": "Guardando…",
+      "saveError": "No se pudo guardar. Inténtalo de nuevo."
     }
   },
   "allergies": {

@@ -507,10 +507,12 @@
   "menu": {
     "wizard": {
       "offerMenu": "Include menu selection",
-      "offerMenuHint": "Let guests pick their meal preferences when they RSVP."
+      "offerMenuHint": "Let guests pick their meal preferences when they RSVP.",
+      "askAllergies": "Ask for allergies",
+      "askAllergiesHint": "Let guests share dietary restrictions when they RSVP."
     },
     "tab": {
-      "label": "Menu"
+      "label": "Menu & dietary"
     },
     "builder": {
       "title": "Menu options",
@@ -529,6 +531,12 @@
       "allergies": {
         "title": "Allergies & dietary restrictions"
       }
+    },
+    "allergies": {
+      "toggleLabel": "Ask guests for allergies",
+      "toggleHint": "When on, the RSVP form includes a dietary-restrictions field — even if you have no menu set up.",
+      "saving": "Saving…",
+      "saveError": "Could not save. Try again."
     }
   },
   "allergies": {
