@@ -69,13 +69,16 @@ export default defineEventHandler(async (event) => {
 
   // Persist guest row + choices atomically
   db.transaction((tx) => {
-    tx.update(guests).set({
+    const updateGuest: Record<string, unknown> = {
       rsvpStatus,
       plusOne: wantsPlusOne,
       plusOneName: wantsPlusOne ? plusOneName : null,
-      allergies: isConfirming && allergiesEnabled ? serializeAllergies(selfAllergies) : null,
-      plusOneAllergies: wantsPlusOne && allergiesEnabled ? serializeAllergies(p1AllergiesParsed) : null,
-    }).where(eq(guests.token, token)).run()
+    }
+    if (allergiesEnabled) {
+      updateGuest.allergies = isConfirming ? serializeAllergies(selfAllergies) : null
+      updateGuest.plusOneAllergies = wantsPlusOne ? serializeAllergies(p1AllergiesParsed) : null
+    }
+    tx.update(guests).set(updateGuest).where(eq(guests.token, token)).run()
 
     // Replace this guest's choice rows
     tx.delete(guestMenuChoices).where(eq(guestMenuChoices.guestId, guest.id)).run()

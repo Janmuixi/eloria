@@ -306,6 +306,37 @@ describe('POST /api/rsvp/:token — allergies gating (independent of menu)', () 
     const get = await getHandler(createMockEvent({ params: { token: 'valid-token-123' } }))
     expect(get.allergies).toBeNull()
   })
+
+  it('preserves stored allergies when allergiesEnabled is flipped off mid-flow', async () => {
+    // Step 1: with flag on, guest submits with allergies
+    await postHandler(createMockEvent({
+      method: 'POST', params: { token: 'valid-token-123' },
+      body: {
+        rsvpStatus: 'confirmed', plusOne: false,
+        allergies: { keys: ['nuts'], other: 'sesame' },
+      },
+    }))
+
+    // Step 2: admin flips the flag off
+    const { events: eventsTable } = await import('../../db/schema')
+    const evtRow = testDb.select().from(eventsTable).all()[0]
+    testDb.update(eventsTable).set({ allergiesEnabled: false }).where(eq(eventsTable.id, evtRow.id)).run()
+
+    // Step 3: guest re-submits (e.g., to update plus-one) while flag is off — no allergy fields sent
+    await postHandler(createMockEvent({
+      method: 'POST', params: { token: 'valid-token-123' },
+      body: { rsvpStatus: 'confirmed', plusOne: false },
+    }))
+
+    // Stored allergies must survive
+    const stored = testDb.select().from(guestsTable).where(eq(guestsTable.id, guest.id)).all()[0]
+    expect(stored.allergies).toBe(JSON.stringify({ keys: ['nuts'], other: 'sesame' }))
+
+    // Step 4: admin flips the flag back on; GET should return the original allergies
+    testDb.update(eventsTable).set({ allergiesEnabled: true }).where(eq(eventsTable.id, evtRow.id)).run()
+    const get = await getHandler(createMockEvent({ params: { token: 'valid-token-123' } }))
+    expect(get.allergies).toEqual({ keys: ['nuts'], other: 'sesame' })
+  })
 })
 
 describe('GET /api/rsvp/:token — menu fields', () => {
