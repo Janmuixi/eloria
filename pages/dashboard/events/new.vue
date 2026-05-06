@@ -26,6 +26,7 @@ const form = reactive({
   venueMapUrl: '',
   description: '',
   offerMenu: false,
+  askAllergies: false,
   menu: { courses: [] } as MenuTreeInput,
 })
 
@@ -45,6 +46,7 @@ async function submitDetails() {
       venueAddress: form.venueAddress,
       venueMapUrl: form.venueMapUrl,
       description: form.description,
+      allergiesEnabled: form.askAllergies,
     }
     if (form.offerMenu && form.menu.courses.length > 0
         && form.menu.courses.every(c => c.name.trim() && c.options.length > 0 && c.options.every(o => o.name.trim()))) {
@@ -392,7 +394,7 @@ const stepLabels = computed(() => {
             class="w-full border border-charcoal-200 rounded-lg px-4 py-2.5 text-charcoal-900 focus:border-champagne-500 focus:ring-2 focus:ring-champagne-500/20 focus:outline-none" />
         </div>
 
-        <div class="border-t border-charcoal-100 pt-4 mt-4">
+        <div class="border-t border-charcoal-100 pt-4 mt-4 space-y-3">
           <label class="flex items-start gap-2 cursor-pointer">
             <input type="checkbox" v-model="form.offerMenu" class="mt-1 rounded text-champagne-600" />
             <span>
@@ -403,6 +405,14 @@ const stepLabels = computed(() => {
           <div v-if="form.offerMenu" class="mt-4">
             <MenuBuilder v-model="form.menu" />
           </div>
+
+          <label class="flex items-start gap-2 cursor-pointer">
+            <input type="checkbox" v-model="form.askAllergies" class="mt-1 rounded text-champagne-600" />
+            <span>
+              <span class="font-medium text-charcoal-900">{{ $t('menu.wizard.askAllergies') }}</span>
+              <span class="block text-sm text-charcoal-300">{{ $t('menu.wizard.askAllergiesHint') }}</span>
+            </span>
+          </label>
         </div>
 
         <button type="submit" :disabled="submitting"
