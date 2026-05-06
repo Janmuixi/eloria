@@ -106,7 +106,6 @@ async function save() {
             <span class="block text-sm text-charcoal-300">{{ $t('menu.allergies.toggleHint') }}</span>
           </span>
         </label>
-        <p v-if="allergiesSaving" class="text-xs text-charcoal-300 mt-2">{{ $t('menu.allergies.saving') }}</p>
         <p v-if="allergiesError" class="text-xs text-red-600 mt-2">{{ allergiesError }}</p>
       </section>
 
