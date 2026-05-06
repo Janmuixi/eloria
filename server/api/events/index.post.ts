@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
   const user = await requireAuth(event)
   const body = await readBody(event)
 
-  const { title, coupleName1, coupleName2, date, venue, venueAddress, venueMapUrl, description } = body
+  const { title, coupleName1, coupleName2, date, venue, venueAddress, venueMapUrl, description, allergiesEnabled } = body
 
   if (!title || !coupleName1 || !coupleName2 || !date || !venue || !venueAddress) {
     throw createError({ statusCode: 400, statusMessage: 'Missing required fields' })
@@ -43,6 +43,7 @@ export default defineEventHandler(async (event) => {
     venueMapUrl: venueMapUrl || null,
     description: description || null,
     slug,
+    allergiesEnabled: allergiesEnabled === true,
   }
 
   if (isSubscriber && premiumTier) {

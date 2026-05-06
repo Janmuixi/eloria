@@ -122,6 +122,47 @@ describe('Events API', () => {
       const opts = testDb.select().from(menuOptions).where(eq(menuOptions.courseId, courses[0].id)).all()
       expect(opts).toHaveLength(1)
     })
+
+    it('persists allergiesEnabled when provided', async () => {
+      const user = await createTestUser(testDb, { email: 'create-a@test.com', name: 'CA' })
+      const event = authEvent(user!.id, user!.email, {
+        method: 'POST',
+        body: {
+          title: 'Wedding', coupleName1: 'Alice', coupleName2: 'Bob',
+          date: '2026-06-15', venue: 'Hall', venueAddress: '1 St',
+          allergiesEnabled: true,
+        },
+      })
+      const created = await createHandler(event)
+      expect(created.allergiesEnabled).toBe(true)
+    })
+
+    it('defaults allergiesEnabled to false when not provided', async () => {
+      const user = await createTestUser(testDb, { email: 'create-b@test.com', name: 'CB' })
+      const event = authEvent(user!.id, user!.email, {
+        method: 'POST',
+        body: {
+          title: 'Wedding', coupleName1: 'Alice', coupleName2: 'Bob',
+          date: '2026-06-15', venue: 'Hall', venueAddress: '1 St',
+        },
+      })
+      const created = await createHandler(event)
+      expect(created.allergiesEnabled).toBe(false)
+    })
+
+    it('treats explicit allergiesEnabled: false as false', async () => {
+      const user = await createTestUser(testDb, { email: 'create-c@test.com', name: 'CC' })
+      const event = authEvent(user!.id, user!.email, {
+        method: 'POST',
+        body: {
+          title: 'Wedding', coupleName1: 'Alice', coupleName2: 'Bob',
+          date: '2026-06-15', venue: 'Hall', venueAddress: '1 St',
+          allergiesEnabled: false,
+        },
+      })
+      const created = await createHandler(event)
+      expect(created.allergiesEnabled).toBe(false)
+    })
   })
 
   describe('GET /api/events/:id', () => {
