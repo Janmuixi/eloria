@@ -8,6 +8,7 @@ defineProps<{
     allergies: { keys: Record<string, number>; other: Array<{ text: string; count: number }> }
   }
   eventId: number | string
+  allergiesEnabled: boolean
 }>()
 
 const localePath = useLocalePath()
@@ -36,7 +37,7 @@ function maxCount(opts: Array<{ count: number }>) {
       </div>
     </div>
 
-    <div class="bg-white rounded-2xl border border-charcoal-100 p-5">
+    <div v-if="allergiesEnabled" class="bg-white rounded-2xl border border-charcoal-100 p-5">
       <h3 class="font-medium text-charcoal-900 mb-4">{{ $t('menu.summary.allergies.title') }}</h3>
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
         <NuxtLink v-for="k in ALLERGEN_KEYS" :key="k"

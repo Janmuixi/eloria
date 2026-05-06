@@ -125,7 +125,7 @@ async function save() {
 
       <section v-if="summary && summary.courses.length > 0">
         <h2 class="text-xl font-serif text-charcoal-900 mb-4">{{ $t('menu.summary.title') }}</h2>
-        <MenuSummary :summary="summary" :event-id="eventId" />
+        <MenuSummary :summary="summary" :event-id="eventId" :allergies-enabled="allergiesEnabled" />
       </section>
     </div>
   </div>
