@@ -73,6 +73,7 @@ export function createTestDb() {
       payment_status TEXT NOT NULL DEFAULT 'pending',
       stripe_payment_id TEXT,
       language TEXT NOT NULL DEFAULT 'en',
+      allergies_enabled INTEGER NOT NULL DEFAULT 0,
       slug TEXT NOT NULL UNIQUE,
       created_at TEXT DEFAULT (datetime('now'))
     );
@@ -200,6 +201,7 @@ export function createTestEvent(db: TestDb, userId: number, overrides?: Partial<
   venue: string; venueAddress: string; slug: string; tierId: number | null;
   templateId: number | null; paymentStatus: string; customization: string | null;
   invitationType: string; customImagePath: string | null;
+  allergiesEnabled: boolean;
 }>) {
   const rows = db.insert(events).values({
     userId,
@@ -216,6 +218,7 @@ export function createTestEvent(db: TestDb, userId: number, overrides?: Partial<
     customization: overrides?.customization ?? null,
     invitationType: overrides?.invitationType || 'template',
     customImagePath: overrides?.customImagePath ?? null,
+    allergiesEnabled: overrides?.allergiesEnabled ?? false,
   }).returning().all()
   return rows[0]
 }

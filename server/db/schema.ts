@@ -108,6 +108,7 @@ export const events = sqliteTable('events', {
   paymentStatus: text('payment_status').notNull().default('pending'),
   stripePaymentId: text('stripe_payment_id'),
   language: text('language').notNull().default('en'),
+  allergiesEnabled: integer('allergies_enabled', { mode: 'boolean' }).notNull().default(false),
   slug: text('slug').notNull().unique(),
   createdAt: text('created_at').default(new Date().toISOString()),
 })
