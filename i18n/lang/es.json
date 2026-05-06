@@ -521,7 +521,9 @@
       "addOption": "Añadir opción",
       "coursePlaceholder": "ej. Primer plato",
       "optionPlaceholder": "ej. Solomillo Wellington",
-      "deleteWarning": "{count} invitados han elegido esto. Su elección se eliminará."
+      "deleteWarning": "{count} invitados han elegido esto. Su elección se eliminará.",
+      "save": "Guardar menú",
+      "saving": "Guardando menú…"
     },
     "summary": {
       "title": "Preferencias de los invitados",

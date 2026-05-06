@@ -109,13 +109,13 @@ async function save() {
         <p v-if="allergiesError" class="text-xs text-red-600 mt-2">{{ allergiesError }}</p>
       </section>
 
-      <section>
+      <section class="border border-charcoal-100 rounded-lg p-4">
         <h2 class="text-xl font-serif text-charcoal-900 mb-4">{{ $t('menu.builder.title') }}</h2>
         <MenuBuilder v-model="draft" />
         <div class="flex items-center gap-3 mt-4">
           <button type="button" :disabled="!dirty || saving" @click="save"
             class="px-5 py-2 bg-champagne-600 text-white rounded-lg disabled:opacity-50">
-            {{ saving ? $t('common.saving') : $t('common.save') }}
+            {{ saving ? $t('menu.builder.saving') : $t('menu.builder.save') }}
           </button>
           <span v-if="dirty" class="text-sm text-charcoal-300">{{ $t('common.unsavedChanges') }}</span>
           <span v-if="saveError" class="text-sm text-red-600">{{ saveError }}</span>

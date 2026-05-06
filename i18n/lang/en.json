@@ -521,7 +521,9 @@
       "addOption": "Add option",
       "coursePlaceholder": "e.g. First course",
       "optionPlaceholder": "e.g. Beef Wellington",
-      "deleteWarning": "{count} guests have picked this. Their choice will be cleared."
+      "deleteWarning": "{count} guests have picked this. Their choice will be cleared.",
+      "save": "Save menu",
+      "saving": "Saving menu…"
     },
     "summary": {
       "title": "Guest preferences",
