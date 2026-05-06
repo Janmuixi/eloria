@@ -11,6 +11,8 @@ const { data: menu } = await useFetch<{ courses: Array<{ id: number; name: strin
   `/api/events/${eventId}/menu`,
 )
 
+const allergiesEnabled = computed(() => evt.value?.allergiesEnabled === true)
+
 const guestLimit = computed(() => evt.value?.tier?.guestLimit ?? null)
 const guestCountLabel = computed(() => {
   const current = guests.value?.length ?? 0
@@ -321,7 +323,7 @@ const isFiltered = computed(() => !!(route.query.menuOption || route.query.aller
                       <span class="text-charcoal-300">{{ course.name }}:</span>
                       <span class="ml-1">{{ optionName(course.id, g.menuChoices?.[course.id]) ?? '—' }}</span>
                     </div>
-                    <div v-if="g.allergies">
+                    <div v-if="allergiesEnabled && g.allergies">
                       <span class="text-charcoal-300">{{ t('rsvp.allergies.title') }}:</span>
                       <span class="ml-1">{{ formatAllergies(g.allergies) }}</span>
                     </div>
@@ -330,7 +332,7 @@ const isFiltered = computed(() => !!(route.query.menuOption || route.query.aller
                         <span class="text-charcoal-300">{{ t('rsvp.menu.plusOneTitle') }} — {{ course.name }}:</span>
                         <span class="ml-1">{{ optionName(course.id, g.plusOneMenuChoices?.[course.id]) ?? '—' }}</span>
                       </div>
-                      <div v-if="g.plusOneAllergies">
+                      <div v-if="allergiesEnabled && g.plusOneAllergies">
                         <span class="text-charcoal-300">{{ t('rsvp.allergies.plusOneTitle') }}:</span>
                         <span class="ml-1">{{ formatAllergies(g.plusOneAllergies) }}</span>
                       </div>
