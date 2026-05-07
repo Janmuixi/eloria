@@ -1,5 +1,5 @@
 import { sqliteTable, text, integer, uniqueIndex } from 'drizzle-orm/sqlite-core'
-import { relations } from 'drizzle-orm'
+import { relations, sql } from 'drizzle-orm'
 
 // ─── Tiers ──────────────────────────────────────────────────────────────────
 
@@ -139,13 +139,11 @@ export const guests = sqliteTable('guests', {
   email: text('email'),
   phone: text('phone'),
   rsvpStatus: text('rsvp_status').notNull().default('pending'),
-  plusOne: integer('plus_one', { mode: 'boolean' }).default(false),
-  plusOneName: text('plus_one_name'),
+  companionsAllowed: integer('companions_allowed').notNull().default(0),
   token: text('token').notNull().unique(),
   emailSentAt: text('email_sent_at'),
   emailOpenedAt: text('email_opened_at'),
   allergies: text('allergies'),
-  plusOneAllergies: text('plus_one_allergies'),
   createdAt: text('created_at').default(new Date().toISOString()),
 })
 
@@ -154,6 +152,24 @@ export const guestsRelations = relations(guests, ({ one, many }) => ({
     fields: [guests.eventId],
     references: [events.id],
   }),
+  menuChoices: many(guestMenuChoices),
+  companions: many(companions),
+}))
+
+export const companions = sqliteTable('companions', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  guestId: integer('guest_id').notNull().references(() => guests.id, { onDelete: 'cascade' }),
+  position: integer('position').notNull(),
+  name: text('name'),
+  attending: integer('attending', { mode: 'boolean' }).notNull().default(false),
+  allergies: text('allergies'),
+  createdAt: text('created_at').default(new Date().toISOString()),
+}, (t) => ({
+  guestPositionUnq: uniqueIndex('companions_guest_position_unq').on(t.guestId, t.position),
+}))
+
+export const companionsRelations = relations(companions, ({ one, many }) => ({
+  guest: one(guests, { fields: [companions.guestId], references: [guests.id] }),
   menuChoices: many(guestMenuChoices),
 }))
 
@@ -180,11 +196,15 @@ export const guestMenuChoices = sqliteTable('guest_menu_choices', {
   guestId: integer('guest_id').notNull().references(() => guests.id, { onDelete: 'cascade' }),
   courseId: integer('course_id').notNull().references(() => menuCourses.id, { onDelete: 'cascade' }),
   optionId: integer('option_id').references(() => menuOptions.id, { onDelete: 'set null' }),
-  forPlusOne: integer('for_plus_one', { mode: 'boolean' }).notNull().default(false),
+  companionId: integer('companion_id').references(() => companions.id, { onDelete: 'cascade' }),
   createdAt: text('created_at').default(new Date().toISOString()),
 }, (t) => ({
-  guestCourseForPlusOneUnq: uniqueIndex('guest_menu_choices_guest_course_plusone_unq')
-    .on(t.guestId, t.courseId, t.forPlusOne),
+  selfPickUnq: uniqueIndex('guest_menu_choices_self_unq')
+    .on(t.guestId, t.courseId)
+    .where(sql`${t.companionId} IS NULL`),
+  companionPickUnq: uniqueIndex('guest_menu_choices_companion_unq')
+    .on(t.guestId, t.courseId, t.companionId)
+    .where(sql`${t.companionId} IS NOT NULL`),
 }))
 
 export const menuCoursesRelations = relations(menuCourses, ({ one, many }) => ({
@@ -202,4 +222,5 @@ export const guestMenuChoicesRelations = relations(guestMenuChoices, ({ one }) =
   guest: one(guests, { fields: [guestMenuChoices.guestId], references: [guests.id] }),
   course: one(menuCourses, { fields: [guestMenuChoices.courseId], references: [menuCourses.id] }),
   option: one(menuOptions, { fields: [guestMenuChoices.optionId], references: [menuOptions.id] }),
+  companion: one(companions, { fields: [guestMenuChoices.companionId], references: [companions.id] }),
 }))
