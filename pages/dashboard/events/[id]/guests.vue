@@ -138,7 +138,8 @@ async function importCsv() {
     await refreshGuests()
   } catch (e: any) {
     if (e?.response?.status === 403) {
-      const remaining = guestLimit.value != null ? guestLimit.value - (guests.value?.length ?? 0) : 0
+      const seatsUsed = (guests.value ?? []).reduce((acc: number, g: any) => acc + 1 + (g.companionsAllowed ?? 0), 0)
+      const remaining = guestLimit.value != null ? guestLimit.value - seatsUsed : 0
       importError.value = t('guests.importSeatLimitExceeded', { limit: guestLimit.value, remaining: Math.max(0, remaining) })
     } else {
       importError.value = t('errors.somethingWentWrong')

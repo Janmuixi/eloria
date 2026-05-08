@@ -54,6 +54,9 @@ export default defineEventHandler(async (event) => {
     }
   })
 
-  const updated = await db.query.guests.findFirst({ where: eq(guests.id, guestId) })
+  const updated = await db.query.guests.findFirst({
+    where: eq(guests.id, guestId),
+    with: { companions: true },
+  })
   return updated
 })
