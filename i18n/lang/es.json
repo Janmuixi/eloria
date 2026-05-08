@@ -160,7 +160,6 @@
     "confirmed": "Confirmados",
     "declined": "Rechazados",
     "pending": "Pendientes",
-    "plusOnes": "Acompañantes",
     "actions": "Acciones",
     "sendInvitations": "Enviar Invitaciones",
     "sending": "Enviando...",
@@ -207,14 +206,19 @@
     "tableHeaderActions": "Acciones",
     "noEmail": "—",
     "confirmRemove": "¿Eliminar este invitado?",
-    "guestCount": "{current} / {limit} invitados",
-    "guestCountUnlimited": "{current} invitados",
-    "guestLimitReached": "Límite de invitados alcanzado para tu plan ({limit}). Mejora tu plan para añadir más.",
-    "importLimitExceeded": "La importación excedería tu límite de invitados ({limit}). Puedes añadir {remaining} más.",
+    "companion": "Acompañante",
+    "companions": "Acompañantes",
+    "companionLabel": "Acompañante {n}",
+    "companionWithName": "Acompañante {n} — {name}",
+    "companionPending": "Acompañante {n} — pendiente",
+    "confirmRemoveCompanion": "¿Eliminar al Acompañante {n} ({name})? Se borrarán sus datos del RSVP.",
+    "confirmRemoveCompanionUnnamed": "¿Eliminar al Acompañante {n}? Se borrarán sus datos del RSVP.",
+    "seatCount": "{current} / {limit} plazas",
+    "seatCountUnlimited": "{current} plazas",
+    "seatLimitReached": "Has alcanzado el límite de plazas de tu plan ({limit}). Mejora tu plan para añadir más.",
+    "importSeatLimitExceeded": "La importación superaría tu límite de plazas ({limit}). Puedes añadir {remaining} más.",
     "upgradePlan": "Mejorar Plan",
     "copyLink": "Copiar enlace",
-    "plusOne": "+1",
-    "plusOneWithName": "+1: {name}",
     "details": "Detalles",
     "filterActive": "Filtro activo",
     "clearFilter": "Quitar filtro"
@@ -359,8 +363,13 @@
     "dearGuest": "Querido/a {name}, por favor déjanos saber si nos acompañarás.",
     "accept": "Acepto con Alegría",
     "decline": "Declino Respetuosamente",
-    "plusOne": "Llevaré un acompañante",
-    "plusOneName": "Nombre del acompañante",
+    "companion": {
+      "label": "Acompañante {n}",
+      "attendingQuestion": "¿Asistirá {label}?",
+      "namePlaceholder": "Su nombre completo",
+      "menuTitle": "Menú — Acompañante {n}",
+      "allergiesTitle": "Alergias — Acompañante {n}"
+    },
     "submit": "Enviar Confirmación",
     "submitting": "Enviando...",
     "poweredBy": "Creado con Eloria",
@@ -369,12 +378,10 @@
     "joinUs": "Acompáñanos el {date} en {venue}",
     "menu": {
       "title": "Elige tu menú",
-      "plusOneTitle": "El menú de tu acompañante",
       "required": "Elige una opción"
     },
     "allergies": {
-      "title": "Alergias y dieta",
-      "plusOneTitle": "Alergias y dieta de tu acompañante"
+      "title": "Alergias y dieta"
     }
   },
   "templates": {

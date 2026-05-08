@@ -160,7 +160,6 @@
     "confirmed": "Confirmed",
     "declined": "Declined",
     "pending": "Pending",
-    "plusOnes": "Plus Ones",
     "actions": "Actions",
     "sendInvitations": "Send Invitations",
     "sending": "Sending...",
@@ -207,14 +206,19 @@
     "tableHeaderActions": "Actions",
     "noEmail": "—",
     "confirmRemove": "Remove this guest?",
-    "guestCount": "{current} / {limit} guests",
-    "guestCountUnlimited": "{current} guests",
-    "guestLimitReached": "Guest limit reached for your plan ({limit}). Upgrade to add more.",
-    "importLimitExceeded": "Import would exceed your guest limit ({limit}). You can add {remaining} more.",
+    "companion": "Companion",
+    "companions": "Companions",
+    "companionLabel": "Companion {n}",
+    "companionWithName": "Companion {n} — {name}",
+    "companionPending": "Companion {n} — pending",
+    "confirmRemoveCompanion": "Remove Companion {n} ({name})? Their RSVP info will be deleted.",
+    "confirmRemoveCompanionUnnamed": "Remove Companion {n}? Their RSVP info will be deleted.",
+    "seatCount": "{current} / {limit} seats",
+    "seatCountUnlimited": "{current} seats",
+    "seatLimitReached": "Seat limit reached for your plan ({limit}). Upgrade to add more.",
+    "importSeatLimitExceeded": "Import would exceed your seat limit ({limit}). You can add {remaining} more.",
     "upgradePlan": "Upgrade Plan",
     "copyLink": "Copy link",
-    "plusOne": "+1",
-    "plusOneWithName": "+1: {name}",
     "details": "Details",
     "filterActive": "Filter active",
     "clearFilter": "Clear filter"
@@ -359,8 +363,13 @@
     "dearGuest": "Dear {name}, please let us know if you'll be joining us.",
     "accept": "Joyfully Accept",
     "decline": "Respectfully Decline",
-    "plusOne": "I'll be bringing a plus one",
-    "plusOneName": "Plus one's name",
+    "companion": {
+      "label": "Companion {n}",
+      "attendingQuestion": "Will {label} attend?",
+      "namePlaceholder": "Their full name",
+      "menuTitle": "Menu — Companion {n}",
+      "allergiesTitle": "Allergies — Companion {n}"
+    },
     "submit": "Submit RSVP",
     "submitting": "Submitting...",
     "poweredBy": "Powered by Eloria",
@@ -369,12 +378,10 @@
     "joinUs": "Join us on {date} at {venue}",
     "menu": {
       "title": "Choose your menu",
-      "plusOneTitle": "Your guest's menu",
       "required": "Please choose an option"
     },
     "allergies": {
-      "title": "Allergies & dietary",
-      "plusOneTitle": "Your guest's allergies & dietary"
+      "title": "Allergies & dietary"
     }
   },
   "templates": {
