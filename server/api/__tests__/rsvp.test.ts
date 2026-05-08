@@ -73,15 +73,13 @@ describe('RSVP API', () => {
   })
 
   describe('POST /api/rsvp/:token', () => {
-    it('confirms RSVP', async () => {
+    it('confirms RSVP with no companions', async () => {
       const event = createMockEvent({
         method: 'POST',
         params: { token: 'valid-token-123' },
-        body: { rsvpStatus: 'confirmed', plusOne: false },
+        body: { rsvpStatus: 'confirmed', companions: [] },
       })
-
       const result = await postHandler(event)
-
       expect(result).toEqual({ success: true, rsvpStatus: 'confirmed' })
     })
 
@@ -89,77 +87,124 @@ describe('RSVP API', () => {
       const event = createMockEvent({
         method: 'POST',
         params: { token: 'valid-token-123' },
-        body: { rsvpStatus: 'declined', plusOne: false },
+        body: { rsvpStatus: 'declined', companions: [] },
       })
-
-      const result = await postHandler(event)
-
-      expect(result).toEqual({ success: true, rsvpStatus: 'declined' })
+      expect(await postHandler(event)).toEqual({ success: true, rsvpStatus: 'declined' })
     })
 
-    it('handles plus-one', async () => {
-      const event = createMockEvent({
+    it('rejects mismatched companion count (400)', async () => {
+      const { guests: guestsTable } = await import('../../db/schema')
+      testDb.update(guestsTable).set({ companionsAllowed: 2 }).where(eq(guestsTable.id, guest.id)).run()
+
+      await expect(postHandler(createMockEvent({
         method: 'POST',
         params: { token: 'valid-token-123' },
-        body: { rsvpStatus: 'confirmed', plusOne: true, plusOneName: 'Partner' },
-      })
-
-      const result = await postHandler(event)
-
-      expect(result).toEqual({ success: true, rsvpStatus: 'confirmed' })
-
-      // Verify plus-one was saved
-      const getEvent = createMockEvent({
-        params: { token: 'valid-token-123' },
-      })
-      const guestData = await getHandler(getEvent)
-      expect(guestData.plusOne).toBe(true)
-      expect(guestData.plusOneName).toBe('Partner')
+        body: {
+          rsvpStatus: 'confirmed',
+          companions: [{ position: 1, attending: false, name: null, menuChoices: {}, allergies: null }],
+        },
+      }))).rejects.toMatchObject({ statusCode: 400 })
     })
 
-    it('clears plus-one name when plusOne is false', async () => {
-      // First set a plus-one
-      const setEvent = createMockEvent({
+    it('rejects duplicate or out-of-range positions (400)', async () => {
+      const { guests: guestsTable } = await import('../../db/schema')
+      testDb.update(guestsTable).set({ companionsAllowed: 2 }).where(eq(guestsTable.id, guest.id)).run()
+
+      await expect(postHandler(createMockEvent({
         method: 'POST',
         params: { token: 'valid-token-123' },
-        body: { rsvpStatus: 'confirmed', plusOne: true, plusOneName: 'Partner' },
-      })
-      await postHandler(setEvent)
+        body: {
+          rsvpStatus: 'confirmed',
+          companions: [
+            { position: 1, attending: false, name: null, menuChoices: {}, allergies: null },
+            { position: 1, attending: false, name: null, menuChoices: {}, allergies: null },
+          ],
+        },
+      }))).rejects.toMatchObject({ statusCode: 400 })
 
-      // Now clear it
-      const clearEvent = createMockEvent({
+      await expect(postHandler(createMockEvent({
         method: 'POST',
         params: { token: 'valid-token-123' },
-        body: { rsvpStatus: 'confirmed', plusOne: false, plusOneName: 'Partner' },
-      })
-      await postHandler(clearEvent)
+        body: {
+          rsvpStatus: 'confirmed',
+          companions: [
+            { position: 1, attending: false, name: null, menuChoices: {}, allergies: null },
+            { position: 3, attending: false, name: null, menuChoices: {}, allergies: null },
+          ],
+        },
+      }))).rejects.toMatchObject({ statusCode: 400 })
+    })
 
-      // Verify plus-one name was cleared
-      const getEvent = createMockEvent({
+    it('persists attending companion data and clears non-attending', async () => {
+      const { guests: guestsTable, companions: companionsTable } = await import('../../db/schema')
+      testDb.update(guestsTable).set({ companionsAllowed: 2 }).where(eq(guestsTable.id, guest.id)).run()
+
+      await postHandler(createMockEvent({
+        method: 'POST',
         params: { token: 'valid-token-123' },
-      })
-      const guestData = await getHandler(getEvent)
-      expect(guestData.plusOne).toBe(false)
-      expect(guestData.plusOneName).toBeNull()
+        body: {
+          rsvpStatus: 'confirmed',
+          companions: [
+            { position: 1, attending: true, name: 'Partner', menuChoices: {}, allergies: null },
+            { position: 2, attending: false, name: 'Should be cleared', menuChoices: {}, allergies: null },
+          ],
+        },
+      }))
+
+      const stored = testDb.select().from(companionsTable).all().filter(c => c.guestId === guest.id)
+      expect(stored.find(c => c.position === 1)).toMatchObject({ name: 'Partner', attending: true })
+      const c2 = stored.find(c => c.position === 2)
+      expect(c2?.attending).toBe(false)
+      expect(c2?.name).toBeNull()
+    })
+
+    it('rejects attending companion with empty name (400)', async () => {
+      const { guests: guestsTable } = await import('../../db/schema')
+      testDb.update(guestsTable).set({ companionsAllowed: 1 }).where(eq(guestsTable.id, guest.id)).run()
+
+      await expect(postHandler(createMockEvent({
+        method: 'POST',
+        params: { token: 'valid-token-123' },
+        body: {
+          rsvpStatus: 'confirmed',
+          companions: [{ position: 1, attending: true, name: '   ', menuChoices: {}, allergies: null }],
+        },
+      }))).rejects.toMatchObject({ statusCode: 400 })
+    })
+
+    it('clears all companion data on decline regardless of body', async () => {
+      const { guests: guestsTable, companions: companionsTable } = await import('../../db/schema')
+      testDb.update(guestsTable).set({ companionsAllowed: 1 }).where(eq(guestsTable.id, guest.id)).run()
+
+      await postHandler(createMockEvent({
+        method: 'POST',
+        params: { token: 'valid-token-123' },
+        body: {
+          rsvpStatus: 'declined',
+          companions: [{ position: 1, attending: true, name: 'Partner', menuChoices: {}, allergies: null }],
+        },
+      }))
+
+      const stored = testDb.select().from(companionsTable).all().filter(c => c.guestId === guest.id)
+      for (const c of stored) {
+        expect(c.attending).toBe(false)
+        expect(c.name).toBeNull()
+      }
     })
 
     it('rejects invalid RSVP status (400)', async () => {
-      const event = createMockEvent({
+      await expect(postHandler(createMockEvent({
         method: 'POST',
         params: { token: 'valid-token-123' },
-        body: { rsvpStatus: 'invalid-status' },
-      })
-
-      await expect(postHandler(event)).rejects.toMatchObject({
-        statusCode: 400,
-      })
+        body: { rsvpStatus: 'invalid', companions: [] },
+      }))).rejects.toMatchObject({ statusCode: 400 })
     })
 
     it('rejects nonexistent token (404)', async () => {
       const event = createMockEvent({
         method: 'POST',
         params: { token: 'nonexistent-token' },
-        body: { rsvpStatus: 'confirmed', plusOne: false },
+        body: { rsvpStatus: 'confirmed', companions: [] },
       })
 
       await expect(postHandler(event)).rejects.toMatchObject({
@@ -169,7 +214,7 @@ describe('RSVP API', () => {
   })
 })
 
-describe('POST /api/rsvp/:token — menu picks', () => {
+describe('POST /api/rsvp/:token — menu picks with companions', () => {
   let course1: any, course2: any, beef: any, salmon: any, cake: any
 
   beforeEach(async () => {
@@ -177,9 +222,8 @@ describe('POST /api/rsvp/:token — menu picks', () => {
     const user = await createTestUser(testDb, { email: 'host@example.com' })
     const evt = createTestEvent(testDb, user.id, { allergiesEnabled: true })
     guest = createTestGuest(testDb, evt.id, {
-      name: 'Invitee',
-      email: 'invitee@example.com',
-      token: 'valid-token-123',
+      name: 'Invitee', email: 'invitee@example.com', token: 'valid-token-123',
+      companionsAllowed: 1,
     })
     ;[course1] = testDb.insert(menuCourses).values({ eventId: evt.id, name: 'First', sortOrder: 0 }).returning().all()
     ;[course2] = testDb.insert(menuCourses).values({ eventId: evt.id, name: 'Dessert', sortOrder: 1 }).returning().all()
@@ -188,52 +232,68 @@ describe('POST /api/rsvp/:token — menu picks', () => {
     ;[cake] = testDb.insert(menuOptions).values({ courseId: course2.id, name: 'Cake', sortOrder: 0 }).returning().all()
   })
 
+  it('rejects when an attending companion is missing a course pick (400)', async () => {
+    await expect(postHandler(createMockEvent({
+      method: 'POST', params: { token: 'valid-token-123' },
+      body: {
+        rsvpStatus: 'confirmed',
+        menuChoices: { [course1.id]: beef.id, [course2.id]: cake.id },
+        companions: [{
+          position: 1, attending: true, name: 'Partner',
+          menuChoices: { [course1.id]: salmon.id }, // missing course2
+          allergies: null,
+        }],
+      },
+    }))).rejects.toMatchObject({ statusCode: 400 })
+  })
+
+  it('persists attending companion menu picks and allergies', async () => {
+    await postHandler(createMockEvent({
+      method: 'POST', params: { token: 'valid-token-123' },
+      body: {
+        rsvpStatus: 'confirmed',
+        menuChoices: { [course1.id]: beef.id, [course2.id]: cake.id },
+        allergies: { keys: ['nuts'], other: '' },
+        companions: [{
+          position: 1, attending: true, name: 'Partner',
+          menuChoices: { [course1.id]: salmon.id, [course2.id]: cake.id },
+          allergies: { keys: ['dairy'], other: '' },
+        }],
+      },
+    }))
+    const get = await getHandler(createMockEvent({ params: { token: 'valid-token-123' } }))
+    expect(get.choices).toEqual({ [course1.id]: beef.id, [course2.id]: cake.id })
+    expect(get.companions[0]).toMatchObject({
+      name: 'Partner',
+      attending: true,
+      menuChoices: { [course1.id]: salmon.id, [course2.id]: cake.id },
+      allergies: { keys: ['dairy'], other: '' },
+    })
+  })
+
+  it('does not require menu picks for non-attending companions', async () => {
+    const result = await postHandler(createMockEvent({
+      method: 'POST', params: { token: 'valid-token-123' },
+      body: {
+        rsvpStatus: 'confirmed',
+        menuChoices: { [course1.id]: beef.id, [course2.id]: cake.id },
+        companions: [{
+          position: 1, attending: false, name: null, menuChoices: {}, allergies: null,
+        }],
+      },
+    }))
+    expect(result.success).toBe(true)
+  })
+
   it('rejects when a confirming guest is missing a course pick (400)', async () => {
     await expect(postHandler(createMockEvent({
       method: 'POST', params: { token: 'valid-token-123' },
-      body: { rsvpStatus: 'confirmed', plusOne: false, menuChoices: { [course1.id]: beef.id } },
-    }))).rejects.toMatchObject({ statusCode: 400 })
-  })
-
-  it('saves menu picks and allergies', async () => {
-    await postHandler(createMockEvent({
-      method: 'POST', params: { token: 'valid-token-123' },
       body: {
-        rsvpStatus: 'confirmed', plusOne: false,
-        menuChoices: { [course1.id]: beef.id, [course2.id]: cake.id },
-        allergies: { keys: ['nuts'], other: 'sesame' },
-      },
-    }))
-
-    const get = await getHandler(createMockEvent({ params: { token: 'valid-token-123' } }))
-    expect(get.choices).toEqual({ [course1.id]: beef.id, [course2.id]: cake.id })
-    expect(get.allergies).toEqual({ keys: ['nuts'], other: 'sesame' })
-  })
-
-  it('requires plus-one picks for every course when plus-one is true', async () => {
-    await expect(postHandler(createMockEvent({
-      method: 'POST', params: { token: 'valid-token-123' },
-      body: {
-        rsvpStatus: 'confirmed', plusOne: true, plusOneName: 'Partner',
-        menuChoices: { [course1.id]: beef.id, [course2.id]: cake.id },
-        plusOneMenuChoices: { [course1.id]: salmon.id }, // missing course2
+        rsvpStatus: 'confirmed',
+        companions: [{ position: 1, attending: false, name: null, menuChoices: {}, allergies: null }],
+        menuChoices: { [course1.id]: beef.id },
       },
     }))).rejects.toMatchObject({ statusCode: 400 })
-  })
-
-  it('discards plus-one fields when plusOne is false', async () => {
-    await postHandler(createMockEvent({
-      method: 'POST', params: { token: 'valid-token-123' },
-      body: {
-        rsvpStatus: 'confirmed', plusOne: false,
-        menuChoices: { [course1.id]: beef.id, [course2.id]: cake.id },
-        plusOneMenuChoices: { [course1.id]: salmon.id },
-        plusOneAllergies: { keys: ['dairy'], other: '' },
-      },
-    }))
-    const get = await getHandler(createMockEvent({ params: { token: 'valid-token-123' } }))
-    expect(get.plusOneChoices).toEqual({})
-    expect(get.plusOneAllergies).toBeNull()
   })
 
   it('ignores menu fields when declining', async () => {
@@ -241,6 +301,7 @@ describe('POST /api/rsvp/:token — menu picks', () => {
       method: 'POST', params: { token: 'valid-token-123' },
       body: {
         rsvpStatus: 'declined',
+        companions: [{ position: 1, attending: false, name: null, menuChoices: {}, allergies: null }],
         menuChoices: { [course1.id]: beef.id, [course2.id]: cake.id },
         allergies: { keys: ['nuts'], other: '' },
       },
@@ -254,7 +315,8 @@ describe('POST /api/rsvp/:token — menu picks', () => {
     await expect(postHandler(createMockEvent({
       method: 'POST', params: { token: 'valid-token-123' },
       body: {
-        rsvpStatus: 'confirmed', plusOne: false,
+        rsvpStatus: 'confirmed',
+        companions: [{ position: 1, attending: false, name: null, menuChoices: {}, allergies: null }],
         menuChoices: { [course1.id]: cake.id, [course2.id]: cake.id }, // cake belongs to course2 not course1
       },
     }))).rejects.toMatchObject({ statusCode: 400 })
@@ -277,7 +339,8 @@ describe('POST /api/rsvp/:token — allergies gating (independent of menu)', () 
     await postHandler(createMockEvent({
       method: 'POST', params: { token: 'valid-token-123' },
       body: {
-        rsvpStatus: 'confirmed', plusOne: false,
+        rsvpStatus: 'confirmed',
+        companions: [],
         allergies: { keys: ['nuts'], other: 'sesame' },
       },
     }))
@@ -286,18 +349,24 @@ describe('POST /api/rsvp/:token — allergies gating (independent of menu)', () 
     expect(get.allergies).toEqual({ keys: ['nuts'], other: 'sesame' })
   })
 
-  it('persists plus-one allergies when allergiesEnabled = true and no menu exists', async () => {
+  it('persists companion allergies when allergiesEnabled = true and no menu exists', async () => {
+    const { guests: guestsTable } = await import('../../db/schema')
+    testDb.update(guestsTable).set({ companionsAllowed: 1 }).where(eq(guestsTable.id, guest.id)).run()
+
     await postHandler(createMockEvent({
       method: 'POST', params: { token: 'valid-token-123' },
       body: {
-        rsvpStatus: 'confirmed', plusOne: true, plusOneName: 'Partner',
+        rsvpStatus: 'confirmed',
         allergies: { keys: [], other: '' },
-        plusOneAllergies: { keys: ['dairy'], other: '' },
+        companions: [{
+          position: 1, attending: true, name: 'Partner',
+          menuChoices: {}, allergies: { keys: ['dairy'], other: '' },
+        }],
       },
     }))
 
     const get = await getHandler(createMockEvent({ params: { token: 'valid-token-123' } }))
-    expect(get.plusOneAllergies).toEqual({ keys: ['dairy'], other: '' })
+    expect(get.companions[0].allergies).toEqual({ keys: ['dairy'], other: '' })
   })
 
   it('ignores allergy fields when allergiesEnabled = false', async () => {
@@ -309,7 +378,8 @@ describe('POST /api/rsvp/:token — allergies gating (independent of menu)', () 
     await postHandler(createMockEvent({
       method: 'POST', params: { token: 'valid-token-123' },
       body: {
-        rsvpStatus: 'confirmed', plusOne: false,
+        rsvpStatus: 'confirmed',
+        companions: [],
         allergies: { keys: ['nuts'], other: '' },
       },
     }))
@@ -323,7 +393,8 @@ describe('POST /api/rsvp/:token — allergies gating (independent of menu)', () 
     await postHandler(createMockEvent({
       method: 'POST', params: { token: 'valid-token-123' },
       body: {
-        rsvpStatus: 'confirmed', plusOne: false,
+        rsvpStatus: 'confirmed',
+        companions: [],
         allergies: { keys: ['nuts'], other: 'sesame' },
       },
     }))
@@ -333,10 +404,10 @@ describe('POST /api/rsvp/:token — allergies gating (independent of menu)', () 
     const evtRow = testDb.select().from(eventsTable).all()[0]
     testDb.update(eventsTable).set({ allergiesEnabled: false }).where(eq(eventsTable.id, evtRow.id)).run()
 
-    // Step 3: guest re-submits (e.g., to update plus-one) while flag is off — no allergy fields sent
+    // Step 3: guest re-submits while flag is off — no allergy fields sent
     await postHandler(createMockEvent({
       method: 'POST', params: { token: 'valid-token-123' },
-      body: { rsvpStatus: 'confirmed', plusOne: false },
+      body: { rsvpStatus: 'confirmed', companions: [] },
     }))
 
     // Stored allergies must survive
@@ -378,7 +449,7 @@ describe('GET /api/rsvp/:token — menu fields', () => {
       .where(eq((await import('../../db/schema')).events.id, evt.id)).run()
     const [course] = testDb.insert(menuCourses).values({ eventId: evt.id, name: 'First', sortOrder: 0 }).returning().all()
     const [opt] = testDb.insert(menuOptions).values({ courseId: course.id, name: 'Beef', sortOrder: 0 }).returning().all()
-    testDb.insert(guestMenuChoices).values({ guestId: guest.id, courseId: course.id, optionId: opt.id, forPlusOne: false }).run()
+    testDb.insert(guestMenuChoices).values({ guestId: guest.id, courseId: course.id, optionId: opt.id, companionId: null }).run()
     testDb.update(guestsTable).set({ allergies: JSON.stringify({ keys: ['nuts'], other: '' }) }).where(eq(guestsTable.id, guest.id)).run()
 
     const event = createMockEvent({ params: { token: 'valid-token-123' } })
@@ -392,14 +463,12 @@ describe('GET /api/rsvp/:token — menu fields', () => {
   it('returns allergiesEnabled = false by default and nulls stored allergies', async () => {
     testDb.update(guestsTable).set({
       allergies: JSON.stringify({ keys: ['nuts'], other: '' }),
-      plusOneAllergies: JSON.stringify({ keys: ['dairy'], other: '' }),
     }).where(eq(guestsTable.id, guest.id)).run()
 
     const result = await getHandler(createMockEvent({ params: { token: 'valid-token-123' } }))
 
     expect(result.allergiesEnabled).toBe(false)
     expect(result.allergies).toBeNull()
-    expect(result.plusOneAllergies).toBeNull()
   })
 
   it('returns stored allergies when allergiesEnabled = true', async () => {
@@ -409,13 +478,11 @@ describe('GET /api/rsvp/:token — menu fields', () => {
       .where(eq((await import('../../db/schema')).events.id, evtRow.id)).run()
     testDb.update(guestsTable).set({
       allergies: JSON.stringify({ keys: ['nuts'], other: '' }),
-      plusOneAllergies: JSON.stringify({ keys: ['dairy'], other: '' }),
     }).where(eq(guestsTable.id, guest.id)).run()
 
     const result = await getHandler(createMockEvent({ params: { token: 'valid-token-123' } }))
 
     expect(result.allergiesEnabled).toBe(true)
     expect(result.allergies).toEqual({ keys: ['nuts'], other: '' })
-    expect(result.plusOneAllergies).toEqual({ keys: ['dairy'], other: '' })
   })
 })
