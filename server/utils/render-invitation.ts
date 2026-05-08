@@ -12,9 +12,31 @@ export type EventRowForRender = {
   language: string
 }
 
+// Shrink-to-fit must run before height is reported so the iframe is sized
+// against the adjusted layout, not the overflowing one.
 const HEIGHT_SCRIPT = `<script>
 (function() {
+  var MAX_WORDING_LINES = 6;
+  function fitWording() {
+    var w = document.querySelector('.wording');
+    if (!w) return;
+    w.style.removeProperty('font-size');
+    var cs = window.getComputedStyle(w);
+    var orig = parseFloat(cs.fontSize);
+    if (!isFinite(orig) || orig <= 0) return;
+    var lh = parseFloat(cs.lineHeight);
+    if (!isFinite(lh) || lh <= 0) lh = orig * 1.4;
+    var maxH = lh * MAX_WORDING_LINES;
+    var min = Math.max(8, orig * 0.55);
+    var fs = orig;
+    var safety = 60;
+    while (w.scrollHeight > maxH && fs > min && safety-- > 0) {
+      fs -= 0.5;
+      w.style.fontSize = fs + 'px';
+    }
+  }
   function post() {
+    fitWording();
     var h = document.documentElement.scrollHeight || document.body.scrollHeight;
     parent.postMessage({ type: 'invitation-height', height: h }, '*');
   }
