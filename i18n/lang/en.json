@@ -160,6 +160,7 @@
     "confirmed": "Confirmed",
     "declined": "Declined",
     "pending": "Pending",
+    "companions": "Companions",
     "actions": "Actions",
     "sendInvitations": "Send Invitations",
     "sending": "Sending...",
