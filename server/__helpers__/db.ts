@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
 import * as schema from '../db/schema'
-import { tiers, users, templates, events, guests, subscriptions } from '../db/schema'
+import { tiers, users, templates, events, guests, subscriptions, companions } from '../db/schema'
 
 export type TestDb = ReturnType<typeof createTestDb>
 
@@ -85,13 +85,11 @@ export function createTestDb() {
       email TEXT,
       phone TEXT,
       rsvp_status TEXT NOT NULL DEFAULT 'pending',
-      plus_one INTEGER DEFAULT 0,
-      plus_one_name TEXT,
+      companions_allowed INTEGER NOT NULL DEFAULT 0,
       token TEXT NOT NULL UNIQUE,
       email_sent_at TEXT,
       email_opened_at TEXT,
       allergies TEXT,
-      plus_one_allergies TEXT,
       created_at TEXT DEFAULT (datetime('now'))
     );
 
@@ -124,15 +122,27 @@ export function createTestDb() {
       created_at TEXT DEFAULT (datetime('now'))
     );
 
+    CREATE TABLE companions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      guest_id INTEGER NOT NULL REFERENCES guests(id) ON DELETE CASCADE,
+      position INTEGER NOT NULL,
+      name TEXT,
+      attending INTEGER NOT NULL DEFAULT 0,
+      allergies TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      UNIQUE (guest_id, position)
+    );
+
     CREATE TABLE guest_menu_choices (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       guest_id INTEGER NOT NULL REFERENCES guests(id) ON DELETE CASCADE,
       course_id INTEGER NOT NULL REFERENCES menu_courses(id) ON DELETE CASCADE,
       option_id INTEGER REFERENCES menu_options(id) ON DELETE SET NULL,
-      for_plus_one INTEGER NOT NULL DEFAULT 0,
-      created_at TEXT DEFAULT (datetime('now')),
-      UNIQUE (guest_id, course_id, for_plus_one)
+      companion_id INTEGER REFERENCES companions(id) ON DELETE CASCADE,
+      created_at TEXT DEFAULT (datetime('now'))
     );
+    CREATE UNIQUE INDEX guest_menu_choices_self_unq ON guest_menu_choices (guest_id, course_id) WHERE companion_id IS NULL;
+    CREATE UNIQUE INDEX guest_menu_choices_companion_unq ON guest_menu_choices (guest_id, course_id, companion_id) WHERE companion_id IS NOT NULL;
   `)
 
   return drizzle(sqlite, { schema })
@@ -225,7 +235,7 @@ export function createTestEvent(db: TestDb, userId: number, overrides?: Partial<
 
 export function createTestGuest(db: TestDb, eventId: number, overrides?: Partial<{
   name: string; email: string | null; phone: string | null; token: string;
-  rsvpStatus: string; plusOne: boolean; plusOneName: string | null;
+  rsvpStatus: string; companionsAllowed: number;
 }>) {
   const rows = db.insert(guests).values({
     eventId,
@@ -234,8 +244,7 @@ export function createTestGuest(db: TestDb, eventId: number, overrides?: Partial
     phone: overrides?.phone ?? null,
     token: overrides?.token || crypto.randomUUID(),
     rsvpStatus: overrides?.rsvpStatus || 'pending',
-    plusOne: overrides?.plusOne ?? false,
-    plusOneName: overrides?.plusOneName ?? null,
+    companionsAllowed: overrides?.companionsAllowed ?? 0,
   }).returning().all()
   return rows[0]
 }
@@ -251,6 +260,19 @@ export function createTestSubscription(db: TestDb, userId: number, overrides?: P
     status: overrides?.status || 'active',
     price: overrides?.price ?? 4900,
     currentPeriodEnd: overrides?.currentPeriodEnd ?? null,
+  }).returning().all()
+  return rows[0]
+}
+
+export function createTestCompanion(db: TestDb, guestId: number, position: number, overrides?: Partial<{
+  name: string | null; attending: boolean; allergies: string | null;
+}>) {
+  const rows = db.insert(companions).values({
+    guestId,
+    position,
+    name: overrides?.name ?? null,
+    attending: overrides?.attending ?? false,
+    allergies: overrides?.allergies ?? null,
   }).returning().all()
   return rows[0]
 }
