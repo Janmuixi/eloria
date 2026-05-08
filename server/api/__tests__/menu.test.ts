@@ -225,35 +225,53 @@ describe('GET /api/events/:id/menu/summary', () => {
     expect(result.allergies.other).toEqual([])
   })
 
-  it('aggregates choices and allergies for confirmed guests only', async () => {
+  it('aggregates choices and allergies including attending companions', async () => {
+    const { companions: companionsTable, guestMenuChoices: choicesTable } = await import('../../db/schema')
     const g1 = createTestGuest(testDb, eventId, { token: 't1', rsvpStatus: 'confirmed' })
-    const g2 = createTestGuest(testDb, eventId, { token: 't2', rsvpStatus: 'confirmed', plusOne: true })
+    const g2 = createTestGuest(testDb, eventId, { token: 't2', rsvpStatus: 'confirmed', companionsAllowed: 1 })
     const g3 = createTestGuest(testDb, eventId, { token: 't3', rsvpStatus: 'declined' })
 
-    // g1 picks Beef + has nut allergy
-    testDb.insert((await import('../../db/schema')).guestMenuChoices).values({
-      guestId: g1.id, courseId, optionId: beefId, forPlusOne: false,
+    // g1 picks Beef + nut allergy
+    testDb.insert(choicesTable).values({
+      guestId: g1.id, courseId, optionId: beefId, companionId: null,
     }).run()
     testDb.update(guestsTable).set({ allergies: JSON.stringify({ keys: ['nuts'], other: '' }) })
       .where((await import('drizzle-orm')).eq(guestsTable.id, g1.id)).run()
 
-    // g2 picks Beef for self, Salmon for plus-one; plus-one has "sesame" other
-    testDb.insert((await import('../../db/schema')).guestMenuChoices).values([
-      { guestId: g2.id, courseId, optionId: beefId, forPlusOne: false },
-      { guestId: g2.id, courseId, optionId: salmonId, forPlusOne: true },
+    // g2 picks Beef for self; companion 1 picks Salmon and is attending; companion has "sesame"
+    const [c1] = testDb.insert(companionsTable).values({
+      guestId: g2.id, position: 1, name: 'Partner', attending: true,
+      allergies: JSON.stringify({ keys: ['nuts'], other: 'sesame' }),
+    }).returning().all()
+    testDb.insert(choicesTable).values([
+      { guestId: g2.id, courseId, optionId: beefId, companionId: null },
+      { guestId: g2.id, courseId, optionId: salmonId, companionId: c1.id },
     ]).run()
-    testDb.update(guestsTable).set({
-      plusOneAllergies: JSON.stringify({ keys: ['nuts'], other: 'sesame' }),
-    }).where((await import('drizzle-orm')).eq(guestsTable.id, g2.id)).run()
 
-    // g3 declined — should not contribute
-    void g3
+    void g3 // declined — should not contribute
 
     const result = await summaryHandler(createMockEvent({ params: { id: String(eventId) } }))
     expect(result.courses[0].options.find((o: any) => o.id === beefId).count).toBe(2)
     expect(result.courses[0].options.find((o: any) => o.id === salmonId).count).toBe(1)
-    expect(result.courses[0].unpickedConfirmedGuests).toBe(0) // g2 has both picks
+    expect(result.courses[0].unpickedConfirmedGuests).toBe(0)
     expect(result.allergies.keys.nuts).toBe(2)
     expect(result.allergies.other).toEqual([{ text: 'sesame', count: 1 }])
+  })
+
+  it('skips companions with attending=false', async () => {
+    const { companions: companionsTable, guestMenuChoices: choicesTable } = await import('../../db/schema')
+    const g = createTestGuest(testDb, eventId, { token: 'tx', rsvpStatus: 'confirmed', companionsAllowed: 1 })
+    // companion with attending=false but a stored row — its pick must NOT count
+    const [c1] = testDb.insert(companionsTable).values({
+      guestId: g.id, position: 1, name: null, attending: false,
+    }).returning().all()
+    testDb.insert(choicesTable).values([
+      { guestId: g.id, courseId, optionId: beefId, companionId: null },
+      { guestId: g.id, courseId, optionId: salmonId, companionId: c1.id },
+    ]).run()
+
+    const result = await summaryHandler(createMockEvent({ params: { id: String(eventId) } }))
+    expect(result.courses[0].options.find((o: any) => o.id === beefId).count).toBe(1)
+    expect(result.courses[0].options.find((o: any) => o.id === salmonId).count).toBe(0)
   })
 })
