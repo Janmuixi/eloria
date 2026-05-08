@@ -191,8 +191,29 @@ describe('Guests API', () => {
 
       await expect(addHandler(event)).rejects.toMatchObject({
         statusCode: 403,
-        statusMessage: 'Guest limit reached for your plan (50)',
+        statusMessage: 'Seat limit reached for your plan (50)',
       })
+    })
+
+    it('counts companions toward the seat limit (403 when seat limit hit)', async () => {
+      // Default Basic tier has guestLimit = 50 — override with a tighter value for the test
+      const { tiers: tiersTable } = await import('../../db/schema')
+      seedTiers(testDb)
+      const basicTier = testDb.select().from(tiersTable).all()[0]
+      testDb.update(tiersTable).set({ guestLimit: 3 }).where((await import('drizzle-orm')).eq(tiersTable.id, basicTier.id)).run()
+      const evtWithLimit = createTestEvent(testDb, user.id, { tierId: basicTier.id, slug: 'limited' })
+
+      // 2 guests, one with 1 companion = 3 seats — at the limit
+      createTestGuest(testDb, evtWithLimit.id, { name: 'A', companionsAllowed: 1 })
+      createTestGuest(testDb, evtWithLimit.id, { name: 'B' })
+
+      const event = authEvent(user.id, user.email, {
+        method: 'POST',
+        params: { id: String(evtWithLimit.id) },
+        body: { name: 'C' },
+      })
+
+      await expect(addHandler(event)).rejects.toMatchObject({ statusCode: 403 })
     })
 
     it('allows adding a guest when under tier guest limit', async () => {
@@ -319,7 +340,7 @@ describe('Guests API', () => {
 
       await expect(importHandler(event)).rejects.toMatchObject({
         statusCode: 403,
-        statusMessage: 'Import would exceed guest limit for your plan (50). You can add 2 more guests.',
+        statusMessage: 'Import would exceed seat limit for your plan (50). You can add 2 more.',
       })
     })
 

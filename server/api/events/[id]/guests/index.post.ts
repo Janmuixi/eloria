@@ -1,7 +1,8 @@
 import { requireAuth } from '~/server/utils/auth'
 import { db } from '~/server/db'
 import { events, guests } from '~/server/db/schema'
-import { eq, and, count } from 'drizzle-orm'
+import { eq, and } from 'drizzle-orm'
+import { countSeats } from '~/server/utils/seats'
 
 export default defineEventHandler(async (event) => {
   const user = await requireAuth(event)
@@ -19,17 +20,13 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Guest name is required' })
   }
 
-  // Enforce guest limit if tier is assigned and has a limit
   if (evt.tier?.guestLimit != null) {
-    const [{ value: currentCount }] = await db
-      .select({ value: count() })
-      .from(guests)
-      .where(eq(guests.eventId, id))
-
-    if (currentCount >= evt.tier.guestLimit) {
+    const seats = await countSeats(id)
+    // Adding one more guest costs 1 seat (companions default to 0)
+    if (seats + 1 > evt.tier.guestLimit) {
       throw createError({
         statusCode: 403,
-        statusMessage: `Guest limit reached for your plan (${evt.tier.guestLimit})`,
+        statusMessage: `Seat limit reached for your plan (${evt.tier.guestLimit})`,
       })
     }
   }
