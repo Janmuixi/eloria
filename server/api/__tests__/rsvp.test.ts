@@ -35,7 +35,7 @@ describe('RSVP API', () => {
   })
 
   describe('GET /api/rsvp/:token', () => {
-    it('returns guest RSVP data', async () => {
+    it('returns guest RSVP data with empty companions when companionsAllowed = 0', async () => {
       const event = createMockEvent({
         params: { token: 'valid-token-123' },
       })
@@ -45,19 +45,30 @@ describe('RSVP API', () => {
       expect(result).toMatchObject({
         name: 'Invitee',
         rsvpStatus: 'pending',
-        plusOne: false,
-        plusOneName: null,
+        companionsAllowed: 0,
+        companions: [],
       })
+    })
+
+    it('synthesizes empty companion entries when slots are configured but unfilled', async () => {
+      const { guests: guestsTable } = await import('../../db/schema')
+      testDb.update(guestsTable).set({ companionsAllowed: 2 }).where(eq(guestsTable.id, guest.id)).run()
+
+      const result = await getHandler(createMockEvent({ params: { token: 'valid-token-123' } }))
+
+      expect(result.companionsAllowed).toBe(2)
+      expect(result.companions).toHaveLength(2)
+      expect(result.companions[0]).toMatchObject({
+        position: 1, name: null, attending: false, menuChoices: {}, allergies: null,
+      })
+      expect(result.companions[1].position).toBe(2)
     })
 
     it('rejects invalid/nonexistent token (404)', async () => {
       const event = createMockEvent({
         params: { token: 'nonexistent-token' },
       })
-
-      await expect(getHandler(event)).rejects.toMatchObject({
-        statusCode: 404,
-      })
+      await expect(getHandler(event)).rejects.toMatchObject({ statusCode: 404 })
     })
   })
 
