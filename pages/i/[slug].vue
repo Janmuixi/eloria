@@ -32,46 +32,64 @@ const { data: guestData, refresh: refreshGuest } = await useFetch(
   { immediate: !!guestToken.value },
 )
 
+type CompanionState = {
+  position: number
+  attending: boolean
+  name: string
+  menuChoices: Record<number, number | null>
+  allergies: Allergies | null
+}
+
 const rsvpForm = reactive({
   rsvpStatus: '' as string,
-  plusOne: false,
-  plusOneName: '',
 })
 
 const menuChoices = ref<Record<number, number | null>>({})
-const plusOneMenuChoices = ref<Record<number, number | null>>({})
 const allergies = ref<Allergies | null>(null)
-const plusOneAllergies = ref<Allergies | null>(null)
+const companionsState = ref<CompanionState[]>([])
 
 const rsvpSubmitting = ref(false)
 const rsvpError = ref('')
 
 watch(guestData, (data) => {
-  if (data) {
-    rsvpForm.rsvpStatus = data.rsvpStatus !== 'pending' ? data.rsvpStatus : ''
-    rsvpForm.plusOne = data.plusOne || false
-    rsvpForm.plusOneName = data.plusOneName || ''
-    if (data.menu) {
-      for (const c of data.menu.courses) {
-        if (!(c.id in menuChoices.value)) menuChoices.value[c.id] = data.choices?.[c.id] ?? null
-        if (!(c.id in plusOneMenuChoices.value)) plusOneMenuChoices.value[c.id] = data.plusOneChoices?.[c.id] ?? null
-      }
-    }
-    if (data.allergiesEnabled) {
-      allergies.value = data.allergies ?? null
-      plusOneAllergies.value = data.plusOneAllergies ?? null
+  if (!data) return
+  rsvpForm.rsvpStatus = data.rsvpStatus !== 'pending' ? data.rsvpStatus : ''
+  if (data.menu) {
+    for (const c of data.menu.courses) {
+      if (!(c.id in menuChoices.value)) menuChoices.value[c.id] = data.choices?.[c.id] ?? null
     }
   }
+  if (data.allergiesEnabled) {
+    allergies.value = data.allergies ?? null
+  }
+  // Build companion state — exactly companionsAllowed entries 1..N
+  const incoming: CompanionState[] = (data.companions ?? []).map((c: any) => ({
+    position: c.position,
+    attending: c.attending ?? false,
+    name: c.name ?? '',
+    menuChoices: { ...(c.menuChoices ?? {}) },
+    allergies: data.allergiesEnabled ? (c.allergies ?? null) : null,
+  }))
+  companionsState.value = incoming
 }, { immediate: true })
 
 const canSubmit = computed(() => {
   if (!rsvpForm.rsvpStatus) return false
   if (rsvpForm.rsvpStatus !== 'confirmed') return true
   const m = guestData.value?.menu
-  if (!m) return true
-  for (const c of m.courses) {
-    if (!menuChoices.value[c.id]) return false
-    if (rsvpForm.plusOne && !plusOneMenuChoices.value[c.id]) return false
+  if (m) {
+    for (const c of m.courses) {
+      if (!menuChoices.value[c.id]) return false
+    }
+  }
+  for (const comp of companionsState.value) {
+    if (!comp.attending) continue
+    if (!comp.name.trim()) return false
+    if (m) {
+      for (const c of m.courses) {
+        if (!comp.menuChoices[c.id]) return false
+      }
+    }
   }
   return true
 })
@@ -86,12 +104,15 @@ async function submitRsvp() {
       method: 'POST',
       body: {
         rsvpStatus: rsvpForm.rsvpStatus,
-        plusOne: rsvpForm.plusOne,
-        plusOneName: rsvpForm.plusOneName,
         menuChoices: menuChoices.value,
-        plusOneMenuChoices: rsvpForm.plusOne ? plusOneMenuChoices.value : undefined,
         allergies: allergies.value,
-        plusOneAllergies: rsvpForm.plusOne ? plusOneAllergies.value : undefined,
+        companions: companionsState.value.map(c => ({
+          position: c.position,
+          attending: c.attending,
+          name: c.name.trim() || null,
+          menuChoices: c.menuChoices,
+          allergies: c.allergies,
+        })),
       },
     })
     await refreshGuest()
@@ -195,19 +216,9 @@ onBeforeUnmount(() => {
             </div>
 
             <div v-if="rsvpForm.rsvpStatus === 'confirmed'" class="mb-6 text-left">
-              <label class="flex items-center gap-3 mb-3 cursor-pointer">
-                <input type="checkbox" v-model="rsvpForm.plusOne" class="rounded text-champagne-600" />
-                <span class="text-sm font-medium text-charcoal-500">{{ $t('rsvp.plusOne') }}</span>
-              </label>
-              <input
-                v-if="rsvpForm.plusOne"
-                v-model="rsvpForm.plusOneName"
-                type="text"
-                :placeholder="$t('rsvp.plusOneName')"
-                class="w-full px-3 py-2 border border-charcoal-200 rounded-lg text-sm focus:ring-2 focus:ring-champagne-500 focus:border-champagne-500"
-              />
 
-              <div v-if="guestData?.menu" class="mt-6 space-y-6">
+              <!-- Self menu -->
+              <div v-if="guestData?.menu" class="mt-2 space-y-6">
                 <fieldset v-for="course in guestData.menu.courses" :key="course.id" class="text-left">
                   <legend class="block text-sm font-medium text-charcoal-500 mb-2">{{ course.name }}</legend>
                   <label v-for="o in course.options" :key="o.id"
@@ -217,31 +228,57 @@ onBeforeUnmount(() => {
                     <span>{{ o.name }}</span>
                   </label>
                 </fieldset>
-
-                <template v-if="rsvpForm.plusOne">
-                  <fieldset v-for="course in guestData.menu.courses" :key="`p1-${course.id}`" class="text-left">
-                    <legend class="block text-sm font-medium text-charcoal-500 mb-2">
-                      {{ $t('rsvp.menu.plusOneTitle') }} — {{ course.name }}
-                    </legend>
-                    <label v-for="o in course.options" :key="o.id"
-                      class="flex items-center gap-3 p-2 rounded border cursor-pointer mb-1"
-                      :class="plusOneMenuChoices[course.id] === o.id ? 'border-champagne-400 bg-champagne-50' : 'border-charcoal-100 hover:bg-ivory-50'">
-                      <input type="radio" :name="`p1-course-${course.id}`" :value="o.id" v-model="plusOneMenuChoices[course.id]" />
-                      <span>{{ o.name }}</span>
-                    </label>
-                  </fieldset>
-                </template>
               </div>
 
-              <div v-if="guestData?.allergiesEnabled" class="mt-6 space-y-4">
-                <div class="text-left">
-                  <label class="block text-sm font-medium text-charcoal-500 mb-2">{{ $t('rsvp.allergies.title') }}</label>
-                  <MenuAllergyPicker v-model="allergies" />
-                </div>
-                <div v-if="rsvpForm.plusOne" class="text-left">
-                  <label class="block text-sm font-medium text-charcoal-500 mb-2">{{ $t('rsvp.allergies.plusOneTitle') }}</label>
-                  <MenuAllergyPicker v-model="plusOneAllergies" />
-                </div>
+              <!-- Self allergies -->
+              <div v-if="guestData?.allergiesEnabled" class="mt-6">
+                <label class="block text-sm font-medium text-charcoal-500 mb-2">{{ $t('rsvp.allergies.title') }}</label>
+                <MenuAllergyPicker v-model="allergies" />
+              </div>
+
+              <!-- Companions -->
+              <div v-if="companionsState.length" class="mt-8 space-y-6">
+                <section v-for="comp in companionsState" :key="comp.position"
+                  class="border border-charcoal-100 rounded-xl p-4 bg-ivory-50/40">
+                  <h3 class="font-medium text-charcoal-700 mb-3">{{ $t('rsvp.companion.label', { n: comp.position }) }}</h3>
+
+                  <label class="flex items-center gap-3 mb-3 cursor-pointer">
+                    <input type="checkbox" v-model="comp.attending" class="rounded text-champagne-600" />
+                    <span class="text-sm font-medium text-charcoal-500">
+                      {{ $t('rsvp.companion.attendingQuestion', { label: comp.name.trim() || $t('rsvp.companion.label', { n: comp.position }) }) }}
+                    </span>
+                  </label>
+
+                  <div v-if="comp.attending" class="space-y-4">
+                    <input
+                      v-model="comp.name"
+                      type="text"
+                      :placeholder="$t('rsvp.companion.namePlaceholder')"
+                      class="w-full px-3 py-2 border border-charcoal-200 rounded-lg text-sm focus:ring-2 focus:ring-champagne-500 focus:border-champagne-500"
+                    />
+
+                    <div v-if="guestData?.menu" class="space-y-4">
+                      <fieldset v-for="course in guestData.menu.courses" :key="`c${comp.position}-${course.id}`">
+                        <legend class="block text-sm font-medium text-charcoal-500 mb-2">
+                          {{ $t('rsvp.companion.menuTitle', { n: comp.position }) }} — {{ course.name }}
+                        </legend>
+                        <label v-for="o in course.options" :key="o.id"
+                          class="flex items-center gap-3 p-2 rounded border cursor-pointer mb-1"
+                          :class="comp.menuChoices[course.id] === o.id ? 'border-champagne-400 bg-champagne-50' : 'border-charcoal-100 hover:bg-ivory-50'">
+                          <input type="radio" :name="`c${comp.position}-course-${course.id}`" :value="o.id" v-model="comp.menuChoices[course.id]" />
+                          <span>{{ o.name }}</span>
+                        </label>
+                      </fieldset>
+                    </div>
+
+                    <div v-if="guestData?.allergiesEnabled">
+                      <label class="block text-sm font-medium text-charcoal-500 mb-2">
+                        {{ $t('rsvp.companion.allergiesTitle', { n: comp.position }) }}
+                      </label>
+                      <MenuAllergyPicker v-model="comp.allergies" />
+                    </div>
+                  </div>
+                </section>
               </div>
             </div>
 
