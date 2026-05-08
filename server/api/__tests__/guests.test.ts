@@ -22,6 +22,7 @@ const listHandler = (await import('../../api/events/[id]/guests/index.get')).def
 const addHandler = (await import('../../api/events/[id]/guests/index.post')).default
 const deleteHandler = (await import('../../api/events/[id]/guests/[guestId].delete')).default
 const importHandler = (await import('../../api/events/[id]/guests/import.post')).default
+const patchHandler = (await import('../../api/events/[id]/guests/[guestId].patch')).default
 
 const { createToken } = await import('../../utils/auth')
 
@@ -363,6 +364,78 @@ describe('Guests API', () => {
 
       const result = await importHandler(event)
       expect(result).toEqual({ imported: 3 })
+    })
+  })
+
+  describe('PATCH /api/events/:id/guests/:guestId', () => {
+    it('updates companionsAllowed when within seat limit', async () => {
+      const guest = createTestGuest(testDb, evt.id, { name: 'Alice' })
+      const event = authEvent(user.id, user.email, {
+        method: 'PATCH',
+        params: { id: String(evt.id), guestId: String(guest.id) },
+        body: { companionsAllowed: 2 },
+      })
+      const result = await patchHandler(event)
+      expect(result.companionsAllowed).toBe(2)
+    })
+
+    it('rejects increase that would exceed seat limit (403)', async () => {
+      const { tiers: tiersTable, guests: guestsTable } = await import('../../db/schema')
+      seedTiers(testDb)
+      const basicTier = testDb.select().from(tiersTable).all()[0]
+      testDb.update(tiersTable).set({ guestLimit: 3 }).where((await import('drizzle-orm')).eq(tiersTable.id, basicTier.id)).run()
+      const evtLimited = createTestEvent(testDb, user.id, { tierId: basicTier.id, slug: 'limited-patch' })
+      // 3 guests fill the limit exactly; bumping any to 1 companion would go to 4 seats
+      for (let i = 0; i < 3; i++) createTestGuest(testDb, evtLimited.id, { name: `g${i}`, token: `t${i}` })
+      const lastGuest = testDb.select().from(guestsTable).all().filter(g => g.eventId === evtLimited.id).at(-1)!
+      const event = authEvent(user.id, user.email, {
+        method: 'PATCH',
+        params: { id: String(evtLimited.id), guestId: String(lastGuest.id) },
+        body: { companionsAllowed: 2 },
+      })
+      await expect(patchHandler(event)).rejects.toMatchObject({ statusCode: 403 })
+    })
+
+    it('cascades companion deletion when companionsAllowed is decreased', async () => {
+      const { companions: companionsTable } = await import('../../db/schema')
+      const guest = createTestGuest(testDb, evt.id, { name: 'Alice', companionsAllowed: 2 })
+      testDb.insert(companionsTable).values([
+        { guestId: guest.id, position: 1, name: 'C1', attending: true },
+        { guestId: guest.id, position: 2, name: 'C2', attending: true },
+      ]).run()
+      const event = authEvent(user.id, user.email, {
+        method: 'PATCH',
+        params: { id: String(evt.id), guestId: String(guest.id) },
+        body: { companionsAllowed: 1 },
+      })
+      await patchHandler(event)
+      const remaining = testDb.select().from(companionsTable).all().filter(c => c.guestId === guest.id)
+      expect(remaining).toHaveLength(1)
+      expect(remaining[0].position).toBe(1)
+    })
+
+    it('rejects out-of-range value (400)', async () => {
+      const guest = createTestGuest(testDb, evt.id, { name: 'Alice' })
+      for (const bad of [-1, 6, 1.5, 'two']) {
+        const event = authEvent(user.id, user.email, {
+          method: 'PATCH',
+          params: { id: String(evt.id), guestId: String(guest.id) },
+          body: { companionsAllowed: bad as any },
+        })
+        await expect(patchHandler(event)).rejects.toMatchObject({ statusCode: 400 })
+      }
+    })
+
+    it('rejects guest not owned by user (404)', async () => {
+      const otherUser = await createTestUser(testDb, { email: 'other@example.com' })
+      const otherEvt = createTestEvent(testDb, otherUser.id, { slug: 'other' })
+      const otherGuest = createTestGuest(testDb, otherEvt.id, { name: 'X', token: 'other-tok' })
+      const event = authEvent(user.id, user.email, {
+        method: 'PATCH',
+        params: { id: String(otherEvt.id), guestId: String(otherGuest.id) },
+        body: { companionsAllowed: 1 },
+      })
+      await expect(patchHandler(event)).rejects.toMatchObject({ statusCode: 404 })
     })
   })
 })
