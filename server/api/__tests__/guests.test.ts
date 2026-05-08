@@ -61,7 +61,7 @@ describe('Guests API', () => {
       const guest = createTestGuest(testDb, evt.id, { name: 'Alice', email: 'alice@example.com' })
       const [course] = testDb.insert(menuCourses).values({ eventId: evt.id, name: 'Main', sortOrder: 0 }).returning().all()
       const [opt] = testDb.insert(menuOptions).values({ courseId: course.id, name: 'Beef', sortOrder: 0 }).returning().all()
-      testDb.insert(guestMenuChoices).values({ guestId: guest.id, courseId: course.id, optionId: opt.id, forPlusOne: false }).run()
+      testDb.insert(guestMenuChoices).values({ guestId: guest.id, courseId: course.id, optionId: opt.id, companionId: null }).run()
 
       const event = authEvent(user.id, user.email, { params: { id: String(evt.id) } })
       const result = await listHandler(event)
@@ -69,36 +69,39 @@ describe('Guests API', () => {
       const alice = result.find((g: any) => g.name === 'Alice')
       expect(alice).toBeDefined()
       expect(alice.menuChoices).toEqual({ [course.id]: opt.id })
-      expect(alice.plusOneMenuChoices).toEqual({})
+      expect(alice.companionsAllowed).toBe(0)
+      expect(alice.companions).toEqual([])
     })
 
-    it('includes plus-one menuChoices separately', async () => {
-      const guest = createTestGuest(testDb, evt.id, { name: 'Bob', plusOne: true })
+    it('includes companions with their menu choices', async () => {
+      const { companions: companionsTable } = await import('../../db/schema')
+      const guest = createTestGuest(testDb, evt.id, { name: 'Bob', companionsAllowed: 2 })
+      const [c1] = testDb.insert(companionsTable).values({
+        guestId: guest.id, position: 1, name: 'Partner', attending: true,
+      }).returning().all()
+      // position 2 has no row yet (pending)
+
       const [course] = testDb.insert(menuCourses).values({ eventId: evt.id, name: 'Starter', sortOrder: 0 }).returning().all()
       const [selfOpt] = testDb.insert(menuOptions).values({ courseId: course.id, name: 'Soup', sortOrder: 0 }).returning().all()
-      const [p1Opt] = testDb.insert(menuOptions).values({ courseId: course.id, name: 'Salad', sortOrder: 1 }).returning().all()
+      const [c1Opt] = testDb.insert(menuOptions).values({ courseId: course.id, name: 'Salad', sortOrder: 1 }).returning().all()
       testDb.insert(guestMenuChoices).values([
-        { guestId: guest.id, courseId: course.id, optionId: selfOpt.id, forPlusOne: false },
-        { guestId: guest.id, courseId: course.id, optionId: p1Opt.id, forPlusOne: true },
+        { guestId: guest.id, courseId: course.id, optionId: selfOpt.id, companionId: null },
+        { guestId: guest.id, courseId: course.id, optionId: c1Opt.id, companionId: c1.id },
       ]).run()
 
       const event = authEvent(user.id, user.email, { params: { id: String(evt.id) } })
       const result = await listHandler(event)
 
       const bob = result.find((g: any) => g.name === 'Bob')
+      expect(bob.companionsAllowed).toBe(2)
+      expect(bob.companions).toHaveLength(1)
+      expect(bob.companions[0]).toMatchObject({
+        position: 1,
+        name: 'Partner',
+        attending: true,
+        menuChoices: { [course.id]: c1Opt.id },
+      })
       expect(bob.menuChoices).toEqual({ [course.id]: selfOpt.id })
-      expect(bob.plusOneMenuChoices).toEqual({ [course.id]: p1Opt.id })
-    })
-
-    it('guests with no picks have empty menuChoices objects (not undefined)', async () => {
-      createTestGuest(testDb, evt.id, { name: 'Charlie' })
-
-      const event = authEvent(user.id, user.email, { params: { id: String(evt.id) } })
-      const result = await listHandler(event)
-
-      const charlie = result.find((g: any) => g.name === 'Charlie')
-      expect(charlie.menuChoices).toEqual({})
-      expect(charlie.plusOneMenuChoices).toEqual({})
     })
 
     it('parses allergies correctly', async () => {
@@ -126,7 +129,6 @@ describe('Guests API', () => {
 
       const eve = result.find((g: any) => g.name === 'Eve')
       expect(eve.allergies).toBeNull()
-      expect(eve.plusOneAllergies).toBeNull()
     })
 
     it('rejects access to another user\'s event guests (404)', async () => {
