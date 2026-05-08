@@ -14,12 +14,13 @@ const { data: menu } = await useFetch<{ courses: Array<{ id: number; name: strin
 const allergiesEnabled = computed(() => evt.value?.allergiesEnabled === true)
 
 const guestLimit = computed(() => evt.value?.tier?.guestLimit ?? null)
-const guestCountLabel = computed(() => {
-  const current = guests.value?.length ?? 0
+const seatCountLabel = computed(() => {
+  const guestRows = guests.value ?? []
+  const seats = guestRows.reduce((acc: number, g: any) => acc + 1 + (g.companionsAllowed ?? 0), 0)
   if (guestLimit.value != null) {
-    return t('guests.guestCount', { current, limit: guestLimit.value })
+    return t('guests.seatCount', { current: seats, limit: guestLimit.value })
   }
-  return t('guests.guestCountUnlimited', { current })
+  return t('guests.seatCountUnlimited', { current: seats })
 })
 
 const tabs = computed(() => [
@@ -34,6 +35,50 @@ const showAddForm = ref(false)
 const addForm = reactive({ name: '', email: '' })
 const addLoading = ref(false)
 const addError = ref('')
+
+const stepperBusy = ref<Record<number, boolean>>({})
+const stepperError = ref('')
+
+async function changeCompanions(g: any, delta: 1 | -1) {
+  const newN = (g.companionsAllowed ?? 0) + delta
+  if (newN < 0 || newN > 5) return
+
+  // Confirm dialog when decrementing a slot that has data
+  if (delta === -1) {
+    const droppedPos = g.companionsAllowed
+    const dropped = (g.companions ?? []).find((c: any) => c.position === droppedPos)
+    const hasData = !!dropped && (
+      (dropped.name && dropped.name.trim().length > 0) ||
+      dropped.attending ||
+      (dropped.allergies && (dropped.allergies.keys?.length || dropped.allergies.other)) ||
+      (dropped.menuChoices && Object.keys(dropped.menuChoices).length > 0)
+    )
+    if (hasData) {
+      const msg = dropped?.name
+        ? t('guests.confirmRemoveCompanion', { n: droppedPos, name: dropped.name })
+        : t('guests.confirmRemoveCompanionUnnamed', { n: droppedPos })
+      if (!confirm(msg)) return
+    }
+  }
+
+  stepperBusy.value[g.id] = true
+  stepperError.value = ''
+  try {
+    await $fetch(`/api/events/${eventId}/guests/${g.id}`, {
+      method: 'PATCH',
+      body: { companionsAllowed: newN },
+    })
+    await refreshGuests()
+  } catch (e: any) {
+    if (e?.response?.status === 403) {
+      stepperError.value = t('guests.seatLimitReached', { limit: guestLimit.value })
+    } else {
+      stepperError.value = t('errors.somethingWentWrong')
+    }
+  } finally {
+    stepperBusy.value[g.id] = false
+  }
+}
 
 async function addGuest() {
   if (!addForm.name.trim()) return
@@ -50,7 +95,7 @@ async function addGuest() {
     await refreshGuests()
   } catch (e: any) {
     if (e?.response?.status === 403) {
-      addError.value = t('guests.guestLimitReached', { limit: guestLimit.value })
+      addError.value = t('guests.seatLimitReached', { limit: guestLimit.value })
     } else {
       addError.value = t('errors.somethingWentWrong')
     }
@@ -94,7 +139,7 @@ async function importCsv() {
   } catch (e: any) {
     if (e?.response?.status === 403) {
       const remaining = guestLimit.value != null ? guestLimit.value - (guests.value?.length ?? 0) : 0
-      importError.value = t('guests.importLimitExceeded', { limit: guestLimit.value, remaining: Math.max(0, remaining) })
+      importError.value = t('guests.importSeatLimitExceeded', { limit: guestLimit.value, remaining: Math.max(0, remaining) })
     } else {
       importError.value = t('errors.somethingWentWrong')
     }
@@ -156,14 +201,18 @@ const filteredGuests = computed(() => {
   const allergy = (route.query.allergy as string) || null
   return list.filter((g: any) => {
     if (opt) {
-      const picksHere = Object.values(g.menuChoices ?? {}).includes(opt)
-        || Object.values(g.plusOneMenuChoices ?? {}).includes(opt)
-      if (!picksHere) return false
+      const selfPick = Object.values(g.menuChoices ?? {}).includes(opt)
+      const compPick = (g.companions ?? []).some((c: any) =>
+        Object.values(c.menuChoices ?? {}).includes(opt),
+      )
+      if (!selfPick && !compPick) return false
     }
     if (allergy) {
-      const has = (g.allergies?.keys ?? []).includes(allergy)
-        || (g.plusOneAllergies?.keys ?? []).includes(allergy)
-      if (!has) return false
+      const selfHas = (g.allergies?.keys ?? []).includes(allergy)
+      const compHas = (g.companions ?? []).some((c: any) =>
+        (c.allergies?.keys ?? []).includes(allergy),
+      )
+      if (!selfHas && !compHas) return false
     }
     return true
   })
@@ -199,7 +248,7 @@ const isFiltered = computed(() => !!(route.query.menuOption || route.query.aller
       <div>
         <h1 class="font-display font-semibold text-2xl text-charcoal-900">
           {{ t('guests.guestList') }}
-          <span v-if="guests" class="text-base font-normal text-charcoal-500">({{ guestCountLabel }})</span>
+          <span v-if="guests" class="text-base font-normal text-charcoal-500">({{ seatCountLabel }})</span>
         </h1>
       </div>
       <div class="flex gap-2">
@@ -274,6 +323,15 @@ const isFiltered = computed(() => !!(route.query.menuOption || route.query.aller
       </div>
     </div>
 
+    <!-- Stepper error -->
+    <div v-if="stepperError" class="mb-3 flex items-center justify-between bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+      <p class="text-sm text-red-700">{{ stepperError }}</p>
+      <NuxtLinkLocale v-if="stepperError.includes(String(guestLimit))" to="/pricing"
+        class="ml-4 px-3 py-1 bg-champagne-500 text-white rounded-full text-xs font-medium hover:bg-champagne-600 transition-colors whitespace-nowrap">
+        {{ t('guests.upgradePlan') }}
+      </NuxtLinkLocale>
+    </div>
+
     <!-- Loading -->
     <UiLoadingSpinner v-if="status === 'pending'" />
 
@@ -302,6 +360,7 @@ const isFiltered = computed(() => !!(route.query.menuOption || route.query.aller
             <tr>
               <th class="text-left px-6 py-3 text-sm font-medium text-charcoal-700 uppercase tracking-wider">{{ t('guests.tableHeaderName') }}</th>
               <th class="text-left px-6 py-3 text-sm font-medium text-charcoal-700 uppercase tracking-wider">{{ t('guests.tableHeaderEmail') }}</th>
+              <th class="text-center px-6 py-3 text-sm font-medium text-charcoal-700 uppercase tracking-wider">{{ t('guests.companions') }}</th>
               <th class="text-left px-6 py-3 text-sm font-medium text-charcoal-700 uppercase tracking-wider">{{ t('guests.tableHeaderRsvp') }}</th>
               <th class="text-right px-6 py-3 text-sm font-medium text-charcoal-700 uppercase tracking-wider">{{ t('guests.tableHeaderActions') }}</th>
             </tr>
@@ -311,35 +370,73 @@ const isFiltered = computed(() => !!(route.query.menuOption || route.query.aller
               <tr class="border-b border-charcoal-200 hover:bg-ivory-100/50 transition-colors">
                 <td class="px-6 py-4 text-sm font-medium text-charcoal-900">
                   <div>{{ g.name }}</div>
-                  <div v-if="g.plusOne" class="text-xs text-charcoal-500 font-normal mt-0.5">
-                    {{ g.plusOneName ? t('guests.plusOneWithName', { name: g.plusOneName }) : t('guests.plusOne') }}
-                  </div>
+                  <template v-if="(g.companionsAllowed ?? 0) > 0">
+                    <div class="text-xs text-charcoal-500 font-normal mt-0.5">
+                      {{ t('guests.companions') }}: {{ (g.companions ?? []).filter((c: any) => c.attending).length }}/{{ g.companionsAllowed }}
+                    </div>
+                  </template>
                   <button type="button" @click="expandedId = expandedId === g.id ? null : g.id"
                     class="text-sm text-charcoal-300 hover:text-charcoal-700 mt-1">
                     {{ expandedId === g.id ? '▴' : '▾' }} {{ t('guests.details') }}
                   </button>
-                  <div v-if="expandedId === g.id" class="mt-3 pl-4 border-l-2 border-charcoal-100 space-y-2 text-sm">
-                    <div v-for="course in menu?.courses ?? []" :key="course.id">
-                      <span class="text-charcoal-300">{{ course.name }}:</span>
-                      <span class="ml-1">{{ optionName(course.id, g.menuChoices?.[course.id]) ?? '—' }}</span>
-                    </div>
-                    <div v-if="allergiesEnabled && g.allergies">
-                      <span class="text-charcoal-300">{{ t('rsvp.allergies.title') }}:</span>
-                      <span class="ml-1">{{ formatAllergies(g.allergies) }}</span>
-                    </div>
-                    <template v-if="g.plusOne">
-                      <div v-for="course in menu?.courses ?? []" :key="`p1-${course.id}`">
-                        <span class="text-charcoal-300">{{ t('rsvp.menu.plusOneTitle') }} — {{ course.name }}:</span>
-                        <span class="ml-1">{{ optionName(course.id, g.plusOneMenuChoices?.[course.id]) ?? '—' }}</span>
+                  <div v-if="expandedId === g.id" class="mt-3 pl-4 border-l-2 border-charcoal-100 space-y-3 text-sm">
+                    <div>
+                      <div class="font-medium text-charcoal-700 mb-1">{{ g.name }}</div>
+                      <div v-for="course in menu?.courses ?? []" :key="course.id">
+                        <span class="text-charcoal-300">{{ course.name }}:</span>
+                        <span class="ml-1">{{ optionName(course.id, g.menuChoices?.[course.id]) ?? '—' }}</span>
                       </div>
-                      <div v-if="allergiesEnabled && g.plusOneAllergies">
-                        <span class="text-charcoal-300">{{ t('rsvp.allergies.plusOneTitle') }}:</span>
-                        <span class="ml-1">{{ formatAllergies(g.plusOneAllergies) }}</span>
+                      <div v-if="allergiesEnabled && g.allergies">
+                        <span class="text-charcoal-300">{{ t('rsvp.allergies.title') }}:</span>
+                        <span class="ml-1">{{ formatAllergies(g.allergies) }}</span>
                       </div>
-                    </template>
+                    </div>
+
+                    <div v-for="pos in g.companionsAllowed ?? 0" :key="`comp-${pos}`">
+                      <template v-if="(g.companions ?? []).find((c: any) => c.position === pos) as any">
+                        <div class="font-medium text-charcoal-700 mb-1">
+                          <template v-if="((g.companions ?? []).find((c: any) => c.position === pos))?.name">
+                            {{ t('guests.companionWithName', { n: pos, name: (g.companions ?? []).find((c: any) => c.position === pos).name }) }}
+                          </template>
+                          <template v-else>
+                            {{ t('guests.companionPending', { n: pos }) }}
+                          </template>
+                        </div>
+                        <template v-if="((g.companions ?? []).find((c: any) => c.position === pos))?.attending">
+                          <div v-for="course in menu?.courses ?? []" :key="`c${pos}-${course.id}`">
+                            <span class="text-charcoal-300">{{ course.name }}:</span>
+                            <span class="ml-1">{{ optionName(course.id, ((g.companions ?? []).find((c: any) => c.position === pos)).menuChoices?.[course.id]) ?? '—' }}</span>
+                          </div>
+                          <div v-if="allergiesEnabled && ((g.companions ?? []).find((c: any) => c.position === pos))?.allergies">
+                            <span class="text-charcoal-300">{{ t('rsvp.allergies.title') }}:</span>
+                            <span class="ml-1">{{ formatAllergies(((g.companions ?? []).find((c: any) => c.position === pos)).allergies) }}</span>
+                          </div>
+                        </template>
+                      </template>
+                      <template v-else>
+                        <div class="font-medium text-charcoal-300">{{ t('guests.companionPending', { n: pos }) }}</div>
+                      </template>
+                    </div>
                   </div>
                 </td>
                 <td class="px-6 py-4 text-sm text-charcoal-500">{{ g.email || t('guests.noEmail') }}</td>
+                <td class="px-6 py-4 text-center whitespace-nowrap">
+                  <div class="inline-flex items-center gap-2">
+                    <button type="button" @click="changeCompanions(g, -1)"
+                      :disabled="(g.companionsAllowed ?? 0) === 0 || stepperBusy[g.id]"
+                      class="w-7 h-7 rounded-full border border-charcoal-200 text-charcoal-700 hover:border-champagne-400 hover:bg-ivory-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors leading-none">
+                      −
+                    </button>
+                    <span class="w-6 text-center text-sm font-medium text-charcoal-900 tabular-nums">
+                      {{ g.companionsAllowed ?? 0 }}
+                    </span>
+                    <button type="button" @click="changeCompanions(g, 1)"
+                      :disabled="(g.companionsAllowed ?? 0) >= 5 || stepperBusy[g.id]"
+                      class="w-7 h-7 rounded-full border border-charcoal-200 text-charcoal-700 hover:border-champagne-400 hover:bg-ivory-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors leading-none">
+                      +
+                    </button>
+                  </div>
+                </td>
                 <td class="px-6 py-4">
                   <span :class="['px-2 py-1 rounded-full text-xs font-medium', statusBadgeClass(g.rsvpStatus)]">
                     {{ g.rsvpStatus }}
