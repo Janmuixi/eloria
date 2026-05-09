@@ -185,6 +185,8 @@
   },
   "guests": {
     "guestList": "Guest List",
+    "exportCsv": "Export CSV",
+    "exportEmptyHint": "Add at least one guest to export",
     "importCsv": "Import CSV",
     "addGuest": "Add Guest",
     "addGuestTitle": "Add Guest",

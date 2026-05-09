@@ -185,6 +185,8 @@
   },
   "guests": {
     "guestList": "Lista de Invitados",
+    "exportCsv": "Exportar CSV",
+    "exportEmptyHint": "Añade al menos un invitado para exportar",
     "importCsv": "Importar CSV",
     "addGuest": "Añadir Invitado",
     "addGuestTitle": "Añadir Invitado",
