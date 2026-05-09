@@ -33,6 +33,8 @@ const exportFilename = computed(() => {
   return `${slug}-guests-${yyyy}-${mm}-${dd}.csv`
 })
 
+const exportDisabled = computed(() => status.value === 'pending' || !guests.value?.length)
+
 const tabs = computed(() => [
   { label: t('eventDetail.tabOverview'), to: `/dashboard/events/${eventId}` },
   { label: t('eventDetail.tabGuests'), to: `/dashboard/events/${eventId}/guests` },
@@ -264,11 +266,13 @@ const isFiltered = computed(() => !!(route.query.menuOption || route.query.aller
       </div>
       <div class="flex gap-2">
         <a :href="exportUrl" :download="exportFilename"
+          :aria-disabled="exportDisabled ? 'true' : undefined"
+          :tabindex="exportDisabled ? -1 : undefined"
           :class="[
             'px-4 py-2 border border-charcoal-200 rounded-full text-sm font-medium text-charcoal-700 hover:border-champagne-400 hover:shadow-sm transition-all duration-200',
-            !guests?.length && 'opacity-50 pointer-events-none',
+            exportDisabled && 'opacity-50 pointer-events-none cursor-not-allowed',
           ]"
-          :title="!guests?.length ? t('guests.exportEmptyHint') : undefined">
+          :title="exportDisabled ? t('guests.exportEmptyHint') : undefined">
           {{ t('guests.exportCsv') }}
         </a>
         <button @click="showImport = !showImport"
