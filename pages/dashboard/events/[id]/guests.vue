@@ -567,7 +567,7 @@ function formatSentDate(iso: string | null): string {
                         <div class="font-medium text-charcoal-300">{{ t('guests.companionPending', { n: pos }) }}</div>
                       </template>
                     </div>
-                    <div v-if="hasEmailDelivery" class="pt-2 border-t border-charcoal-100">
+                    <div v-if="hasEmailDelivery && (!g.email || g.emailSentAt)" class="pt-2 border-t border-charcoal-100">
                       <template v-if="g.email && g.emailSentAt">
                         <div class="flex items-center justify-between">
                           <span class="text-xs text-charcoal-500">
