@@ -279,6 +279,17 @@ function cancelSend() {
   pendingSend.value = null
 }
 
+function openResendConfirm(g: { id: number; name: string; email: string | null; emailSentAt: string | null }) {
+  if (!g.email) return
+  pendingSend.value = {
+    kind: 'resend',
+    guestId: g.id,
+    name: g.name,
+    email: g.email,
+    sentAt: g.emailSentAt,
+  }
+}
+
 async function confirmSend() {
   const p = pendingSend.value
   if (!p) return
@@ -554,6 +565,24 @@ function formatSentDate(iso: string | null): string {
                       </template>
                       <template v-else>
                         <div class="font-medium text-charcoal-300">{{ t('guests.companionPending', { n: pos }) }}</div>
+                      </template>
+                    </div>
+                    <div v-if="hasEmailDelivery" class="pt-2 border-t border-charcoal-100">
+                      <template v-if="g.email && g.emailSentAt">
+                        <div class="flex items-center justify-between">
+                          <span class="text-xs text-charcoal-500">
+                            {{ t('guests.invitations.resendRowLabel', { date: formatSentDate(g.emailSentAt) }) }}
+                          </span>
+                          <button type="button" @click="openResendConfirm(g)"
+                            class="text-sm text-charcoal-700 hover:text-charcoal-900 font-medium">
+                            {{ t('guests.invitations.resendRowAction') }}
+                          </button>
+                        </div>
+                      </template>
+                      <template v-else-if="!g.email">
+                        <span class="text-xs text-charcoal-400">
+                          {{ t('guests.invitations.noEmailRowLabel') }}
+                        </span>
                       </template>
                     </div>
                   </div>
