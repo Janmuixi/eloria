@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { buildGuestsCsv, type CsvCourse } from '../guests-csv'
 import type { LoadedGuest } from '../event-guests'
+import type { AllergenKey } from '~/shared/menu'
 
 const NO_COURSES: CsvCourse[] = []
 
@@ -94,7 +95,7 @@ describe('buildGuestsCsv', () => {
   it('formats allergies as "keys, "other"" with raw key names', () => {
     const g = guest({
       id: 1,
-      allergies: { keys: ['gluten', 'dairy'] as any, other: 'shellfish bisque' },
+      allergies: { keys: ['gluten', 'dairy'] as AllergenKey[], other: 'shellfish bisque' },
     })
     const rows = buildGuestsCsv([g], NO_COURSES).slice(1).trim().split('\r\n')
     // The allergies field contains commas and quotes, so the cell is wrapped in quotes

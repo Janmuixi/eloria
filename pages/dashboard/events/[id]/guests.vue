@@ -272,7 +272,7 @@ const isFiltered = computed(() => !!(route.query.menuOption || route.query.aller
             'px-4 py-2 border border-charcoal-200 rounded-full text-sm font-medium text-charcoal-700 hover:border-champagne-400 hover:shadow-sm transition-all duration-200',
             exportDisabled && 'opacity-50 pointer-events-none cursor-not-allowed',
           ]"
-          :title="exportDisabled ? t('guests.exportEmptyHint') : undefined">
+          :title="status === 'pending' ? t('guests.exportLoadingHint') : (exportDisabled ? t('guests.exportEmptyHint') : undefined)">
           {{ t('guests.exportCsv') }}
         </a>
         <button @click="showImport = !showImport"
