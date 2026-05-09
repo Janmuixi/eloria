@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import {
   createTestDb,
   createTestUser,
@@ -46,21 +46,26 @@ describe('GET /api/events/:id/guests/export', () => {
     await expect(exportHandler(event)).rejects.toMatchObject({ statusCode: 404 })
   })
 
-  it('sets CSV headers with attachment filename containing slug + UTC date', async () => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date('2026-05-09T08:00:00Z'))
+  describe('with a fake clock', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2026-05-09T08:00:00Z'))
+    })
+    afterEach(() => {
+      vi.useRealTimers()
+    })
 
-    const event = authEvent(user.id, user.email, { params: { id: String(evt.id) } })
-    const body = (await exportHandler(event)) as string
+    it('sets CSV headers with attachment filename containing slug + UTC date', async () => {
+      const event = authEvent(user.id, user.email, { params: { id: String(evt.id) } })
+      const body = (await exportHandler(event)) as string
 
-    expect(event.node.res.getHeader('Content-Type')).toBe('text/csv; charset=utf-8')
-    expect(event.node.res.getHeader('Content-Disposition')).toBe(
-      'attachment; filename="alice-and-bob-guests-2026-05-09.csv"'
-    )
-    expect(typeof body).toBe('string')
-    expect(body.startsWith('﻿')).toBe(true)
-
-    vi.useRealTimers()
+      expect(event.node.res.getHeader('Content-Type')).toBe('text/csv; charset=utf-8')
+      expect(event.node.res.getHeader('Content-Disposition')).toBe(
+        'attachment; filename="alice-and-bob-guests-2026-05-09.csv"'
+      )
+      expect(typeof body).toBe('string')
+      expect(body.startsWith('﻿')).toBe(true)
+    })
   })
 
   it('returns header row only when the event has no guests', async () => {
