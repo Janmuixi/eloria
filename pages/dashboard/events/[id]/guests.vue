@@ -220,6 +220,102 @@ const filteredGuests = computed(() => {
 })
 
 const isFiltered = computed(() => !!(route.query.menuOption || route.query.allergy))
+
+// Send invitations
+type PendingSend =
+  | { kind: 'bulk' }
+  | { kind: 'resend'; guestId: number; name: string; email: string; sentAt: string | null }
+
+const pendingSend = ref<PendingSend | null>(null)
+const sendLoading = ref(false)
+
+type SendResult =
+  | { type: 'success'; sent: number; failed: number }
+  | { type: 'error'; message: string }
+const lastSendResult = ref<SendResult | null>(null)
+
+const hasEmailDelivery = computed(() => evt.value?.tier?.hasEmailDelivery === true)
+
+const unsentCount = computed(() => {
+  return (guests.value ?? []).filter((g: any) => g.email && !g.emailSentAt).length
+})
+
+const confirmBodyText = computed(() => {
+  const p = pendingSend.value
+  if (!p) return ''
+  if (p.kind === 'bulk') {
+    return t('guests.invitations.confirmBody', { count: unsentCount.value })
+  }
+  const dateStr = p.sentAt
+    ? new Date(p.sentAt).toLocaleDateString()
+    : '—'
+  return t('guests.invitations.resendBody', { name: p.name, email: p.email, date: dateStr })
+})
+
+const confirmTitleText = computed(() => {
+  const p = pendingSend.value
+  if (!p) return ''
+  return p.kind === 'bulk'
+    ? t('guests.invitations.confirmTitle')
+    : t('guests.invitations.resendTitle')
+})
+
+const confirmCtaText = computed(() => {
+  const p = pendingSend.value
+  if (!p) return ''
+  return p.kind === 'bulk'
+    ? t('guests.invitations.confirmCta')
+    : t('guests.invitations.resendCta')
+})
+
+function openBulkConfirm() {
+  if (unsentCount.value === 0) return
+  pendingSend.value = { kind: 'bulk' }
+}
+
+function cancelSend() {
+  if (sendLoading.value) return
+  pendingSend.value = null
+}
+
+async function confirmSend() {
+  const p = pendingSend.value
+  if (!p) return
+  sendLoading.value = true
+  try {
+    const body = p.kind === 'resend' ? { guestIds: [p.guestId] } : {}
+    const result = await $fetch<{ sent: number; failed: number }>(
+      `/api/events/${eventId}/send-invitations`,
+      { method: 'POST', body },
+    )
+    lastSendResult.value = { type: 'success', sent: result.sent, failed: result.failed }
+    pendingSend.value = null
+    await refreshGuests()
+  } catch (e: any) {
+    const status = e?.response?.status ?? e?.statusCode
+    let message: string
+    if (status === 403) {
+      message = t('guests.invitations.tierBanner')
+    } else if (status === 400) {
+      message = t('guests.invitations.noTemplateBanner')
+    } else {
+      message = t('guests.invitations.errorBanner')
+    }
+    lastSendResult.value = { type: 'error', message }
+    pendingSend.value = null
+  } finally {
+    sendLoading.value = false
+  }
+}
+
+function dismissResult() {
+  lastSendResult.value = null
+}
+
+function formatSentDate(iso: string | null): string {
+  if (!iso) return '—'
+  return new Date(iso).toLocaleDateString()
+}
 </script>
 
 <template>
@@ -253,6 +349,15 @@ const isFiltered = computed(() => !!(route.query.menuOption || route.query.aller
         </h1>
       </div>
       <div class="flex gap-2">
+        <button v-if="hasEmailDelivery"
+          type="button"
+          @click="openBulkConfirm"
+          :disabled="unsentCount === 0"
+          class="px-4 py-2 border border-charcoal-200 rounded-full text-sm font-medium text-charcoal-700 hover:border-champagne-400 hover:shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
+          {{ unsentCount > 0
+            ? t('guests.invitations.sendButton', { count: unsentCount })
+            : t('guests.invitations.sendButtonAllInvited') }}
+        </button>
         <button @click="showImport = !showImport"
           class="px-4 py-2 border border-charcoal-200 rounded-full text-sm font-medium text-charcoal-700 hover:border-champagne-400 hover:shadow-sm transition-all duration-200">
           {{ t('guests.importCsv') }}
@@ -321,6 +426,38 @@ const isFiltered = computed(() => !!(route.query.menuOption || route.query.aller
           class="ml-4 px-3 py-1 bg-champagne-500 text-white rounded-full text-xs font-medium hover:bg-champagne-600 transition-colors whitespace-nowrap">
           {{ t('guests.upgradePlan') }}
         </NuxtLinkLocale>
+      </div>
+    </div>
+
+    <!-- Send invitations result banner -->
+    <div v-if="lastSendResult" class="mb-3">
+      <div v-if="lastSendResult.type === 'success' && lastSendResult.failed === 0"
+        class="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+        <p class="text-sm text-green-700">
+          {{ t('guests.invitations.successBanner', { sent: lastSendResult.sent }) }}
+        </p>
+        <button type="button" @click="dismissResult"
+          class="text-sm text-green-700 hover:text-green-900 ml-4">
+          {{ t('guests.invitations.dismiss') }}
+        </button>
+      </div>
+      <div v-else-if="lastSendResult.type === 'success'"
+        class="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
+        <p class="text-sm text-amber-800">
+          {{ t('guests.invitations.partialBanner', { sent: lastSendResult.sent, failed: lastSendResult.failed }) }}
+        </p>
+        <button type="button" @click="dismissResult"
+          class="text-sm text-amber-800 hover:text-amber-900 ml-4">
+          {{ t('guests.invitations.dismiss') }}
+        </button>
+      </div>
+      <div v-else
+        class="flex items-center justify-between bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+        <p class="text-sm text-red-700">{{ lastSendResult.message }}</p>
+        <button type="button" @click="dismissResult"
+          class="text-sm text-red-700 hover:text-red-900 ml-4">
+          {{ t('guests.invitations.dismiss') }}
+        </button>
       </div>
     </div>
 
@@ -459,5 +596,27 @@ const isFiltered = computed(() => !!(route.query.menuOption || route.query.aller
         </table>
       </div>
     </template>
+
+    <!-- Send invitations confirmation modal -->
+    <div v-if="pendingSend"
+      class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
+      @click.self="cancelSend">
+      <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+        <h3 class="font-display font-semibold text-lg text-charcoal-900 mb-2">
+          {{ confirmTitleText }}
+        </h3>
+        <p class="text-sm text-charcoal-700 mb-6">{{ confirmBodyText }}</p>
+        <div class="flex justify-end gap-2">
+          <button type="button" @click="cancelSend" :disabled="sendLoading"
+            class="px-4 py-2 border border-charcoal-200 rounded-full text-sm text-charcoal-600 hover:border-champagne-400 disabled:opacity-50 transition-colors">
+            {{ t('guests.invitations.cancelCta') }}
+          </button>
+          <button type="button" @click="confirmSend" :disabled="sendLoading"
+            class="px-4 py-2 bg-champagne-500 text-white rounded-full text-sm font-medium hover:bg-champagne-600 disabled:opacity-50 transition-colors">
+            {{ sendLoading ? t('guests.invitations.sending') : confirmCtaText }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
