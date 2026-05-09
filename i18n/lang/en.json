@@ -225,7 +225,29 @@
     "copyLink": "Copy link",
     "details": "Details",
     "filterActive": "Filter active",
-    "clearFilter": "Clear filter"
+    "clearFilter": "Clear filter",
+    "invitations": {
+      "sendButton": "Send invitations ({count})",
+      "sendButtonAllInvited": "All invited",
+      "sending": "Sending...",
+      "confirmTitle": "Send invitations",
+      "confirmBody": "Send invitations to {count} guest(s) who haven't been invited yet?",
+      "confirmCta": "Send",
+      "cancelCta": "Cancel",
+      "resendTitle": "Resend invitation",
+      "resendBody": "Resend invitation to {name} ({email})? Last sent on {date}.",
+      "resendCta": "Resend",
+      "resendRowLabel": "Invited {date}",
+      "resendRowAction": "Resend",
+      "invitedPill": "Invited",
+      "noEmailRowLabel": "No email — can't invite",
+      "successBanner": "Sent {sent} invitation(s).",
+      "partialBanner": "Sent {sent} invitation(s). {failed} failed.",
+      "errorBanner": "Could not send invitations. Please try again.",
+      "tierBanner": "Your plan does not include email delivery.",
+      "noTemplateBanner": "Select a template or upload an image before sending invitations.",
+      "dismiss": "Dismiss"
+    }
   },
   "settings": {
     "title": "Event Settings",

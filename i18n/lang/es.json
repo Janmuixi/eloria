@@ -225,7 +225,29 @@
     "copyLink": "Copiar enlace",
     "details": "Detalles",
     "filterActive": "Filtro activo",
-    "clearFilter": "Quitar filtro"
+    "clearFilter": "Quitar filtro",
+    "invitations": {
+      "sendButton": "Enviar invitaciones ({count})",
+      "sendButtonAllInvited": "Todos invitados",
+      "sending": "Enviando...",
+      "confirmTitle": "Enviar invitaciones",
+      "confirmBody": "¿Enviar invitaciones a {count} invitado(s) que aún no han sido invitados?",
+      "confirmCta": "Enviar",
+      "cancelCta": "Cancelar",
+      "resendTitle": "Reenviar invitación",
+      "resendBody": "¿Reenviar invitación a {name} ({email})? Última vez enviada el {date}.",
+      "resendCta": "Reenviar",
+      "resendRowLabel": "Invitado el {date}",
+      "resendRowAction": "Reenviar",
+      "invitedPill": "Invitado",
+      "noEmailRowLabel": "Sin email — no se puede invitar",
+      "successBanner": "Se enviaron {sent} invitación(es).",
+      "partialBanner": "Se enviaron {sent} invitación(es). {failed} fallaron.",
+      "errorBanner": "No se pudieron enviar las invitaciones. Inténtalo de nuevo.",
+      "tierBanner": "Tu plan no incluye envío de email.",
+      "noTemplateBanner": "Selecciona una plantilla o sube una imagen antes de enviar invitaciones.",
+      "dismiss": "Descartar"
+    }
   },
   "settings": {
     "title": "Configuración del Evento",

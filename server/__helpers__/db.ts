@@ -240,7 +240,7 @@ export function createTestGuest(db: TestDb, eventId: number, overrides?: Partial
   const rows = db.insert(guests).values({
     eventId,
     name: overrides?.name || 'Guest User',
-    email: overrides?.email ?? 'guest@example.com',
+    email: overrides && 'email' in overrides ? overrides.email : 'guest@example.com',
     phone: overrides?.phone ?? null,
     token: overrides?.token || crypto.randomUUID(),
     rsvpStatus: overrides?.rsvpStatus || 'pending',
