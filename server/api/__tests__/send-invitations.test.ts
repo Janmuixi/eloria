@@ -86,6 +86,7 @@ describe('POST /api/events/[id]/send-invitations', () => {
     vi.resetModules()
     const handler = (await import('../events/[id]/send-invitations.post')).default
     const { sendInvitationEmail } = await import('~/server/utils/email')
+    ;(sendInvitationEmail as any).mockClear()
     seedTiers(testDb)
     const user = await createTestUser(testDb, { email: 'resend@test.com', name: 'R' })
     const template = seedTemplate(testDb, 2)
@@ -156,7 +157,6 @@ describe('POST /api/events/[id]/send-invitations', () => {
       templateId: template!.id,
     })
     const noEmailGuest = createTestGuest(testDb, evt!.id, { name: 'NoEmail', email: null })
-    testDb.update(guests).set({ email: null }).where(eq(guests.id, noEmailGuest!.id)).run()
 
     const event = authEvent(user!.id, user!.email, {
       method: 'POST',
@@ -182,7 +182,7 @@ describe('POST /api/events/[id]/send-invitations', () => {
       tierId: 2,
       templateId: template!.id,
     })
-    const fresh = createTestGuest(testDb, evt!.id, { name: 'Fresh', email: 'f@x.com' })
+    createTestGuest(testDb, evt!.id, { name: 'Fresh', email: 'f@x.com' })
 
     const event = authEvent(user!.id, user!.email, {
       method: 'POST',
