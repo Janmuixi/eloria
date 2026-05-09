@@ -246,10 +246,11 @@ const confirmBodyText = computed(() => {
   if (p.kind === 'bulk') {
     return t('guests.invitations.confirmBody', { count: unsentCount.value })
   }
-  const dateStr = p.sentAt
-    ? new Date(p.sentAt).toLocaleDateString()
-    : '—'
-  return t('guests.invitations.resendBody', { name: p.name, email: p.email, date: dateStr })
+  return t('guests.invitations.resendBody', {
+    name: p.name,
+    email: p.email,
+    date: formatSentDate(p.sentAt),
+  })
 })
 
 const confirmTitleText = computed(() => {
@@ -292,7 +293,7 @@ async function confirmSend() {
     pendingSend.value = null
     await refreshGuests()
   } catch (e: any) {
-    const status = e?.response?.status ?? e?.statusCode
+    const status = e?.response?.status
     let message: string
     if (status === 403) {
       message = t('guests.invitations.tierBanner')
