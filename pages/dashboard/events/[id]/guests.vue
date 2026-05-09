@@ -23,6 +23,18 @@ const seatCountLabel = computed(() => {
   return t('guests.seatCountUnlimited', { current: seats })
 })
 
+const exportUrl = computed(() => `/api/events/${eventId}/guests/export`)
+const exportFilename = computed(() => {
+  const slug = evt.value?.slug ?? 'event'
+  const d = new Date()
+  const yyyy = d.getUTCFullYear()
+  const mm = String(d.getUTCMonth() + 1).padStart(2, '0')
+  const dd = String(d.getUTCDate()).padStart(2, '0')
+  return `${slug}-guests-${yyyy}-${mm}-${dd}.csv`
+})
+
+const exportDisabled = computed(() => status.value === 'pending' || !guests.value?.length)
+
 const tabs = computed(() => [
   { label: t('eventDetail.tabOverview'), to: `/dashboard/events/${eventId}` },
   { label: t('eventDetail.tabGuests'), to: `/dashboard/events/${eventId}/guests` },
@@ -253,6 +265,16 @@ const isFiltered = computed(() => !!(route.query.menuOption || route.query.aller
         </h1>
       </div>
       <div class="flex gap-2">
+        <a :href="exportUrl" :download="exportFilename"
+          :aria-disabled="exportDisabled ? 'true' : undefined"
+          :tabindex="exportDisabled ? -1 : undefined"
+          :class="[
+            'px-4 py-2 border border-charcoal-200 rounded-full text-sm font-medium text-charcoal-700 hover:border-champagne-400 hover:shadow-sm transition-all duration-200',
+            exportDisabled && 'opacity-50 pointer-events-none cursor-not-allowed',
+          ]"
+          :title="status === 'pending' ? t('guests.exportLoadingHint') : (exportDisabled ? t('guests.exportEmptyHint') : undefined)">
+          {{ t('guests.exportCsv') }}
+        </a>
         <button @click="showImport = !showImport"
           class="px-4 py-2 border border-charcoal-200 rounded-full text-sm font-medium text-charcoal-700 hover:border-champagne-400 hover:shadow-sm transition-all duration-200">
           {{ t('guests.importCsv') }}
