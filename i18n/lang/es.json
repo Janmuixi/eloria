@@ -236,6 +236,7 @@
       "resendCta": "Reenviar",
       "resendRowLabel": "Invitado el {date}",
       "resendRowAction": "Reenviar",
+      "invitedPill": "Invitado",
       "noEmailRowLabel": "Sin email — no se puede invitar",
       "successBanner": "Se enviaron {sent} invitación(es).",
       "partialBanner": "Se enviaron {sent} invitación(es). {failed} fallaron.",

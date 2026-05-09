@@ -568,22 +568,12 @@ function formatSentDate(iso: string | null): string {
                       </template>
                     </div>
                     <div v-if="hasEmailDelivery && (!g.email || g.emailSentAt)" class="pt-2 border-t border-charcoal-100">
-                      <template v-if="g.email && g.emailSentAt">
-                        <div class="flex items-center justify-between">
-                          <span class="text-xs text-charcoal-500">
-                            {{ t('guests.invitations.resendRowLabel', { date: formatSentDate(g.emailSentAt) }) }}
-                          </span>
-                          <button type="button" @click="openResendConfirm(g)"
-                            class="text-sm text-charcoal-700 hover:text-charcoal-900 font-medium">
-                            {{ t('guests.invitations.resendRowAction') }}
-                          </button>
-                        </div>
-                      </template>
-                      <template v-else-if="!g.email">
-                        <span class="text-xs text-charcoal-400">
-                          {{ t('guests.invitations.noEmailRowLabel') }}
-                        </span>
-                      </template>
+                      <span v-if="g.email && g.emailSentAt" class="text-xs text-charcoal-500">
+                        {{ t('guests.invitations.resendRowLabel', { date: formatSentDate(g.emailSentAt) }) }}
+                      </span>
+                      <span v-else-if="!g.email" class="text-xs text-charcoal-400">
+                        {{ t('guests.invitations.noEmailRowLabel') }}
+                      </span>
                     </div>
                   </div>
                 </td>
@@ -606,11 +596,23 @@ function formatSentDate(iso: string | null): string {
                   </div>
                 </td>
                 <td class="px-6 py-4">
-                  <span :class="['px-2 py-1 rounded-full text-xs font-medium', statusBadgeClass(g.rsvpStatus)]">
-                    {{ g.rsvpStatus }}
-                  </span>
+                  <div class="flex flex-col items-start gap-1">
+                    <span :class="['px-2 py-1 rounded-full text-xs font-medium', statusBadgeClass(g.rsvpStatus)]">
+                      {{ g.rsvpStatus }}
+                    </span>
+                    <span v-if="hasEmailDelivery && g.email && g.emailSentAt"
+                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-charcoal-100 text-charcoal-600">
+                      <span aria-hidden="true">✉</span>
+                      {{ t('guests.invitations.invitedPill') }}
+                    </span>
+                  </div>
                 </td>
                 <td class="px-6 py-4 text-right space-x-3 whitespace-nowrap">
+                  <button v-if="hasEmailDelivery && g.email && g.emailSentAt"
+                    @click="openResendConfirm(g)"
+                    class="text-sm text-charcoal-700 hover:text-charcoal-900 font-medium">
+                    {{ t('guests.invitations.resendRowAction') }}
+                  </button>
                   <button @click="copyPersonalLink(g)"
                     class="text-sm text-charcoal-700 hover:text-charcoal-900 font-medium">
                     {{ copiedGuestId === g.id ? t('common.copied') : t('guests.copyLink') }}
