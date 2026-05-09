@@ -2,7 +2,7 @@ import { requireAuth } from '~/server/utils/auth'
 import { sendInvitationEmail } from '~/server/utils/email'
 import { db } from '~/server/db'
 import { events, guests } from '~/server/db/schema'
-import { eq, and, isNull, isNotNull } from 'drizzle-orm'
+import { eq, and, isNull, isNotNull, inArray } from 'drizzle-orm'
 import { resolveEnvVar } from '~/server/utils/resolve-env-var'
 
 export default defineEventHandler(async (event) => {
@@ -40,24 +40,26 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Select a template or upload an image before sending invitations' })
   }
 
-  // Fetch guests with email addresses who haven't been sent an invitation yet
-  const pendingGuests = await db.query.guests.findMany({
-    where: and(
-      eq(guests.eventId, eventId),
-      isNotNull(guests.email),
-      isNull(guests.emailSentAt),
-    ),
+  const body = await readBody(event).catch(() => ({})) as { guestIds?: unknown }
+  const explicitIds = Array.isArray(body?.guestIds)
+    ? body.guestIds.filter((v): v is number => typeof v === 'number')
+    : null
+
+  const targetGuests = await db.query.guests.findMany({
+    where: explicitIds && explicitIds.length > 0
+      ? and(eq(guests.eventId, eventId), isNotNull(guests.email), inArray(guests.id, explicitIds))
+      : and(eq(guests.eventId, eventId), isNotNull(guests.email), isNull(guests.emailSentAt)),
   })
 
-  if (pendingGuests.length === 0) {
-    return { sent: 0, failed: 0, message: 'No pending invitations to send' }
+  if (targetGuests.length === 0) {
+    return { sent: 0, failed: 0, message: 'No invitations to send' }
   }
 
   const baseUrl = resolveEnvVar('BASE_URL', 'http://localhost:3000')
   let sent = 0
   let failed = 0
 
-  for (const guest of pendingGuests) {
+  for (const guest of targetGuests) {
     if (!guest.email) continue
 
     try {
@@ -77,7 +79,6 @@ export default defineEventHandler(async (event) => {
         invitationUrl,
       })
 
-      // Update emailSentAt for this guest
       await db
         .update(guests)
         .set({ emailSentAt: new Date().toISOString() })
