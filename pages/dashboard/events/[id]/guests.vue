@@ -620,7 +620,7 @@ function formatSentDate(iso: string | null): string {
                 <td class="px-6 py-4">
                   <div class="flex flex-col items-start gap-1">
                     <span :class="['px-2 py-1 rounded-full text-xs font-medium', statusBadgeClass(g.rsvpStatus)]">
-                      {{ g.rsvpStatus }}
+                      {{ t(`guests.rsvpStatus.${g.rsvpStatus}`) }}
                     </span>
                     <span v-if="hasEmailDelivery && g.email && g.emailSentAt"
                       class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-charcoal-100 text-charcoal-600">

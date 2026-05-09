@@ -226,6 +226,11 @@
     "details": "Details",
     "filterActive": "Filter active",
     "clearFilter": "Clear filter",
+    "rsvpStatus": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "declined": "Declined"
+    },
     "invitations": {
       "sendButton": "Send invitations ({count})",
       "sendButtonAllInvited": "All invited",
