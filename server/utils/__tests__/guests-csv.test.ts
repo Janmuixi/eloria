@@ -110,6 +110,17 @@ describe('buildGuestsCsv', () => {
     expect(rows[1]).toContain(',"line1\nline2",')
   })
 
+  it('avoids collisions between natural slugs and synthetic suffixes', () => {
+    const courses: CsvCourse[] = [
+      { id: 1, name: 'Dessert', sortOrder: 0, options: [] },
+      { id: 2, name: 'Dessert 2', sortOrder: 1, options: [] },
+      { id: 3, name: 'Dessert', sortOrder: 2, options: [] },
+    ]
+    const csv = buildGuestsCsv([], courses)
+    const header = csv.split('\r\n')[0]
+    expect(header).toContain('menu_dessert,menu_dessert_2,menu_dessert_3')
+  })
+
   it('disambiguates duplicate slugified course names', () => {
     const courses: CsvCourse[] = [
       { id: 1, name: 'Dessert', sortOrder: 0, options: [] },

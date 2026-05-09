@@ -34,14 +34,18 @@ function formatAllergies(a: Allergies | null): string {
 
 function buildMenuHeaders(courses: CsvCourse[]): { headers: string[]; courseIds: number[] } {
   const sorted = [...courses].sort((a, b) => a.sortOrder - b.sortOrder)
-  const seen = new Map<string, number>()
+  const used = new Set<string>()
   const headers: string[] = []
   const courseIds: number[] = []
   for (const c of sorted) {
     const base = `menu_${csvSlugify(c.name) || 'course'}`
-    const count = (seen.get(base) ?? 0) + 1
-    seen.set(base, count)
-    headers.push(count === 1 ? base : `${base}_${count}`)
+    let candidate = base
+    let n = 2
+    while (used.has(candidate)) {
+      candidate = `${base}_${n++}`
+    }
+    used.add(candidate)
+    headers.push(candidate)
     courseIds.push(c.id)
   }
   return { headers, courseIds }
