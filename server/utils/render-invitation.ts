@@ -1,4 +1,5 @@
 import { substituteTemplate, type TemplateData } from './template-substitute'
+import { formatDate, toEventDate } from '~/shared/date-format'
 
 export type EventRowForRender = {
   coupleName1: string
@@ -60,7 +61,7 @@ export function renderInvitation(
   translations: Record<string, unknown>,
 ): string {
   const wording = extractWording(event.customization)
-  const formattedDate = formatDate(event.date, event.language)
+  const formattedDate = formatDate(toEventDate(event.date), event.language, 'long')
 
   const data: TemplateData = {
     coupleName1: event.coupleName1,
@@ -85,17 +86,6 @@ function extractWording(customization: string | null): string {
   } catch {
     return ''
   }
-}
-
-function formatDate(dateStr: string, language: string): string {
-  const d = new Date(dateStr + 'T12:00:00')
-  if (Number.isNaN(d.getTime())) return dateStr
-  return d.toLocaleDateString(language, {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
 }
 
 function injectMetaAndScript(html: string): string {
