@@ -2,7 +2,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
-const { t } = useI18n()
+const { t, d } = useI18n()
 const { user } = useAuth()
 const { data: stats } = await useFetch<{ eventCount: number }>('/api/auth/me/stats')
 const { data: subscriptionStatus, refresh: refreshSubscription } = await useFetch('/api/subscriptions/status')
@@ -38,7 +38,7 @@ async function reactivateSubscription() {
 
 function formatDate(dateStr: string | null): string {
   if (!dateStr) return '—'
-  return new Date(dateStr).toLocaleDateString()
+  return d(new Date(dateStr), 'short')
 }
 </script>
 

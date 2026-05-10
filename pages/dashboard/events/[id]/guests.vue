@@ -1,7 +1,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
-const { t } = useI18n()
+const { t, d } = useI18n()
 const route = useRoute()
 const eventId = route.params.id as string
 
@@ -338,7 +338,7 @@ function dismissResult() {
 
 function formatSentDate(iso: string | null): string {
   if (!iso) return '—'
-  return new Date(iso).toLocaleDateString()
+  return d(new Date(iso), 'short')
 }
 </script>
 

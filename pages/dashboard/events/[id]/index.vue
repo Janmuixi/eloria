@@ -1,7 +1,9 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
-const { t, locale } = useI18n()
+import { toEventDate } from '~/shared/date-format'
+
+const { t, d } = useI18n()
 const localePath = useLocalePath()
 const route = useRoute()
 const eventId = route.params.id as string
@@ -49,13 +51,7 @@ async function copyLink() {
 }
 
 function formatDate(dateStr: string) {
-  const date = new Date(dateStr + 'T12:00:00')
-  return date.toLocaleDateString(locale.value, {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
+  return d(toEventDate(dateStr), 'long')
 }
 
 const rsvpStats = computed(() => {
