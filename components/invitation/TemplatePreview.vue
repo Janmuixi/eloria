@@ -65,9 +65,22 @@ function fitWording() {
 function resizeIframe() {
   if (!iframeRef.value) return
   const doc = iframeRef.value.contentDocument
-  if (!doc?.body) return
+  const win = iframeRef.value.contentWindow
+  if (!doc?.body || !win) return
   fitWording()
-  const height = doc.documentElement.scrollHeight || doc.body.scrollHeight
+  // Templates set 'min-height: 100vh' on body, so body.scrollHeight echoes the
+  // iframe's current height instead of the content's height. Measure the
+  // invitation wrapper itself when present, plus body padding.
+  const card = doc.querySelector<HTMLElement>('.card, .invitation')
+  let height: number
+  if (card) {
+    const bodyStyle = win.getComputedStyle(doc.body)
+    const padY = (parseFloat(bodyStyle.paddingTop) || 0)
+      + (parseFloat(bodyStyle.paddingBottom) || 0)
+    height = Math.ceil(card.getBoundingClientRect().height + padY)
+  } else {
+    height = doc.documentElement.scrollHeight || doc.body.scrollHeight
+  }
   if (height > 0) {
     iframeRef.value.style.height = `${height}px`
   }
