@@ -4,6 +4,7 @@ import { db } from '~/server/db'
 import { events, guests } from '~/server/db/schema'
 import { eq, and, isNull, isNotNull, inArray } from 'drizzle-orm'
 import { resolveEnvVar } from '~/server/utils/resolve-env-var'
+import { formatDate, toEventDate } from '~/shared/date-format'
 
 export default defineEventHandler(async (event) => {
   const user = await requireAuth(event)
@@ -70,12 +71,7 @@ export default defineEventHandler(async (event) => {
         guestName: guest.name,
         coupleName1: userEvent.coupleName1,
         coupleName2: userEvent.coupleName2,
-        date: new Date(userEvent.date + 'T12:00:00').toLocaleDateString('en-US', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        }),
+        date: formatDate(toEventDate(userEvent.date), userEvent.language, 'long'),
         invitationUrl,
       })
 
