@@ -1,3 +1,5 @@
+import { dateFormatOptions } from './shared/date-format'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
@@ -18,6 +20,10 @@ export default defineNuxtConfig({
       cookieKey: 'i18n_locale',
       fallbackLocale: 'en',
       redirectOn: 'root',
+    },
+    datetimeFormats: {
+      en: dateFormatOptions,
+      es: dateFormatOptions,
     },
   },
   typescript: { strict: true },
