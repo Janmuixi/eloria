@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { toEventDate } from '~/shared/date-format'
+
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
-const { t } = useI18n()
+const { t, d } = useI18n()
 const { data: events, status } = await useFetch('/api/events')
 </script>
 
@@ -30,7 +32,7 @@ const { data: events, status } = await useFetch('/api/events')
         class="bg-ivory-100 border border-charcoal-200 rounded-2xl shadow-sm p-6 hover:border-champagne-400 hover:shadow-md transition-all duration-200 flex items-center justify-between">
         <div>
           <h3 class="font-display font-semibold text-lg text-charcoal-900">{{ evt.title }}</h3>
-          <p class="text-sm text-charcoal-500">{{ evt.coupleName1 }} &amp; {{ evt.coupleName2 }} &middot; {{ evt.date }}</p>
+          <p class="text-sm text-charcoal-500">{{ evt.coupleName1 }} &amp; {{ evt.coupleName2 }} &middot; {{ d(toEventDate(evt.date), 'long') }}</p>
         </div>
         <div class="flex items-center gap-3">
           <span :class="[
