@@ -127,8 +127,10 @@ const iframeRef = ref<HTMLIFrameElement | null>(null)
 const iframeHeight = ref(1200)
 
 function handleMessage(ev: MessageEvent) {
-  if (ev.source !== iframeRef.value?.contentWindow) return
   if (ev.data?.type !== 'invitation-height') return
+  // The iframe may post before Vue has bound iframeRef; once it's bound,
+  // require source to match so we ignore stray cross-frame messages.
+  if (iframeRef.value && ev.source !== iframeRef.value.contentWindow) return
   const h = Number(ev.data.height)
   if (Number.isFinite(h) && h > 0) iframeHeight.value = h
 }

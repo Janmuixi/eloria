@@ -98,6 +98,20 @@
   /* Container queries so type scales with the card, not the viewport. */
   .card{ container-type: inline-size; }
 
+  /* Mobile portrait: keep the landscape card and the floral background art,
+     but shrink everything proportionally so the right-column copy fits inside
+     the card at the constrained card height. The base styles use clamp()
+     minimums tuned for desktop; here we drop those floors so type, spacing
+     and padding scale all the way down with the card width. */
+  @media (max-width: 600px){
+    body{ padding:8px; }
+    .names{ padding: 0 3%; }
+    .names .name{ font-size: clamp(13px, 5.2cqw, 60px); }
+    .names .and{ font-size: clamp(11px, 4cqw, 46px); }
+    .details{ padding: 5% 6%; gap: clamp(4px, 3cqw, 36px); }
+    .details p{ font-size: clamp(7px, 1.85cqw, 21px); line-height:1.35; }
+  }
+
   @media print{
     body{background:#fff;padding:0;}
     .card{box-shadow:none;}

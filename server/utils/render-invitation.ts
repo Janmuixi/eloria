@@ -36,12 +36,26 @@ const HEIGHT_SCRIPT = `<script>
       w.style.fontSize = fs + 'px';
     }
   }
+  function measureHeight() {
+    // Templates set 'min-height: 100vh' on body, so body.scrollHeight echoes the
+    // current iframe height instead of the actual content height. Measure the
+    // invitation wrapper directly when present, and add body padding so the
+    // template's intentional breathing room is preserved.
+    var card = document.querySelector('.card, .invitation');
+    if (!card) return document.documentElement.scrollHeight || document.body.scrollHeight;
+    var rect = card.getBoundingClientRect();
+    var bs = window.getComputedStyle(document.body);
+    var pad = (parseFloat(bs.paddingTop) || 0) + (parseFloat(bs.paddingBottom) || 0);
+    return Math.ceil(rect.height + pad);
+  }
   function post() {
     fitWording();
-    var h = document.documentElement.scrollHeight || document.body.scrollHeight;
-    parent.postMessage({ type: 'invitation-height', height: h }, '*');
+    parent.postMessage({ type: 'invitation-height', height: measureHeight() }, '*');
   }
   window.addEventListener('load', post);
+  // The iframe's load event can fire before the parent attaches its message
+  // listener; a follow-up post on the next macrotask catches that race.
+  setTimeout(post, 50);
   if (window.ResizeObserver) {
     new ResizeObserver(post).observe(document.body);
   } else {
