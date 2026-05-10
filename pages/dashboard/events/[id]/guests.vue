@@ -365,14 +365,14 @@ function formatSentDate(iso: string | null): string {
       </nav>
     </div>
 
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h1 class="font-display font-semibold text-2xl text-charcoal-900">
           {{ t('guests.guestList') }}
           <span v-if="guests" class="text-base font-normal text-charcoal-500">({{ seatCountLabel }})</span>
         </h1>
       </div>
-      <div class="flex gap-2">
+      <div class="flex flex-wrap gap-2">
         <button v-if="hasEmailDelivery"
           type="button"
           @click="openBulkConfirm"
