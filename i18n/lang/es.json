@@ -26,6 +26,7 @@
   },
   "nav": {
     "templates": "Plantillas",
+    "howItWorks": "Cómo funciona",
     "pricing": "Precios",
     "dashboard": "Dashboard",
     "signIn": "Iniciar sesión",
@@ -77,6 +78,44 @@
     "ctaTitle": "¿Listo para crear tu invitación perfecta?",
     "ctaSubtitle": "Sé una más de las parejas que eligieron Eloria para su día especial.",
     "ctaButton": "Comienza Gratis"
+  },
+  "howItWorks": {
+    "seoTitle": "Cómo funciona Eloria — Eloria",
+    "seoDescription": "Descubre cómo Eloria convierte los detalles de tu evento en una invitación preciosa en cinco pasos sencillos.",
+    "heroTitle": "De la idea a la invitación en cinco pasos",
+    "heroSubtitle": "Eloria te acompaña en cada parte de la creación de una invitación de boda: diseño, texto, vista previa y envío.",
+    "heroCta": "Empieza a crear",
+    "stepEyebrow": "Paso {n}",
+    "steps": {
+      "1": {
+        "title": "Cuéntanos sobre el gran día",
+        "body": "Nombres de la pareja, fecha y lugar. Si quieres, deja que los invitados elijan menú o indiquen alergias; sus respuestas llegan directamente con su confirmación.",
+        "alt": "Formulario de detalles del evento con los nombres, la fecha y el lugar rellenados"
+      },
+      "2": {
+        "title": "Elige una plantilla o sube la tuya",
+        "body": "Describe tu estilo y deja que la IA te sugiera las plantillas que mejor encajan. O salta este paso y sube un diseño que ya tengas.",
+        "alt": "Galería de plantillas con las recomendaciones de IA junto al resto de diseños disponibles"
+      },
+      "3": {
+        "title": "Haz que las palabras sean tuyas",
+        "body": "Escribe el texto o deja que la IA genere variaciones en el tono que elijas: formal, informal, poético o divertido. La vista previa se actualiza al instante.",
+        "alt": "Pantalla de personalización con el texto de la invitación a la izquierda y la vista previa en vivo a la derecha"
+      },
+      "4": {
+        "title": "Mira exactamente lo que verán tus invitados",
+        "body": "Repasa la invitación completa antes de publicarla. Vuelve atrás y ajusta lo que no te convenza.",
+        "alt": "Vista previa de la invitación final con la plantilla elegida"
+      },
+      "5": {
+        "title": "Publica y comparte",
+        "body": "Elige el plan que encaje con tu evento y envía las invitaciones por enlace, correo o PDF — y sigue las confirmaciones desde tu panel.",
+        "alt": "Pantalla de selección de plan con las tarifas por evento y la oferta de suscripción Pro"
+      }
+    },
+    "closingTitle": "Invita con intención",
+    "closingSubtitle": "Crea tu primera invitación en unos minutos — sin experiencia de diseño.",
+    "closingCta": "Empieza gratis"
   },
   "pricing": {
     "seoTitle": "Precios - Eloria",
