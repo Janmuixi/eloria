@@ -11,13 +11,13 @@ useSeoMeta({
   twitterDescription: t('howItWorks.seoDescription'),
 })
 
-const steps = computed(() => [
+const steps = [
   { n: 1, image: '/images/how-it-works/step-1-details.jpg' },
   { n: 2, image: '/images/how-it-works/step-2-templates.jpg' },
   { n: 3, image: '/images/how-it-works/step-3-customize.jpg' },
   { n: 4, image: '/images/how-it-works/step-4-preview.jpg' },
   { n: 5, image: '/images/how-it-works/step-5-publish.jpg' },
-])
+]
 </script>
 
 <template>
@@ -28,7 +28,7 @@ const steps = computed(() => [
         <h1 class="font-display font-bold text-4xl md:text-6xl text-charcoal-900">
           {{ $t('howItWorks.heroTitle') }}
         </h1>
-        <p class="text-lg text-charcoal-500 max-w-2xl mx-auto mt-6">
+        <p class="text-lg text-charcoal-500 max-w-xl mx-auto mt-6">
           {{ $t('howItWorks.heroSubtitle') }}
         </p>
         <NuxtLinkLocale
