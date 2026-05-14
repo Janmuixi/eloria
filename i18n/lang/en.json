@@ -26,6 +26,7 @@
   },
   "nav": {
     "templates": "Templates",
+    "howItWorks": "How it works",
     "pricing": "Pricing",
     "dashboard": "Dashboard",
     "signIn": "Sign in",
@@ -77,6 +78,44 @@
     "ctaTitle": "Ready to create your perfect invitation?",
     "ctaSubtitle": "Become one of the couples who chose Eloria for their special day.",
     "ctaButton": "Get Started Free"
+  },
+  "howItWorks": {
+    "seoTitle": "How Eloria works — Eloria",
+    "seoDescription": "See exactly how Eloria turns your event details into a beautiful invitation in five short steps.",
+    "heroTitle": "From idea to invitation in five steps",
+    "heroSubtitle": "Eloria walks you through every part of creating a wedding invitation — design, wording, preview, and sending.",
+    "heroCta": "Start creating",
+    "stepEyebrow": "Step {n}",
+    "steps": {
+      "1": {
+        "title": "Tell us about the day",
+        "body": "Couple names, date, venue. Optionally let guests pick a menu or share allergies — those choices flow straight into their RSVP.",
+        "alt": "Event details form with couple names, date, and venue filled in"
+      },
+      "2": {
+        "title": "Pick a template, or upload your own",
+        "body": "Describe your style and let AI surface the templates that fit. Or skip ahead and upload a design you already have.",
+        "alt": "Template gallery showing AI-recommended designs alongside the full template grid"
+      },
+      "3": {
+        "title": "Make the words yours",
+        "body": "Write the wording, or let AI generate variations in your chosen tone — formal, casual, poetic, funny. The live preview updates as you type.",
+        "alt": "Customization screen with invitation wording on the left and a live preview on the right"
+      },
+      "4": {
+        "title": "See exactly what guests will see",
+        "body": "Review the finished invitation in full before anything is published. Step back and tweak if anything feels off.",
+        "alt": "Preview of the finished invitation rendered in the chosen template"
+      },
+      "5": {
+        "title": "Publish and share",
+        "body": "Pick a plan that fits your event size, then send invites by link, email, or PDF — and track RSVPs from your dashboard.",
+        "alt": "Plan selection screen with single-event tiers and a Pro subscription upsell"
+      }
+    },
+    "closingTitle": "Invite with intention",
+    "closingSubtitle": "Create your first invitation in a few minutes — no design experience needed.",
+    "closingCta": "Get started free"
   },
   "pricing": {
     "seoTitle": "Pricing - Eloria",
