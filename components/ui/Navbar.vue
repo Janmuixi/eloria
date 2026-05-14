@@ -24,6 +24,7 @@ const mobileOpen = ref(false)
       <!-- Desktop nav links (centered) -->
       <div class="hidden md:flex items-center gap-8">
         <NuxtLinkLocale to="/templates" class="text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors">{{ $t('nav.templates') }}</NuxtLinkLocale>
+        <NuxtLinkLocale to="/how-it-works" class="text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors">{{ $t('nav.howItWorks') }}</NuxtLinkLocale>
         <NuxtLinkLocale to="/pricing" class="text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors">{{ $t('nav.pricing') }}</NuxtLinkLocale>
       </div>
 
@@ -69,6 +70,7 @@ const mobileOpen = ref(false)
     <!-- Mobile menu -->
     <div v-if="mobileOpen" class="md:hidden border-t border-charcoal-200 px-6 py-4 space-y-3">
       <NuxtLinkLocale to="/templates" class="block text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors" @click="mobileOpen = false">{{ $t('nav.templates') }}</NuxtLinkLocale>
+      <NuxtLinkLocale to="/how-it-works" class="block text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors" @click="mobileOpen = false">{{ $t('nav.howItWorks') }}</NuxtLinkLocale>
       <NuxtLinkLocale to="/pricing" class="block text-sm font-medium text-charcoal-700 hover:text-charcoal-900 hover:bg-champagne-100 rounded-full px-3 py-1 transition-colors" @click="mobileOpen = false">{{ $t('nav.pricing') }}</NuxtLinkLocale>
       <hr class="border-charcoal-200" />
       <template v-if="!loading">
