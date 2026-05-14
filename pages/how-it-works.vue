@@ -12,11 +12,11 @@ useSeoMeta({
 })
 
 const steps = [
-  { n: 1, image: '/images/how-it-works/step-1-details.jpg' },
-  { n: 2, image: '/images/how-it-works/step-2-templates.jpg' },
-  { n: 3, image: '/images/how-it-works/step-3-customize.jpg' },
-  { n: 4, image: '/images/how-it-works/step-4-preview.jpg' },
-  { n: 5, image: '/images/how-it-works/step-5-publish.jpg' },
+  { n: 1, image: '/images/how-it-works/step-1-details.jpg',   width: 1265, height: 1062 },
+  { n: 2, image: '/images/how-it-works/step-2-templates.jpg', width: 1265, height: 2012 },
+  { n: 3, image: '/images/how-it-works/step-3-customize.jpg', width: 1265, height: 937 },
+  { n: 4, image: '/images/how-it-works/step-4-preview.jpg',   width: 1265, height: 1221 },
+  { n: 5, image: '/images/how-it-works/step-5-publish.jpg',   width: 1265, height: 1174 },
 ]
 </script>
 
@@ -56,6 +56,8 @@ const steps = [
             <img
               :src="step.image"
               :alt="$t(`howItWorks.steps.${step.n}.alt`)"
+              :width="step.width"
+              :height="step.height"
               :loading="step.n === 1 ? 'eager' : 'lazy'"
               decoding="async"
               class="w-full h-auto block"
