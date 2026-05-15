@@ -261,9 +261,16 @@ watch(currentStep, (step) => {
   }
 })
 
-function formatPrice(cents: number) {
-  return `$${(cents / 100).toFixed(2)}`
+function formatPrice(cents: number): string {
+  if (cents === 0) return t('common.free')
+  return `${(cents / 100).toFixed(cents % 100 === 0 ? 0 : 2)} €`
 }
+
+function formatGuestLimit(limit: number | null): string {
+  return limit ? t('pricing.guests', { count: limit }) : t('pricing.unlimitedGuests')
+}
+
+const selectableTiers = computed(() => tiersList.value.filter(tier => tier.slug !== 'pro'))
 
 async function payAndPublish() {
   if (!eventId.value || !selectedTierSlug.value) return
@@ -714,34 +721,78 @@ const stepLabels = computed(() => {
       </div>
 
       <div v-else class="grid md:grid-cols-2 gap-6 max-w-2xl">
-        <button v-for="tier in tiersList" :key="tier.id"
+        <button v-for="tier in selectableTiers" :key="tier.id"
           @click="selectedTierSlug = tier.slug"
           :class="[
-            'rounded-2xl p-6 text-left transition-all duration-200 hover:shadow-md',
+            'rounded-2xl p-6 text-left flex flex-col transition-all duration-200 hover:shadow-md',
             selectedTierSlug === tier.slug ? 'border-2 border-champagne-500 ring-2 ring-champagne-500/20 bg-champagne-50' : 'border border-charcoal-200 bg-white'
           ]">
-          <h3 class="font-display font-semibold text-lg text-charcoal-900 mb-1">{{ tier.name }}</h3>
-          <p class="font-display font-bold text-2xl text-charcoal-900 mb-4">{{ formatPrice(tier.price) }}</p>
-          <ul class="space-y-2 text-sm text-charcoal-600">
-            <li class="flex items-center gap-2">
-              <span :class="tier.guestLimit ? 'text-charcoal-400' : 'text-champagne-500'">
-                {{ tier.guestLimit ? $t('payment.upToGuests', { count: tier.guestLimit }) : $t('payment.unlimitedGuests') }}
-              </span>
+          <div class="mb-4">
+            <h3 class="text-lg font-semibold text-charcoal-900">{{ tier.name }}</h3>
+            <p class="text-sm text-charcoal-500 mt-1">{{ $t('pricing.audienceCouples') }}</p>
+            <div class="mt-2">
+              <span class="font-display font-bold text-3xl text-charcoal-900">{{ formatPrice(tier.price) }}</span>
+              <span v-if="tier.price > 0" class="text-charcoal-500 text-sm ml-1">{{ $t('common.oneTime') }}</span>
+            </div>
+          </div>
+
+          <ul class="space-y-2 flex-1">
+            <li class="flex items-center gap-2 text-sm">
+              <svg class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <span class="text-charcoal-500">{{ $t('pricing.oneEvent') }}</span>
             </li>
-            <li v-if="tier.hasEmailDelivery" class="flex items-center gap-2">
-              <span class="text-champagne-500">&#10003;</span> {{ $t('payment.emailDelivery') }}
+            <li class="flex items-center gap-2 text-sm">
+              <svg class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <span class="text-charcoal-500">{{ formatGuestLimit(tier.guestLimit) }}</span>
             </li>
-            <li v-if="tier.hasPdfExport" class="flex items-center gap-2">
-              <span class="text-champagne-500">&#10003;</span> {{ $t('payment.pdfExport') }}
+            <li class="flex items-center gap-2 text-sm">
+              <svg v-if="tier.hasEmailDelivery" class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <svg v-else class="w-5 h-5 text-charcoal-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              <span :class="tier.hasEmailDelivery ? 'text-charcoal-500' : 'text-charcoal-300'">{{ $t('pricing.emailDelivery') }}</span>
             </li>
-            <li v-if="tier.hasAiTextGeneration" class="flex items-center gap-2">
-              <span class="text-champagne-500">&#10003;</span> {{ $t('payment.aiTextGeneration') }}
+            <li class="flex items-center gap-2 text-sm">
+              <svg v-if="tier.hasPdfExport" class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <svg v-else class="w-5 h-5 text-charcoal-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              <span :class="tier.hasPdfExport ? 'text-charcoal-500' : 'text-charcoal-300'">{{ $t('pricing.pdfExport') }}</span>
             </li>
-            <li v-if="tier.removeBranding" class="flex items-center gap-2">
-              <span class="text-champagne-500">&#10003;</span> {{ $t('payment.removeBranding') }}
+            <li class="flex items-center gap-2 text-sm">
+              <svg v-if="tier.hasAiTextGeneration" class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <svg v-else class="w-5 h-5 text-charcoal-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              <span :class="tier.hasAiTextGeneration ? 'text-charcoal-500' : 'text-charcoal-300'">{{ $t('pricing.aiTextGeneration') }}</span>
             </li>
-            <li v-if="tier.hasMultipleVariants" class="flex items-center gap-2">
-              <span class="text-champagne-500">&#10003;</span> {{ $t('payment.multipleVariants') }}
+            <li class="flex items-center gap-2 text-sm">
+              <svg v-if="tier.removeBranding" class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <svg v-else class="w-5 h-5 text-charcoal-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              <span :class="tier.removeBranding ? 'text-charcoal-500' : 'text-charcoal-300'">{{ $t('pricing.customBranding') }}</span>
+            </li>
+            <li class="flex items-center gap-2 text-sm">
+              <svg v-if="tier.hasMultipleVariants" class="w-5 h-5 text-champagne-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <svg v-else class="w-5 h-5 text-charcoal-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              <span :class="tier.hasMultipleVariants ? 'text-charcoal-500' : 'text-charcoal-300'">{{ $t('pricing.multipleVariants') }}</span>
             </li>
           </ul>
         </button>
