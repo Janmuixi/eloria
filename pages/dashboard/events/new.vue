@@ -225,7 +225,10 @@ async function startSubscription() {
   try {
     const res = await $fetch<{ url: string }>('/api/subscriptions/create-checkout', {
       method: 'POST',
-      body: eventId.value ? { eventId: eventId.value } : {},
+      body: {
+        locale: locale.value,
+        ...(eventId.value ? { eventId: eventId.value } : {}),
+      },
     })
     if (res.url) navigateTo(res.url, { external: true })
   } catch {
@@ -276,6 +279,7 @@ async function payAndPublish() {
       body: {
         eventId: eventId.value,
         tierSlug: selectedTierSlug.value,
+        locale: locale.value,
       },
     })
     if (data.url) {

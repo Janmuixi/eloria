@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const { user } = useAuth()
 const loggedIn = computed(() => user.value !== null)
@@ -8,7 +8,10 @@ const subscribing = ref(false)
 async function startSubscription() {
   subscribing.value = true
   try {
-    const res = await $fetch<{ url: string }>('/api/subscriptions/create-checkout', { method: 'POST' })
+    const res = await $fetch<{ url: string }>('/api/subscriptions/create-checkout', {
+      method: 'POST',
+      body: { locale: locale.value },
+    })
     if (res.url) navigateTo(res.url, { external: true })
   } catch {
     navigateTo(localePath('/auth/login'))

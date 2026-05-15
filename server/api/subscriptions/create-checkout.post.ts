@@ -29,11 +29,12 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody(event).catch(() => ({}))
   const eventId = body?.eventId ? parseInt(body.eventId) : null
+  const localePrefix = body?.locale === 'es' ? '/es' : ''
 
   const baseUrl = resolveEnvVar('BASE_URL', 'http://localhost:3000')
   const successUrl = eventId
-    ? `${baseUrl}/dashboard/events/${eventId}?subscription=success`
-    : `${baseUrl}/dashboard?subscription=success`
+    ? `${baseUrl}${localePrefix}/dashboard/events/${eventId}?subscription=success`
+    : `${baseUrl}${localePrefix}/dashboard?subscription=success`
 
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
@@ -53,7 +54,7 @@ export default defineEventHandler(async (event) => {
     mode: 'subscription',
     allow_promotion_codes: true,
     success_url: successUrl,
-    cancel_url: `${baseUrl}/pricing`,
+    cancel_url: `${baseUrl}${localePrefix}/pricing`,
     metadata: { userId: user.id.toString(), ...(eventId ? { eventId: eventId.toString() } : {}) },
   })
 

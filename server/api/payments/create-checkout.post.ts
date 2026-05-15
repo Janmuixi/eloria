@@ -15,6 +15,7 @@ export default defineEventHandler(async (event) => {
   const user = await requireAuth(event)
   const body = await readBody(event)
   const { eventId, tierSlug } = body
+  const localePrefix = body?.locale === 'es' ? '/es' : ''
 
   const userEvent = await db.query.events.findFirst({
     where: and(eq(events.id, eventId), eq(events.userId, user.id)),
@@ -57,8 +58,8 @@ export default defineEventHandler(async (event) => {
     }],
     mode: 'payment',
     allow_promotion_codes: true,
-    success_url: `${baseUrl}/dashboard/events/${eventId}/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${baseUrl}/dashboard/events/new?step=5&eventId=${eventId}`,
+    success_url: `${baseUrl}${localePrefix}/dashboard/events/${eventId}/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${baseUrl}${localePrefix}/dashboard/events/new?step=5&eventId=${eventId}`,
     metadata: { eventId: eventId.toString(), tierId: tier.id.toString() },
   })
 
