@@ -19,6 +19,7 @@
     "pendingPayment": "Pending Payment",
     "locked": "Locked",
     "manage": "Manage",
+    "completePayment": "Complete payment",
     "premium": "Premium",
     "oneTime": "one-time",
     "perMonth": "/month",
@@ -220,7 +221,9 @@
     "viewInvitationDescription": "See your public invitation page",
     "eventLocked": "Event Locked",
     "eventLockedDescription": "Your subscription has expired. Reactivate your Pro subscription to restore access to this event.",
-    "reactivateSubscription": "Reactivate Subscription"
+    "reactivateSubscription": "Reactivate Subscription",
+    "paymentPending": "Payment Incomplete",
+    "paymentPendingDescription": "This event is not published yet. Complete payment to send invitations and unlock access."
   },
   "guests": {
     "guestList": "Guest List",

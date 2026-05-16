@@ -37,10 +37,19 @@ const { data: events, status } = await useFetch('/api/events')
         <div class="flex items-center gap-3">
           <span :class="[
             'rounded-full px-3 py-1 text-xs font-medium',
-            evt.paymentStatus === 'paid' ? 'bg-champagne-500 text-white' : 'bg-charcoal-100 text-charcoal-500'
+            evt.paymentStatus === 'paid' ? 'bg-champagne-500 text-white' :
+            evt.paymentStatus === 'locked' ? 'bg-amber-100 text-amber-700' :
+            'bg-amber-100 text-amber-700'
           ]">
-            {{ evt.paymentStatus === 'paid' ? $t('common.active') : $t('common.pendingPayment') }}
+            {{ evt.paymentStatus === 'paid' ? $t('common.active') :
+               evt.paymentStatus === 'locked' ? $t('common.locked') :
+               $t('common.pendingPayment') }}
           </span>
+          <NuxtLinkLocale v-if="evt.paymentStatus !== 'paid' && evt.paymentStatus !== 'locked'"
+            :to="`/dashboard/events/new?step=5&eventId=${evt.id}`"
+            class="bg-champagne-500 text-white rounded-full px-4 py-1.5 text-sm font-medium hover:bg-champagne-600 transition-colors">
+            {{ $t('common.completePayment') }}
+          </NuxtLinkLocale>
           <NuxtLinkLocale :to="`/dashboard/events/${evt.id}`"
             class="text-charcoal-700 hover:text-charcoal-900 font-medium hover:underline">
             {{ $t('common.manage') }}

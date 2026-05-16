@@ -15,6 +15,10 @@ const isSubscriber = computed(() => subscriptionStatus.value?.hasActiveSubscript
 const currentStep = ref(parseInt(route.query.step as string) || 1)
 const eventId = ref<number | null>(parseInt(route.query.eventId as string) || null)
 
+// Retry-payment entry: user landed on step 5 with an eventId in the URL.
+// Earlier-step state (template, wording, preview) is empty, so going back would render broken steps.
+const isRetryMode = ref(currentStep.value === 5 && eventId.value !== null)
+
 // ─── Step 1: Event Details ─────────────────────────────────────────────────
 const form = reactive({
   title: '',
@@ -259,7 +263,7 @@ watch(currentStep, (step) => {
   if (step === 5 && tiersList.value.length === 0) {
     loadTiers()
   }
-})
+}, { immediate: true })
 
 function formatPrice(cents: number): string {
   if (cents === 0) return t('common.free')
@@ -799,8 +803,8 @@ const stepLabels = computed(() => {
       </div>
 
       <!-- Navigation -->
-      <div class="flex justify-between mt-8">
-        <button @click="currentStep = 4" class="text-charcoal-700 hover:text-charcoal-900 font-medium">
+      <div :class="['flex mt-8', isRetryMode ? 'justify-end' : 'justify-between']">
+        <button v-if="!isRetryMode" @click="currentStep = 4" class="text-charcoal-700 hover:text-charcoal-900 font-medium">
           &larr; {{ $t('common.back') }}
         </button>
         <button @click="payAndPublish" :disabled="!selectedTierSlug || processingPayment"
