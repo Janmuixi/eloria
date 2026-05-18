@@ -18,6 +18,7 @@ vi.mock('~/server/db', () => ({
 
 const statsHandler = (await import('../admin/stats/index.get')).default
 const usersListHandler = (await import('../admin/users/index.get')).default
+const userDetailHandler = (await import('../admin/users/[id].get')).default
 
 const { createToken } = await import('../../utils/auth')
 
@@ -128,6 +129,40 @@ describe('Admin API', () => {
       expect(result.limit).toBe(2)
       expect(result.offset).toBe(1)
       expect(result.rows).toHaveLength(2)
+    })
+  })
+
+  describe('GET /api/admin/users/[id]', () => {
+    it('returns 403 for non-admin user', async () => {
+      const user = await createTestUser(testDb, { email: 'user@test.com', name: 'User' })
+      const event = authEvent(user!.id, user!.email, { params: { id: String(user!.id) } })
+      await expect(userDetailHandler(event)).rejects.toMatchObject({ statusCode: 403 })
+    })
+
+    it('returns 404 for unknown user', async () => {
+      const admin = await createTestUser(testDb, { email: 'admin@test.com', name: 'Admin' })
+      const event = authEvent(admin!.id, admin!.email, { params: { id: '999' } })
+      await expect(userDetailHandler(event)).rejects.toMatchObject({ statusCode: 404 })
+    })
+
+    it('returns redacted user + events + subscriptions', async () => {
+      const admin = await createTestUser(testDb, { email: 'admin@test.com', name: 'Admin' })
+      const target = await createTestUser(testDb, { email: 'target@test.com', name: 'Target', password: 'secret' })
+      const evt = createTestEvent(testDb, target!.id, { title: 'T-Evt' })
+      createTestSubscription(testDb, target!.id, { status: 'active' })
+
+      const event = authEvent(admin!.id, admin!.email, { params: { id: String(target!.id) } })
+      const result = await userDetailHandler(event)
+
+      expect(result.user.email).toBe('target@test.com')
+      expect(result.user.passwordHash).toBeNull()
+      expect(result.user.hasPassword).toBe(true)
+      expect(result.user.resetToken).toBeNull()
+      expect(result.user.hasResetToken).toBe(false)
+      expect(result.events).toHaveLength(1)
+      expect(result.events[0].id).toBe(evt!.id)
+      expect(result.subscriptions).toHaveLength(1)
+      expect(result.subscriptions[0].status).toBe('active')
     })
   })
 })
