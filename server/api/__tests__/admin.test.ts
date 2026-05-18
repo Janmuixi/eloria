@@ -19,6 +19,7 @@ vi.mock('~/server/db', () => ({
 const statsHandler = (await import('../admin/stats/index.get')).default
 const usersListHandler = (await import('../admin/users/index.get')).default
 const userDetailHandler = (await import('../admin/users/[id].get')).default
+const eventsListHandler = (await import('../admin/events/index.get')).default
 
 const { createToken } = await import('../../utils/auth')
 
@@ -163,6 +164,61 @@ describe('Admin API', () => {
       expect(result.events[0].id).toBe(evt!.id)
       expect(result.subscriptions).toHaveLength(1)
       expect(result.subscriptions[0].status).toBe('active')
+    })
+  })
+
+  describe('GET /api/admin/events', () => {
+    it('returns 403 for non-admin user', async () => {
+      const user = await createTestUser(testDb, { email: 'user@test.com', name: 'User' })
+      const event = authEvent(user!.id, user!.email)
+      await expect(eventsListHandler(event)).rejects.toMatchObject({ statusCode: 403 })
+    })
+
+    it('returns rows joined with owner email and guestCount', async () => {
+      const admin = await createTestUser(testDb, { email: 'admin@test.com', name: 'Admin' })
+      const u1 = await createTestUser(testDb, { email: 'a@test.com', name: 'A' })
+      const evt = createTestEvent(testDb, u1!.id, { title: 'My Event' })
+      const { createTestGuest } = await import('../../__helpers__/db')
+      createTestGuest(testDb, evt!.id, { name: 'G1' })
+      createTestGuest(testDb, evt!.id, { name: 'G2' })
+
+      const event = authEvent(admin!.id, admin!.email)
+      const result = await eventsListHandler(event)
+
+      expect(result.total).toBe(1)
+      expect(result.rows).toHaveLength(1)
+      expect(result.rows[0].title).toBe('My Event')
+      expect(result.rows[0].user.email).toBe('a@test.com')
+      expect(result.rows[0].guestCount).toBe(2)
+    })
+
+    it('filters by paymentStatus', async () => {
+      const admin = await createTestUser(testDb, { email: 'admin@test.com', name: 'Admin' })
+      const u1 = await createTestUser(testDb, { email: 'a@test.com', name: 'A' })
+      createTestEvent(testDb, u1!.id, { title: 'Paid', paymentStatus: 'paid' })
+      createTestEvent(testDb, u1!.id, { title: 'Pending', paymentStatus: 'pending' })
+
+      const event = authEvent(admin!.id, admin!.email, { url: '/api/admin/events?paymentStatus=paid' })
+      const result = await eventsListHandler(event)
+
+      expect(result.total).toBe(1)
+      expect(result.rows[0].title).toBe('Paid')
+    })
+
+    it('filters by q against title or owner email', async () => {
+      const admin = await createTestUser(testDb, { email: 'admin@test.com', name: 'Admin' })
+      const u1 = await createTestUser(testDb, { email: 'alice@test.com', name: 'Alice' })
+      const u2 = await createTestUser(testDb, { email: 'bob@test.com', name: 'Bob' })
+      createTestEvent(testDb, u1!.id, { title: 'Alpha Wedding' })
+      createTestEvent(testDb, u2!.id, { title: 'Beta Wedding' })
+
+      const byTitle = authEvent(admin!.id, admin!.email, { url: '/api/admin/events?q=alpha' })
+      expect((await eventsListHandler(byTitle)).total).toBe(1)
+
+      const byEmail = authEvent(admin!.id, admin!.email, { url: '/api/admin/events?q=bob@' })
+      const result = await eventsListHandler(byEmail)
+      expect(result.total).toBe(1)
+      expect(result.rows[0].title).toBe('Beta Wedding')
     })
   })
 })
