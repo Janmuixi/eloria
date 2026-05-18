@@ -22,6 +22,8 @@ const userDetailHandler = (await import('../admin/users/[id].get')).default
 const eventsListHandler = (await import('../admin/events/index.get')).default
 const eventDetailHandler = (await import('../admin/events/[id].get')).default
 const subsListHandler = (await import('../admin/subscriptions/index.get')).default
+const tiersHandler = (await import('../admin/tiers/index.get')).default
+const templatesHandler = (await import('../admin/templates/index.get')).default
 
 const { createToken } = await import('../../utils/auth')
 
@@ -299,6 +301,52 @@ describe('Admin API', () => {
 
       expect(result.total).toBe(1)
       expect(result.rows[0].status).toBe('canceled')
+    })
+  })
+
+  describe('GET /api/admin/tiers', () => {
+    it('returns 403 for non-admin', async () => {
+      const u = await createTestUser(testDb, { email: 'user@test.com', name: 'User' })
+      const event = authEvent(u!.id, u!.email)
+      await expect(tiersHandler(event)).rejects.toMatchObject({ statusCode: 403 })
+    })
+
+    it('returns all tiers ordered by sortOrder', async () => {
+      const { seedTiers } = await import('../../__helpers__/db')
+      seedTiers(testDb)
+      const admin = await createTestUser(testDb, { email: 'admin@test.com', name: 'Admin' })
+
+      const event = authEvent(admin!.id, admin!.email)
+      const result = await tiersHandler(event)
+
+      expect(result).toHaveLength(2)
+      expect(result[0].slug).toBe('basic')
+      expect(result[1].slug).toBe('premium')
+    })
+  })
+
+  describe('GET /api/admin/templates', () => {
+    it('returns 403 for non-admin', async () => {
+      const u = await createTestUser(testDb, { email: 'user@test.com', name: 'User' })
+      const event = authEvent(u!.id, u!.email)
+      await expect(templatesHandler(event)).rejects.toMatchObject({ statusCode: 403 })
+    })
+
+    it('returns templates with minimumTier slug, html/css omitted', async () => {
+      const { seedTiers, seedTemplate } = await import('../../__helpers__/db')
+      const { tiers } = await import('../../db/schema')
+      seedTiers(testDb)
+      const tier = (testDb.select().from(tiers).all() as any[])[0]
+      seedTemplate(testDb, tier.id)
+      const admin = await createTestUser(testDb, { email: 'admin@test.com', name: 'Admin' })
+
+      const event = authEvent(admin!.id, admin!.email)
+      const result = await templatesHandler(event)
+
+      expect(result).toHaveLength(1)
+      expect(result[0].minimumTier.slug).toBe(tier.slug)
+      expect(result[0].htmlTemplate).toBeUndefined()
+      expect(result[0].cssTemplate).toBeUndefined()
     })
   })
 })
