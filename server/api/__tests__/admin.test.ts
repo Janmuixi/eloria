@@ -20,6 +20,7 @@ const statsHandler = (await import('../admin/stats/index.get')).default
 const usersListHandler = (await import('../admin/users/index.get')).default
 const userDetailHandler = (await import('../admin/users/[id].get')).default
 const eventsListHandler = (await import('../admin/events/index.get')).default
+const eventDetailHandler = (await import('../admin/events/[id].get')).default
 
 const { createToken } = await import('../../utils/auth')
 
@@ -219,6 +220,50 @@ describe('Admin API', () => {
       const result = await eventsListHandler(byEmail)
       expect(result.total).toBe(1)
       expect(result.rows[0].title).toBe('Beta Wedding')
+    })
+  })
+
+  describe('GET /api/admin/events/[id]', () => {
+    it('returns 403 for non-admin', async () => {
+      const u = await createTestUser(testDb, { email: 'user@test.com', name: 'User' })
+      const ev = createTestEvent(testDb, u!.id)
+      const event = authEvent(u!.id, u!.email, { params: { id: String(ev!.id) } })
+      await expect(eventDetailHandler(event)).rejects.toMatchObject({ statusCode: 403 })
+    })
+
+    it('returns 404 for unknown event', async () => {
+      const admin = await createTestUser(testDb, { email: 'admin@test.com', name: 'Admin' })
+      const event = authEvent(admin!.id, admin!.email, { params: { id: '999' } })
+      await expect(eventDetailHandler(event)).rejects.toMatchObject({ statusCode: 404 })
+    })
+
+    it('returns event + owner + guests + menu tree', async () => {
+      const { seedTiers, seedTemplate, createTestGuest } = await import('../../__helpers__/db')
+      const { tiers, menuCourses, menuOptions } = await import('../../db/schema')
+
+      const admin = await createTestUser(testDb, { email: 'admin@test.com', name: 'Admin' })
+      const owner = await createTestUser(testDb, { email: 'owner@test.com', name: 'Owner' })
+      seedTiers(testDb)
+      const tier = (testDb.select().from(tiers).all() as any[])[0]
+      const tmpl = seedTemplate(testDb, tier.id)
+      const ev = createTestEvent(testDb, owner!.id, { title: 'Detail', tierId: tier.id, templateId: tmpl.id })
+      createTestGuest(testDb, ev!.id, { name: 'Guest A' })
+
+      const courseRow = testDb.insert(menuCourses).values({ eventId: ev!.id, name: 'Main', sortOrder: 0 }).returning().all()[0]
+      testDb.insert(menuOptions).values({ courseId: courseRow.id, name: 'Beef', sortOrder: 0 }).run()
+
+      const event = authEvent(admin!.id, admin!.email, { params: { id: String(ev!.id) } })
+      const result = await eventDetailHandler(event)
+
+      expect(result.event.id).toBe(ev!.id)
+      expect(result.owner.email).toBe('owner@test.com')
+      expect(result.tier?.slug).toBe(tier.slug)
+      expect(result.template?.slug).toBe(tmpl.slug)
+      expect(result.guests).toHaveLength(1)
+      expect(result.guests[0].name).toBe('Guest A')
+      expect(result.menu).toHaveLength(1)
+      expect(result.menu[0].name).toBe('Main')
+      expect(result.menu[0].options[0].name).toBe('Beef')
     })
   })
 })
