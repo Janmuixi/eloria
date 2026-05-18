@@ -17,6 +17,7 @@ vi.mock('~/server/db', () => ({
 }))
 
 const statsHandler = (await import('../admin/stats/index.get')).default
+const usersListHandler = (await import('../admin/users/index.get')).default
 
 const { createToken } = await import('../../utils/auth')
 
@@ -66,6 +67,67 @@ describe('Admin API', () => {
         paidEvents: 2,
         activeSubscriptions: 1,
       })
+    })
+  })
+
+  describe('GET /api/admin/users', () => {
+    it('returns 401 without auth', async () => {
+      const event = createMockEvent({})
+      await expect(usersListHandler(event)).rejects.toMatchObject({ statusCode: 401 })
+    })
+
+    it('returns 403 for non-admin user', async () => {
+      const user = await createTestUser(testDb, { email: 'user@test.com', name: 'User' })
+      const event = authEvent(user!.id, user!.email)
+      await expect(usersListHandler(event)).rejects.toMatchObject({ statusCode: 403 })
+    })
+
+    it('returns paginated rows with eventCount and activeSubscription', async () => {
+      const admin = await createTestUser(testDb, { email: 'admin@test.com', name: 'Admin' })
+      const u1 = await createTestUser(testDb, { email: 'a@test.com', name: 'A' })
+      createTestEvent(testDb, u1!.id, { title: 'E1' })
+      createTestEvent(testDb, u1!.id, { title: 'E2' })
+      createTestSubscription(testDb, u1!.id, { status: 'active', price: 4900 })
+
+      const event = authEvent(admin!.id, admin!.email)
+      const result = await usersListHandler(event)
+
+      expect(result.total).toBe(2)
+      expect(result.limit).toBe(50)
+      expect(result.offset).toBe(0)
+      expect(result.rows).toHaveLength(2)
+      const u1Row = result.rows.find((r: any) => r.email === 'a@test.com')
+      expect(u1Row.eventCount).toBe(2)
+      expect(u1Row.activeSubscription).toMatchObject({ status: 'active', price: 4900 })
+      const adminRow = result.rows.find((r: any) => r.email === 'admin@test.com')
+      expect(adminRow.eventCount).toBe(0)
+      expect(adminRow.activeSubscription).toBeNull()
+    })
+
+    it('filters by q substring against email or name (case-insensitive)', async () => {
+      const admin = await createTestUser(testDb, { email: 'admin@test.com', name: 'Admin' })
+      await createTestUser(testDb, { email: 'alice@example.com', name: 'Alice' })
+      await createTestUser(testDb, { email: 'bob@example.com', name: 'Bob' })
+
+      const event = authEvent(admin!.id, admin!.email, { url: '/api/admin/users?q=ALICE' })
+      const result = await usersListHandler(event)
+
+      expect(result.total).toBe(1)
+      expect(result.rows[0].email).toBe('alice@example.com')
+    })
+
+    it('respects limit and offset', async () => {
+      const admin = await createTestUser(testDb, { email: 'admin@test.com', name: 'Admin' })
+      for (let i = 0; i < 5; i++) {
+        await createTestUser(testDb, { email: `u${i}@test.com`, name: `U${i}` })
+      }
+      const event = authEvent(admin!.id, admin!.email, { url: '/api/admin/users?limit=2&offset=1' })
+      const result = await usersListHandler(event)
+
+      expect(result.total).toBe(6)
+      expect(result.limit).toBe(2)
+      expect(result.offset).toBe(1)
+      expect(result.rows).toHaveLength(2)
     })
   })
 })
