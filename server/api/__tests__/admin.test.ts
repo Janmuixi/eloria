@@ -138,6 +138,11 @@ describe('Admin API', () => {
   })
 
   describe('GET /api/admin/users/[id]', () => {
+    it('returns 401 without auth', async () => {
+      const event = createMockEvent({})
+      await expect(userDetailHandler(event)).rejects.toMatchObject({ statusCode: 401 })
+    })
+
     it('returns 403 for non-admin user', async () => {
       const user = await createTestUser(testDb, { email: 'user@test.com', name: 'User' })
       const event = authEvent(user!.id, user!.email, { params: { id: String(user!.id) } })
@@ -172,6 +177,11 @@ describe('Admin API', () => {
   })
 
   describe('GET /api/admin/events', () => {
+    it('returns 401 without auth', async () => {
+      const event = createMockEvent({})
+      await expect(eventsListHandler(event)).rejects.toMatchObject({ statusCode: 401 })
+    })
+
     it('returns 403 for non-admin user', async () => {
       const user = await createTestUser(testDb, { email: 'user@test.com', name: 'User' })
       const event = authEvent(user!.id, user!.email)
@@ -227,6 +237,11 @@ describe('Admin API', () => {
   })
 
   describe('GET /api/admin/events/[id]', () => {
+    it('returns 401 without auth', async () => {
+      const event = createMockEvent({})
+      await expect(eventDetailHandler(event)).rejects.toMatchObject({ statusCode: 401 })
+    })
+
     it('returns 403 for non-admin', async () => {
       const u = await createTestUser(testDb, { email: 'user@test.com', name: 'User' })
       const ev = createTestEvent(testDb, u!.id)
@@ -271,6 +286,11 @@ describe('Admin API', () => {
   })
 
   describe('GET /api/admin/subscriptions', () => {
+    it('returns 401 without auth', async () => {
+      const event = createMockEvent({})
+      await expect(subsListHandler(event)).rejects.toMatchObject({ statusCode: 401 })
+    })
+
     it('returns 403 for non-admin', async () => {
       const u = await createTestUser(testDb, { email: 'user@test.com', name: 'User' })
       const event = authEvent(u!.id, u!.email)
@@ -305,6 +325,11 @@ describe('Admin API', () => {
   })
 
   describe('GET /api/admin/tiers', () => {
+    it('returns 401 without auth', async () => {
+      const event = createMockEvent({})
+      await expect(tiersHandler(event)).rejects.toMatchObject({ statusCode: 401 })
+    })
+
     it('returns 403 for non-admin', async () => {
       const u = await createTestUser(testDb, { email: 'user@test.com', name: 'User' })
       const event = authEvent(u!.id, u!.email)
@@ -326,6 +351,11 @@ describe('Admin API', () => {
   })
 
   describe('GET /api/admin/templates', () => {
+    it('returns 401 without auth', async () => {
+      const event = createMockEvent({})
+      await expect(templatesHandler(event)).rejects.toMatchObject({ statusCode: 401 })
+    })
+
     it('returns 403 for non-admin', async () => {
       const u = await createTestUser(testDb, { email: 'user@test.com', name: 'User' })
       const event = authEvent(u!.id, u!.email)
