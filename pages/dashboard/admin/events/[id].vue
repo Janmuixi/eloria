@@ -6,7 +6,7 @@ type EventRow = Record<string, unknown> & {
   date: string; venue: string; venueAddress: string; venueMapUrl: string | null;
   description: string | null; templateId: number | null; invitationType: string;
   customImagePath: string | null; customization: string | null; tierId: number | null;
-  paymentStatus: string; stripePaymentId: string | null; language: string;
+  paymentStatus: string; stripePaymentId: null; hasStripePayment: boolean; language: string;
   allergiesEnabled: boolean; slug: string; createdAt: string | null;
 }
 

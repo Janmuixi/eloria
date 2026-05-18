@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
   const guests = await loadEventGuests(id)
 
   return {
-    event: evt,
+    event: { ...evt, stripePaymentId: null, hasStripePayment: !!evt.stripePaymentId },
     owner: owner ? { id: owner.id, email: owner.email, name: owner.name } : null,
     tier: tier ?? null,
     template: template
