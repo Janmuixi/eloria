@@ -1,4 +1,5 @@
 import { requireAuth } from '../../utils/auth'
+import { isAdmin } from '../../utils/admin'
 
 export default defineEventHandler(async (event) => {
   const user = await requireAuth(event)
@@ -8,6 +9,7 @@ export default defineEventHandler(async (event) => {
       id: user.id,
       email: user.email,
       name: user.name,
+      isAdmin: isAdmin(user),
     },
   }
 })

@@ -2,6 +2,7 @@ interface User {
   id: number
   email: string
   name: string
+  isAdmin: boolean
 }
 
 export const useAuth = () => {
