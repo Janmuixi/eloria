@@ -3,6 +3,7 @@ import { users } from '../../db/schema'
 import { eq } from 'drizzle-orm'
 import { verifyPassword } from '../../utils/password'
 import { createToken } from '../../utils/auth'
+import { isAdmin } from '../../utils/admin'
 import { resolveEnvVar } from '~/server/utils/resolve-env-var'
 
 export default defineEventHandler(async (event) => {
@@ -49,5 +50,5 @@ export default defineEventHandler(async (event) => {
     path: '/',
   })
 
-  return { user: { id: user.id, email: user.email, name: user.name } }
+  return { user: { id: user.id, email: user.email, name: user.name, isAdmin: isAdmin(user) } }
 })
