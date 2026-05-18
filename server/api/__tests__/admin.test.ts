@@ -21,6 +21,7 @@ const usersListHandler = (await import('../admin/users/index.get')).default
 const userDetailHandler = (await import('../admin/users/[id].get')).default
 const eventsListHandler = (await import('../admin/events/index.get')).default
 const eventDetailHandler = (await import('../admin/events/[id].get')).default
+const subsListHandler = (await import('../admin/subscriptions/index.get')).default
 
 const { createToken } = await import('../../utils/auth')
 
@@ -264,6 +265,40 @@ describe('Admin API', () => {
       expect(result.menu).toHaveLength(1)
       expect(result.menu[0].name).toBe('Main')
       expect(result.menu[0].options[0].name).toBe('Beef')
+    })
+  })
+
+  describe('GET /api/admin/subscriptions', () => {
+    it('returns 403 for non-admin', async () => {
+      const u = await createTestUser(testDb, { email: 'user@test.com', name: 'User' })
+      const event = authEvent(u!.id, u!.email)
+      await expect(subsListHandler(event)).rejects.toMatchObject({ statusCode: 403 })
+    })
+
+    it('returns rows joined with owner', async () => {
+      const admin = await createTestUser(testDb, { email: 'admin@test.com', name: 'Admin' })
+      const u1 = await createTestUser(testDb, { email: 'a@test.com', name: 'A' })
+      createTestSubscription(testDb, u1!.id, { status: 'active', price: 4900 })
+
+      const event = authEvent(admin!.id, admin!.email)
+      const result = await subsListHandler(event)
+
+      expect(result.total).toBe(1)
+      expect(result.rows[0].status).toBe('active')
+      expect(result.rows[0].user.email).toBe('a@test.com')
+    })
+
+    it('filters by status', async () => {
+      const admin = await createTestUser(testDb, { email: 'admin@test.com', name: 'Admin' })
+      const u1 = await createTestUser(testDb, { email: 'a@test.com', name: 'A' })
+      createTestSubscription(testDb, u1!.id, { status: 'active' })
+      createTestSubscription(testDb, u1!.id, { status: 'canceled' })
+
+      const event = authEvent(admin!.id, admin!.email, { url: '/api/admin/subscriptions?status=canceled' })
+      const result = await subsListHandler(event)
+
+      expect(result.total).toBe(1)
+      expect(result.rows[0].status).toBe('canceled')
     })
   })
 })
