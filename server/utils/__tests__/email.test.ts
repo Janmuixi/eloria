@@ -45,6 +45,7 @@ describe('email utils', () => {
       coupleName2: 'Charlie',
       date: '2026-06-15',
       invitationUrl: 'https://example.com/invite?token=xyz',
+      rsvpUrl: 'https://example.com/invite?token=xyz',
     })
 
     const resend = await import('resend')

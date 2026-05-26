@@ -73,6 +73,7 @@ export default defineEventHandler(async (event) => {
         coupleName2: userEvent.coupleName2,
         date: formatDate(toEventDate(userEvent.date), userEvent.language, 'long'),
         invitationUrl,
+        rsvpUrl: invitationUrl,
       })
 
       await db

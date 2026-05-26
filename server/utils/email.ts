@@ -27,6 +27,7 @@ export async function sendVerificationEmail(params: SendVerificationParams) {
     from: 'Eloria <noreply@muidev.com>',
     to: params.to,
     subject: 'Verify your email - Eloria',
+    text: `Verify your email\n\nHi ${params.userName},\n\nPlease verify your email address by clicking the link below:\n\n${params.verificationUrl}\n\nThis link expires in 24 hours.`,
     html: `
       <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; text-align: center; padding: 40px 20px;">
         <h1 style="font-size: 24px; color: #333;">Verify your email</h1>
@@ -50,6 +51,7 @@ interface SendInvitationParams {
   coupleName2: string
   date: string
   invitationUrl: string
+  rsvpUrl: string
 }
 
 export async function sendInvitationEmail(params: SendInvitationParams) {
@@ -59,6 +61,10 @@ export async function sendInvitationEmail(params: SendInvitationParams) {
     from: 'Eloria <invitations@muidev.com>',
     to: params.to,
     subject: `You're invited to ${params.coupleName1} & ${params.coupleName2}'s wedding`,
+    text: `You're Invited!\n\nDear ${params.guestName},\n\n${params.coupleName1} & ${params.coupleName2} would love for you to celebrate their wedding on ${params.date}.\n\nView Invitation & RSVP: ${params.invitationUrl}\n\nUnsubscribe: ${params.rsvpUrl}`,
+    headers: {
+      'List-Unsubscribe': `<${params.rsvpUrl}>`,
+    },
     html: `
       <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; text-align: center; padding: 40px 20px;">
         <h1 style="font-size: 24px; color: #333;">You're Invited!</h1>
@@ -88,6 +94,7 @@ export async function sendPasswordResetEmail(params: SendPasswordResetParams) {
     from: 'Eloria <noreply@muidev.com>',
     to: params.to,
     subject: 'Reset your password - Eloria',
+    text: `Reset Your Password\n\nHi ${params.userName},\n\nWe received a request to reset your password. Click the link below to create a new one:\n\n${params.resetUrl}\n\nThis link expires in 24 hours. If you didn't request this, you can safely ignore this email.`,
     html: `
       <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; text-align: center; padding: 40px 20px;">
         <h1 style="font-size: 24px; color: #333;">Reset Your Password</h1>
