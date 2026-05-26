@@ -176,6 +176,7 @@ describe('Payments API', () => {
       const updated = testDb.select().from(events).where(eq(events.id, evt!.id)).all()
       expect(updated[0]!.paymentStatus).toBe('paid')
       expect(updated[0]!.stripePaymentId).toBe('pi_test_123')
+      expect(updated[0]!.designLocked).toBe(true)
     })
 
     it('returns existing paid status without calling Stripe', async () => {
@@ -250,6 +251,7 @@ describe('Payments API', () => {
       const updated = testDb.select().from(events).where(eq(events.id, evt!.id)).all()
       expect(updated[0]!.paymentStatus).toBe('paid')
       expect(updated[0]!.stripePaymentId).toBe('pi_webhook_123')
+      expect(updated[0]!.designLocked).toBe(true)
     })
   })
 })

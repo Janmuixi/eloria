@@ -35,6 +35,7 @@ export default defineEventHandler(async (event) => {
     if (eventId && tierId) {
       await db.update(events).set({
         paymentStatus: 'paid',
+        designLocked: true,
         stripePaymentId: session.payment_intent as string,
         tierId,
       }).where(eq(events.id, eventId))

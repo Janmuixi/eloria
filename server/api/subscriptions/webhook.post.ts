@@ -60,7 +60,7 @@ export default defineEventHandler(async (event) => {
         const premiumTier = await db.query.tiers.findFirst({ where: eq(tiers.slug, 'premium') })
         if (premiumTier) {
           await db.update(events)
-            .set({ paymentStatus: 'paid', tierId: premiumTier.id })
+            .set({ paymentStatus: 'paid', designLocked: true, tierId: premiumTier.id })
             .where(eq(events.id, eventId))
         }
       }
@@ -92,7 +92,7 @@ export default defineEventHandler(async (event) => {
         .where(eq(subscriptions.id, subscription.id))
 
       await db.update(events)
-        .set({ paymentStatus: 'locked' })
+        .set({ paymentStatus: 'locked', designLocked: true })
         .where(eq(events.userId, subscription.userId))
     }
   }

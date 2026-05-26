@@ -106,6 +106,7 @@ export const events = sqliteTable('events', {
   customization: text('customization'),
   tierId: integer('tier_id').references(() => tiers.id),
   paymentStatus: text('payment_status').notNull().default('pending'),
+  designLocked: integer('design_locked', { mode: 'boolean' }).notNull().default(false),
   stripePaymentId: text('stripe_payment_id'),
   language: text('language').notNull().default('en'),
   allergiesEnabled: integer('allergies_enabled', { mode: 'boolean' }).notNull().default(false),

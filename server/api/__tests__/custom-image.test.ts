@@ -76,14 +76,26 @@ describe('PUT /api/events/:id/custom-image', () => {
     await expect(uploadHandler(ev)).rejects.toMatchObject({ statusCode: 404 })
   })
 
-  it('rejects when event is already paid', async () => {
+  it('rejects when design is locked', async () => {
     const user = await createTestUser(testDb, { email: 'a@test.com', name: 'A' })
-    const evt = createTestEvent(testDb, user!.id, { paymentStatus: 'paid' })
+    const evt = createTestEvent(testDb, user!.id, { paymentStatus: 'paid', designLocked: true })
     const buf = await jpegBuffer()
     const ev = authedMultipart(user!.id, user!.email, String(evt!.id), [
       { name: 'file', data: buf, filename: 'test.jpg', type: 'image/jpeg' },
     ])
     await expect(uploadHandler(ev)).rejects.toMatchObject({ statusCode: 403 })
+  })
+
+  it('accepts upload when event is paid but design is not locked (subscriber case)', async () => {
+    const user = await createTestUser(testDb, { email: 'a@test.com', name: 'A' })
+    const evt = createTestEvent(testDb, user!.id, { paymentStatus: 'paid', designLocked: false })
+    const buf = await jpegBuffer()
+    const ev = authedMultipart(user!.id, user!.email, String(evt!.id), [
+      { name: 'file', data: buf, filename: 'test.jpg', type: 'image/jpeg' },
+    ])
+    const result = await uploadHandler(ev)
+    expect(result.invitationType).toBe('upload')
+    expect(result.customImagePath).toMatch(/^[0-9]+\/[0-9a-f-]+\.jpg$/)
   })
 
   it('rejects unsupported MIME types', async () => {

@@ -71,6 +71,7 @@ export function createTestDb() {
       customization TEXT,
       tier_id INTEGER REFERENCES tiers(id),
       payment_status TEXT NOT NULL DEFAULT 'pending',
+      design_locked INTEGER NOT NULL DEFAULT 0,
       stripe_payment_id TEXT,
       language TEXT NOT NULL DEFAULT 'en',
       allergies_enabled INTEGER NOT NULL DEFAULT 0,
@@ -211,7 +212,7 @@ export function createTestEvent(db: TestDb, userId: number, overrides?: Partial<
   venue: string; venueAddress: string; slug: string; tierId: number | null;
   templateId: number | null; paymentStatus: string; customization: string | null;
   invitationType: string; customImagePath: string | null;
-  allergiesEnabled: boolean;
+  allergiesEnabled: boolean; designLocked: boolean;
 }>) {
   const rows = db.insert(events).values({
     userId,
@@ -225,6 +226,7 @@ export function createTestEvent(db: TestDb, userId: number, overrides?: Partial<
     tierId: overrides?.tierId ?? null,
     templateId: overrides?.templateId ?? null,
     paymentStatus: overrides?.paymentStatus || 'pending',
+    designLocked: overrides?.designLocked ?? false,
     customization: overrides?.customization ?? null,
     invitationType: overrides?.invitationType || 'template',
     customImagePath: overrides?.customImagePath ?? null,

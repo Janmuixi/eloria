@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     where: and(eq(events.id, id), eq(events.userId, user.id)),
   })
   if (!existing) throw createError({ statusCode: 404, statusMessage: 'Event not found' })
-  if (existing.paymentStatus === 'paid') {
+  if (existing.designLocked) {
     throw createError({ statusCode: 403, statusMessage: 'Cannot change design after payment' })
   }
 
